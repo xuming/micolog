@@ -11,8 +11,19 @@ from  model import *
 import wsgiref.handlers
 from mimetypes import types_map
 from datetime import datetime, timedelta
-
+import urllib
 logging.info('module base reloaded')
+
+def urldecode(value):
+    return  urllib.unquote(urllib.unquote(value)).decode('utf8')
+
+def urlencode(value):
+    return urllib.quote(value.encode('utf8'))
+
+def sid():
+    now=datetime.datetime.now()
+    return now.strftime('%y%m%d%H%M%S')+str(now.microsecond)
+
 
 def requires_admin(method):
     @wraps(method)
@@ -135,6 +146,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
     	if html == None:
     		#try:
 		    sfile=getattr(self.blog.theme, template_file)
+		    logging.debug('template:'+sfile)
 		    self.template_vals.update(values)
 		    html = template.render(sfile, self.template_vals)
     		#except Exception, e: # if theme files are not found, fall back to default theme
@@ -181,9 +193,14 @@ class BaseRequestHandler(webapp2.RequestHandler):
 class BasePublicPage(BaseRequestHandler):
     def initialize(self, request, response):
         BaseRequestHandler.initialize(self,request, response)
-        m_pages=Entry.all().filter('entrytype =','page').filter('published =',True).filter('entry_parent =',0)
+        m_pages=Entry.all().filter('entrytype =','page')\
+            .filter('published =',True)\
+            .filter('entry_parent =',0)\
+            .order('menu_order')
+        blogroll=Link.all().filter('linktype =','blogroll')
         self.template_vals.update({
                         'menu_pages':m_pages,
                         'categories':Category.all(),
+                        'blogroll':blogroll,
                         'recent_comments':Comment.all().order('-date').fetch(5)
         })

@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>{% block title %} {{ blog.title}}{% endblock %}</title>
+<link rel="stylesheet" href="/themes/{{ blog.theme_name }}/style.css" type="text/css" />
+<link rel="alternate" type="application/atom+xml" title="{{ blog.title }}" href="{{ blog.feedurl }}" />
+<link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
+<link rel="icon" type="image/ico" href="/favicon.ico">
+
+<script type="text/javascript" src="/themes/{{ blog.theme_name }}/jquery-1.2.6.min.js"></script> 
+<link rel="pingback" href="/pingback" />
+  {% block head_javascript %}{% endblock %}
+</head>
+<body>
+<div id="gc-container">
+<div id="langpref">    
+  {% if self.is_login%}
+    <a href="{{self.loginurl}}"> 注销</a>
+  {% else %}
+    <a href="{{self.loginurl}}"> 登录</a>
+  
+  {% endif %}
+</div>
+<div id="gc-header">
+  <div id="logo"><a href="{{ blog.baseurl }}">
+  
+     <img src="/themes/{{ blog.theme_name }}/images/cleardot.gif" alt="xuming.net" id="gc-logo-img">
+  
+  </a></div>
+  <div id="search">
+<!-- Google CSE Search Box Ends -->
+
+    <div id="searchForm" class="searchForm">
+      <form action="{{ blog.baseurl }}/gsearch" id="cse-search-box" >
+        <table class="gsc-search-box" cellpadding="0" cellspacing="0">
+          <tbody>
+            <tr>
+              <td class="gsc-input">
+              	 <input type="hidden" name="cx" value="011174782183950134202:hplznclaark" />
+                 <input type="hidden" name="cof" value="FORID:10" />
+                 <input type="text" class="gsc-input"  name="q" size="25" value="" />    
+              </td>
+              <td class="gsc-search-button">
+		 
+		             <input type="submit" name="sa" class="gsc-search-button"  value="搜索"/>
+		             
+            
+              </td>
+            </tr>
+            <tr>
+              <td class="greytext">e.g. "python" or "日本,av"</td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div> <!-- end searchForm -->
+    
+  </div> <!-- end search -->
+</div> <!-- end gc-header -->
+	
+ <div id="codesiteContent">
+
+<div id="gc-topnav">
+  <h1></h1>
+  
+  <ul id="home" class="gc-topnav-tabs">
+  	<li id="home_link">
+      <a href="{{ blog.baseurl }}"  >首页</a>
+    </li>
+    {% for page in  menu_pages %}
+       <li> 
+         <a href="/{{page.link}}">{{page.title}}</a>
+       </li>
+    {% endfor%}
+    {% block topmenu %}
+
+    {% endblock %}
+    
+</ul>
+</div> 
+<!-- end gc-topnav -->
+
+
+ {% block content %}{% endblock %}
+
+</div> <!-- end codesite content -->
+
+<div id="gc-footer" dir="ltr"> 
+  <div id="gc-footer-img"></div>
+  <div class="text" >
+  	<div style="margin-bottom:6px;">
+  		©2008 <a href="http://xuming.net">徐明的博客</a> Powered by <a href="http://code.google.com/appengine/" rel="nofollow">Google App Engine</a>
+  	 
+  	</div>
+  	<div>
+    
+       除非另有声明，本站文章采用 <a rel="license" href="http://creativecommons.org/licenses/by-nc/2.5/cn/"  rel="nofollow">知识共享署名-非商业性使用 2.5 中国大陆许可协议</a> 进行许可。
+    </div>
+  </div>
+</div><!-- end gc-footer -->
+
+</div><!-- end gc-containter -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-805972-4");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+</body>
+</html>

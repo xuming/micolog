@@ -1,4 +1,4 @@
-import cgi, os
+import cgi, os,sys
 import wsgiref.handlers
 from google.appengine.ext.webapp import template, \
     WSGIApplication
@@ -8,6 +8,7 @@ from google.appengine.ext import db
 from base import *
 from datetime import datetime ,timedelta
 import base64
+from django.utils import simplejson
 
 
 def doRequestHandle(old_handler,new_handler,**args):
@@ -16,6 +17,7 @@ def doRequestHandle(old_handler,new_handler,**args):
 
 class MainPage(BasePublicPage):
     def get(self,page=0):
+
 
         postid=self.param('p')
         if postid:
@@ -34,11 +36,14 @@ class MainPage(BasePublicPage):
 				return	self.error(404)
 
         entries = Entry.all().filter('entrytype =','post').\
-                filter("published =", True).order('-date')
+                filter("published =", True).order('-date').\
+                fetch(self.blog.posts_per_page, offset = page * self.blog.posts_per_page)
 
 
         show_prev =entries and  (not (page == 0))
         show_next =entries and  ( not (page == max_page))
+
+        logging.debug('this is ok')
 
 
         self.render('index',{'entries':entries,
@@ -57,11 +62,14 @@ class EntrysByCategory(BasePublicPage):
             page_index=int (self.param('page'))
         except:
             page_index=1
-        cats=Category.all().filter('slug =',slug)
+        slug=urllib.unquote(slug).decode('utf8')
+        cats=Category.all().filter('slug =',slug).fetch(1)
         if cats:
             entrys=Entry.all().filter('categorie_keys =',cats[0].key())
             entrys,links=Pager(query=entrys).fetch(page_index)
             self.render('category',{'entrys':entrys,'category':cats[0],'pager':links})
+        else:
+            self.error(414,slug)
 
 class EntrysByTag(BasePublicPage):
     def get(self,slug=None):
@@ -73,7 +81,8 @@ class EntrysByTag(BasePublicPage):
         except:
             page_index=1
         import urllib
-        slug=urllib.unquote(urllib.unquote(slug))
+        slug=urldecode(slug)
+
         entrys=Entry.all().filter('tags =',slug)
         entrys,links=Pager(query=entrys).fetch(page_index)
         self.render('tag',{'entrys':entrys,'tag':slug,'pager':links})
@@ -83,9 +92,11 @@ class EntrysByTag(BasePublicPage):
 class SinglePost(BasePublicPage):
     #@printinfo
     def get(self,slug=None,postid=None):
+
         if postid:
             entries = Entry.all().filter("published =", True).filter('post_id =', postid).fetch(1)
         else:
+            slug=urldecode(slug)
             entries = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
         if not entries or len(entries) == 0:
             return self.error(404)
@@ -94,16 +105,21 @@ class SinglePost(BasePublicPage):
         comments=Comment.all().filter("entry =",entry)
 
         commentuser=self.request.cookies.get('commentuser', '')
-        commentuser=base64.b64decode(commentuser).split('#@#')
+        if commentuser:
+            commentuser=base64.b64decode(commentuser).split('#@#')
+        else:
+            commentuser=['','','']
+
         if entry.entrytype=='post':
             self.render('single',
-                        {'entry':entry,
+                        {
+                        'entry':entry,
                         'comments':comments,
                         'user_name':commentuser[0],
                         'user_email':commentuser[1],
                         'user_url':commentuser[2],
-
                         })
+
         else:
             self.render('page',
                         {'entry':entry,
@@ -175,12 +191,219 @@ class ChangeTheme(BaseRequestHandler):
        g_blog.get_theme()
        self.redirect('/')
 
+class admin_init_blog(BaseRequestHandler):
+    @requires_admin
+    def get(self,slug=None):
+
+        for com in Comment.all():
+            com.delete()
+
+        for entry in Entry.all():
+            entry.delete()
+
+        g_blog.entrycount=0
+        self.write('"Init succeed."')
+
+class admin_updatelink(BaseRequestHandler):
+    @requires_admin
+    def get(self,slug=None):
+        link_format=self.param('linkfmt')
+
+        if link_format:
+            link_format=link_format.strip()
+            g_blog.link_format=link_format
+            g_blog.save()
+            for entry in Entry.all():
+                vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
+                'postname':entry.slug,'post_id':entry.post_id}
+
+                if entry.slug:
+                    newlink=link_format%vals
+                else:
+                    newlink='?p=%(post_id)s'%vals
+
+                if entry.link<>newlink:
+                    entry.link=newlink
+                    entry.put()
+            self.write('"ok"')
+        else:
+            self.write('"Please input url format."')
+
+class admin_import_next(BaseRequestHandler):
+    @requires_admin
+    def get(self,slug=None):
+        if self.blog.import_wp:
+            categories_list,entrys=self.blog.import_wp
+        if categories_list:
+            next=categories_list.pop(0)
+            if next:
+                nicename=next['nicename']
+                cat=Category.get_by_key_name('cat_'+nicename)
+                if not cat:
+                    cat=Category(key_name='cat_'+nicename)
+                cat.name=next['name']
+                cat.slug=nicename
+                cat.put()
+                self.write(simplejson.dumps(('category',next['name'],True)))
+                return
+
+        if entrys:
+            next=entrys.pop(0)
+            if next:
+                entry=Entry()
+                entry.title=next['title']
+                entry.author=self.login_user
+                entry.is_wp=True
+                entry.date=datetime.strptime( next['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
+                entry.entrytype=next['post_type']
+                entry.content=next['encoded']
+                entry.post_id=next['post_id']
+                entry.slug=next['post_name']
+                entry.entry_parent=next['post_parent']
+                entry.menu_order=next['menu_order']
+
+
+                for cat in next['categories']:
+                    nicename=cat
+                    c=Category.get_by_key_name('cat_'+nicename)
+                    if c:
+                        entry.categorie_keys.append(c.key())
+                for tag in next['tags']:
+                    entry.tags.append(tag)
+
+
+                if next['published']:
+                    key=entry.publish(True)
+                else:
+                    key=entry.save()
+
+                for com in next['comments']:
+                        comment=Comment(author=com['author'],
+                                        content=com['content'],
+                                        entry=entry,
+                                        )
+                        try:
+                            comment.email=com['email']
+                            comment.weburl=com['weburl']
+                        except:
+                            pass
+                        comment.put()
+                self.write(simplejson.dumps(('entry',next['title'],True)))
+                return
+        self.blog.import_wp=None
+        self.write(simplejson.dumps(('Ok','Finished',False)))
+
 class admin_import(BaseRequestHandler):
     @requires_admin
     def get(self,slug=None):
-         self.render2('views/admin/import.html')
+        gblog_init()
+        self.render2('views/admin/import.html')
+
     @requires_admin
     def post(self):
+        import  xml.etree.ElementTree as et
+
+
+        wpfile=self.param('wpfile')
+        doc=et.fromstring(wpfile)
+        #use namespace
+        wpns='{http://wordpress.org/export/1.0/}'
+
+        contentns="{http://purl.org/rss/1.0/modules/content/}"
+        et._namespace_map[wpns]='wp'
+        et._namespace_map[contentns]='content'
+
+        channel=doc.find('channel')
+        #self.write('Blog:'+channel.findtext('title')+'<br>')
+        categories=channel.findall(wpns+'category')
+        categories_list=[]
+        for cate in categories:
+            #self.write('cate:'+cate.findtext(wpns+'cat_name')+'<br>')
+
+            nicename=cate.findtext(wpns+'category_nicename')
+            name=cate.findtext(wpns+'cat_name')
+            categories_list.append({'nicename':nicename,'name':name})
+        import time
+        items=channel.findall('item')
+        entrys=[]
+        for item in items:
+            title=item.findtext('title')
+            try:
+                #self.write(title+'<br>')
+
+                entry={}
+                entry['title']=item.findtext('title')
+                logging.info(title)
+                #entry['author']=self.login_user
+                #entry.is_wp=True
+                entry['pubDate']=item.findtext('pubDate')
+                entry['post_type']=item.findtext(wpns+'post_type')
+                entry['encoded']= item.findtext(contentns+'encoded')
+                entry['post_id']=int(item.findtext(wpns+'post_id'))
+                entry['post_name']=item.findtext(wpns+'post_name')
+                entry['post_parent']=int(item.findtext(wpns+'post_parent'))
+                entry['menu_order']=int(item.findtext(wpns+'menu_order'))
+
+                entry['tags']=[]
+                entry['categories']=[]
+
+
+                cats=item.findall('category')
+
+
+                for cat in cats:
+                    if cat.attrib.has_key('nicename'):
+                        cat_type=cat.attrib['domain']
+                        if cat_type=='tag':
+                            entry['tags'].append(cat.text)
+                        else:
+                            nicename=cat.attrib['nicename']
+                            entry['categories'].append(nicename)
+
+                pub_status=item.findtext(wpns+'status')
+                if pub_status=='publish':
+                    entry['published']=True
+                else:
+                    entry['published']=False
+
+                entry['comments']=[]
+
+                comments=item.findall(wpns+'comment')
+
+                for com in comments:
+                    try:
+                        comment_approved=int(com.findtext(wpns+'comment_approved'))
+                    except:
+                        comment_approved=0
+                    if comment_approved:
+
+
+                        comment=dict(author=com.findtext(wpns+'comment_author'),
+                                        content=com.findtext(wpns+'comment_content'),
+                                        email=com.findtext(wpns+'comment_author_email'),
+                                        weburl=com.findtext(wpns+'comment_author_url')
+                                        )
+
+                        entry['comments'].append(comment)
+                entrys.append(entry)
+            except :
+                import traceback
+
+                logging.error('Import ''%s'' error.'%traceback.format_exc(10))
+
+##        self.write('<script> entrys='+simplejson.dumps(entrys)+'</script>')
+##        self.render2('views/admin/import.html',
+##                    {'categories':simplejson.dumps(categories_list),
+##                     'entrys':simplejson.dumps(entrys),
+##                     'postback':True})
+        #memcache.set('import_wp',simplejson.dumps([categories_list,entrys]),1000)
+        self.blog.import_wp=(categories_list,entrys)
+        self.render2('views/admin/import.html',
+                    {'postback':True})
+
+
+    @requires_admin
+    def post_old(self):
         import  xml.etree.ElementTree as et
         wpfile=self.param('wpfile')
         doc=et.fromstring(wpfile)
@@ -211,79 +434,92 @@ class admin_import(BaseRequestHandler):
 ##            ntag=Tag()
 ##            ntag.tag=tag.findtext(wpns+'tag_name')
 ##            ntag.put()
+        import time
         items=channel.findall('item')
         for item in items:
-            self.write(item.findtext('title'))
-            entry=Entry()
-            entry.title=item.findtext('title')
-            logging.info(entry.title)
-            entry.author=self.login_user
-            entry.is_wp=True
-            entry.date=datetime.strptime( item.findtext('pubDate'),"%a, %d %b %Y %H:%M:%S +0000")
-            entry.entrytype=item.findtext(wpns+'post_type')
-            entry.content=item.findtext(contentns+'encoded')
-            entry.post_id=int(item.findtext(wpns+'post_id'))
-            entry.slug=item.findtext(wpns+'post_name')
-            entry.entry_parent=int(item.findtext(wpns+'post_parent'))
-            entry.menu_order=int(item.findtext(wpns+'menu_order'))
+            title=item.findtext('title')
+            try:
+                self.write(title+'<br>')
+
+                entry=Entry()
+                entry.title=item.findtext('title')
+                logging.info(title)
+                entry.author=self.login_user
+                entry.is_wp=True
+                entry.date=datetime.strptime( item.findtext('pubDate'),"%a, %d %b %Y %H:%M:%S +0000")
+                entry.entrytype=item.findtext(wpns+'post_type')
+                entry.content=item.findtext(contentns+'encoded')
+                entry.post_id=int(item.findtext(wpns+'post_id'))
+                entry.slug=item.findtext(wpns+'post_name')
+                entry.entry_parent=int(item.findtext(wpns+'post_parent'))
+                entry.menu_order=int(item.findtext(wpns+'menu_order'))
 
 
-            cats=item.findall('category')
+                cats=item.findall('category')
 
-            for cat in cats:
-                if cat.attrib.has_key('nicename'):
-                    cat_type=cat.attrib['domain']
-                    nicename=cat.attrib['nicename']
-                    if cat_type=='tag':
-                        entry.tags.append(cat.text)
-                    else:
-                        c=Category.get_by_key_name('cat_'+nicename)
-                        if c:
-                            entry.categorie_keys.append(c.key())
+                for cat in cats:
+                    if cat.attrib.has_key('nicename'):
+                        cat_type=cat.attrib['domain']
+                        if cat_type=='tag':
+                            entry.tags.append(cat.text)
+                        else:
+                            nicename=cat.attrib['nicename']
+                            c=Category.get_by_key_name('cat_'+nicename)
+                            if c:
+                                entry.categorie_keys.append(c.key())
 
-            pub_status=item.findtext(wpns+'status')
-            if pub_status=='publish':
-                key=entry.publish(True)
-            else:
-                key=entry.save()
+                pub_status=item.findtext(wpns+'status')
+                if pub_status=='publish':
+                    key=entry.publish(True)
+                else:
+                    key=entry.save()
 
-            comments=item.findall(wpns+'comment')
+                comments=item.findall(wpns+'comment')
 
-            for com in comments:
-                comment_approved=int(com.findtext(wpns+'comment_approved'))
-                if comment_approved:
-
-                    comment=Comment(author=com.findtext(wpns+'comment_author'),
-                                    content=com.findtext(wpns+'comment_content'),
-                                    entry=entry,
-                                    )
+                for com in comments:
                     try:
-                        comment.email=com.findtext(wpns+'comment_author_email')
-                        comment.weburl=com.findtext(wpns+'comment_author_url')
+                        comment_approved=int(com.findtext(wpns+'comment_approved'))
                     except:
-                        pass
-                    comment.put()
+                        comment_approved=0
+                    if comment_approved:
+
+                        comment=Comment(author=com.findtext(wpns+'comment_author'),
+                                        content=com.findtext(wpns+'comment_content'),
+                                        entry=entry,
+                                        )
+                        try:
+                            comment.email=com.findtext(wpns+'comment_author_email')
+                            comment.weburl=com.findtext(wpns+'comment_author_url')
+                        except:
+                            pass
+                        comment.put()
+            except :
+                import traceback
+
+                self.write('Import ''%s'' error.<br>'%title)
+                logging.error('Import ''%s'' error.'%traceback.format_exc(10))
+
 
 
 
 
 def main():
+    webapp.template.register_template_library('filter')
     application = webapp2.WSGIApplication2(
                     [('/skin',ChangeTheme),
-                     ('/themes/[\\w\\-]+/templates/.*',Error404),
                      ('/feed', FeedHandler),
                      ('/post_comment',Post_comment),
                      ('/page/(?P<page>\d+)', MainPage),
                      ('/admin/import',admin_import),
+                     ('/admin/import_next',admin_import_next),
+                     ('/admin/init_blog',admin_init_blog),
+                     ('/admin/updatelink',admin_updatelink),
+
                      ('/category/(.*)',EntrysByCategory),
                      ('/tag/(.*)',EntrysByTag),
-
                      ('/', MainPage),
                      ('/([\\w\\-\\./]+)', SinglePost),
-
-
                      ('.*',Error404),
-
                      ],debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 

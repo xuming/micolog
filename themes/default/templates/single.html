@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+{% block content %}
+
+  <div id="gc-home">
+    <div class="g-section g-tpl-330-alt">
+
+     
+      <div class="g-unit">
+        <div class="g-c-gc-home">
+
+{% if entry %}
+			<div class="post" id="post-{{ entry.id }}">
+				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
+				<div class="greytext">{{ entry.date|date:"F jS, Y " }} </div>
+
+				<div class="entry">
+					{{ entry.content }}
+				</div>
+
+				<p class="postmetadata">{% if entry.tags%}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} </p>
+			</div>
+				{% include "comments.html" %}
+{% else %}
+ <p>Sorry, no posts matched your criteria.</p>
+{% endif %}
+
+
+
+
+
+
+
+
+        
+      </div><!-- end g-c-gc-home -->
+    </div><!-- end g-unit -->
+ <div class="g-unit g-first">
+ 	 {{ blog.theme }}
+      	{% include "sidebar.html" %}
+        
+      </div>
+  </div><!-- end g-section -->
+
+
+
+
+</div><!-- end gc-home -->
+
+    	
+
+  
+
+   
+{% endblock %}

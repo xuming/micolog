@@ -1,0 +1,64 @@
+﻿<html>
+	<head>
+<script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>
+
+<script type="text/javascript">
+{%if postback%}
+$(document).ready(function() {
+  $.getJSON("{{self.blog.baseurl}}/admin/import_next", next_result);
+  function next_result(json)
+  {
+  	$('#list').prepend('<li>'+json[0]+':'+json[1]+'</li>')
+  	if (json[2])
+  	{
+  		 $.getJSON("{{self.blog.baseurl}}/admin/import_next", next_result);
+  	}
+
+  }
+
+});
+{%else%}
+	 function init_blog()
+	 {
+	 	$.getJSON("{{self.blog.baseurl}}/admin/init_blog", function(json){
+	 		  alert(json);
+
+	 		});
+	 }
+	 
+	 function update_link()
+	 {
+	 	$.getJSON("{{self.blog.baseurl}}/admin/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
+	 		  alert(json);
+
+	 		});
+	 }
+{%endif%}
+</script>
+
+</head>
+<body>
+	{%if postback%}
+	正在导入．．．：<br>
+	<ul id="list"></ul>
+
+
+
+	{%else%}
+	<form action="" method='post' enctype="multipart/form-data">
+	请上传wordpress export rss文件：<input type="file" name="wpfile"><input type="submit" value="上传"/>
+</form>
+<p>
+<input type='button' value='初始化博客数据' id='init_blog' onclick='init_blog()'/>
+</p>
+<p>
+<input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
+<input type='button' value='更新文章URL' id='update_link' onclick='update_link()'/>
+<br>
+可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s 
+
+</p>
+{%endif%}
+
+</body>
+</html>

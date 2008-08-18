@@ -1,0 +1,73 @@
+﻿	<div class="g-c-gc-home" id="rightbar">
+
+
+
+<div style="border-color: rgb(51, 102, 204); margin: 1em 0pt 0pt; padding: 0pt 0.9em 0.9em; background-color: rgb(229, 236, 249);"><h2 style="padding-top: 0.5em;">订阅</h2>
+  <div style="padding:0.5em">
+  <div>
+   <span class="fg-subscribe" style="padding-right:20px"><a href="http://feeds.feedburner.com/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feeds.feedburner.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedBurner</a> </span>
+<span class="fg-subscribe"  ><a href="http://feed.feedsky/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feed.feedsky.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedSky</a> </span>
+  </div>
+
+
+ </div>
+
+
+<!-- FEED  begin -->
+<a href="http://fusion.google.com/add?feedurl=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_google.gif" alt="google reader" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://www.zhuaxia.com/add_channel.php?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_zhuaxia.gif" alt="&#25235;&#34430;" vspace="2" style="margin-bottom:3px" ></a><br />
+<a href="http://www.bloglines.com/sub/http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_bloglines.gif" alt="bloglines" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://add.my.yahoo.com/rss?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_yahoo.gif" alt="my yahoo" vspace="2" style="margin-bottom:3px" ></a><br />
+<a href="http://inezha.com/add?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_nazha.gif" alt="&#21738;&#21522;" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://www.xianguo.com/subscribe.php?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_xianguo.gif" alt="&#40092;&#26524;" vspace="2" style="margin-bottom:3px" ></a><br />
+<!-- FEED end -->
+
+<div style="padding:5px 0px">* 更多订阅本站方式请看 <a href="/rsshelp">订阅帮助</a></div>
+</div>
+ <div style="margin: 15px;"></div>
+
+
+<ul id="sidebar">
+   <li>
+
+    <h2>最近评论</h2>
+        <ul>
+        {% for comment in recent_comments %}
+        <li><a href="/{{comment.entry.link}}#comment-{{comment.key.id}}">{{comment.author}}:</a> {{comment.shortcontent}}...</li>
+        {%endfor%}
+        </ul>
+        </li>
+<li>
+ <h2>分类杂谈</h2>
+  <ul>
+ 	{%for cate in categories%}
+  <li>	<a href="/category/{{cate.slug}}">{{cate.name}}</a>({{cate.count}})</li>
+ 	{%endfor%}
+ 	</ul>
+
+</li>
+    <li>
+    <h2>Twitter</h2>
+    <div style="margin-top:10px;"><embed src="http://twitter.com/flash/twitter_badge.swf"  flashvars="color1=10079487&type=user&id=57073"  quality="high" width="210" height="210" name="twitter_badge" align="middle" allowScriptAccess="always" wmode="transparent" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /><br><a style="font-size: 10px; color: #99CCFF; text-decoration: none" href="http://twitter.com/chyni">follow chyni at http://twitter.com</a></div>
+    </li>
+<li>
+<h2>我读的书</h2>
+<script type="text/javascript" src="http://www.douban.com/service/badge/chyni/?show=dolist&amp;n=3&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book" ></script>
+</li>
+<li>
+<h2>友情链接</h2>
+<ul>
+{%for link in blogroll%}
+<li><a href="{{link.href}}">{{link.linktext}}</a></li>
+{%endfor%}
+
+</ul>
+</li>
+</ul>
+
+
+        </div>
+
+
+
+

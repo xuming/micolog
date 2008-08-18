@@ -4,30 +4,34 @@ from google.appengine.ext import db
 from google.appengine.ext.db import Model as DBModel
 from datetime import datetime
 
+logging.info('module base reloaded')
 
+rootpath=os.path.dirname(__file__)
 
 class Theme:
 	def __init__(self, name='default'):
 		self.name = name
 		self.mapping_cache = {}
 		self.dir = '/themes/%s' % name
-		self.viewdir=os.path.join(os.getcwd(), 'view')
-		self.server_dir = os.path.join(os.getcwd(), 'themes', self.name)
+		self.viewdir=os.path.join(rootpath, 'view')
+		self.server_dir = os.path.join(rootpath, 'themes', self.name)
+		logging.debug('server_dir:%s'%self.server_dir)
 
 	def __getattr__(self, name):
-		if self.mapping_cache.has_key(name):
-			return self.mapping_cache[name]
-		else:
-			path = os.path.join(self.server_dir, 'templates', name + '.html')
-			if not os.path.exists(path):
-				path = os.path.join(os.getcwd(), 'themes', 'default', 'templates', name + '.html')
-				if os.path.exists(path):
-					self.mapping_cache[name] = path
-					return path
-		  	else:
-					self.mapping_cache[name] = path
-					return path
-			return None
+	    if self.mapping_cache.has_key(name):
+        	return self.mapping_cache[name]
+	    else:
+   	        path = os.path.join(self.server_dir, 'templates', name + '.html')
+   	        logging.debug('path:%s'%path)
+            if not os.path.exists(path):
+        		path = os.path.join(rootpath, 'themes', 'default', 'templates', name + '.html')
+        		if os.path.exists(path):
+        			self.mapping_cache[name] = path
+        			return path
+            else:
+        			self.mapping_cache[name] = path
+        			return path
+            return None
 
 
 class ThemeIterator:
@@ -95,7 +99,7 @@ class Blog(db.Model):
     blogversion = db.StringProperty(multiline=False,default='1.00')
     theme_name = db.StringProperty(multiline=False,default='default')
     enable_memcache = db.BooleanProperty(default = False)
-    link_format=db.StringProperty(multiline=False,default='')
+    link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
     theme=None
 
     def save(self):
@@ -187,7 +191,7 @@ class Entry(BaseModel):
 
 
     def comments(self):
-        return Comment.all().filter('entry =',self)
+        return Comment.all().filter('entry =',self).order('-date')
 
     def update_archive(self):
         """Checks to see if there is a month-year entry for the
@@ -226,10 +230,16 @@ class Entry(BaseModel):
             if not self.is_wp:
                 self.post_id=self.key().id()
 
-            vals={'year':self.date.year,'month':self.date.month,'day':self.date.day,
+            vals={'year':self.date.year,'month':str(self.date.month).zfill(2),'day':self.date.day,
                 'postname':self.slug,'post_id':self.post_id}
 
-            if not self.link:
+
+            if self.entrytype=='page':
+                if self.slug:
+                    self.link=self.slug
+                else:
+                    self.link='?p=%(post_id)s'%vals
+            else:
                 if g_blog.link_format and self.slug:
                     self.link=g_blog.link_format.strip()%vals
                 else:
@@ -277,16 +287,20 @@ class Comment(db.Model):
 
 
 #setting
-logging.info('module setting reloaded')
-g_blog = Blog.get_by_key_name('default')
-if not g_blog:
-	g_blog = Blog(key_name = 'default')
+g_blog=None
+def gblog_init():
+    logging.info('module setting reloaded')
+    global g_blog
+    g_blog = Blog.get_by_key_name('default')
+    if not g_blog:
+    	g_blog = Blog(key_name = 'default')
 
-g_blog.put()
+    g_blog.put()
 
-g_blog.get_theme()
+    g_blog.get_theme()
 
-g_blog.rootdir=os.path.dirname(__file__)
+    g_blog.rootdir=os.path.dirname(__file__)
 
-
+    logging.info(g_blog.rootdir)
+gblog_init()
 

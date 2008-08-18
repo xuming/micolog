@@ -4,17 +4,25 @@ runtime: python
 api_version: 1
 
 handlers:
--   url: /rpc
-    script: metaweblog.py
 
--   url: /rpc/.*
-    script: metaweblog.py
+- url: /favicon\.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
 
--   url: /themes/[\w\-]+/templates/.*
-    script: blog.py
+- url: /static
+  static_dir: static
 
--   url: /themes
-    static_dir: themes
+- url: /rpc|/rpc
+  script: api_rpc.py
 
--   url: /.*
-    script: blog.py
+- url: /themes/.*
+  script: theme_files.py
+
+- url: /myadmin/.*|/myadmin
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
+
+
+- url: /.*
+  script: blog.py
+

@@ -1,0 +1,46 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div id="gc-home">
+	
+    <div class="g-section g-tpl-330-alt">
+
+     
+      <div class="g-unit">
+        <div class="g-c-gc-home">
+  {% for entry in entries %}
+
+			<div class="post" id="post-{{ entry.id }}">
+				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
+				<div class="greytext">{{ entry.date|date:"F jS, Y " }} </div>
+
+				<div class="entry">
+					{{ entry.content }}
+				</div>
+
+				<p class="postmetadata">Topics: {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | <a href="/{{entry.link}}#comments">评论({{entry.commentcount}})</a></p>
+			</div>
+
+	 {% endfor %}
+
+   
+		<div class="navigation">
+			{% if show_prev %}
+			<div class="alignleft"><a href="/page/{{ pageindex|add:"-1" }}">&laquo; 上一页</a></div>
+			{% endif %}
+			{% if show_next %}
+			<div class="alignright"><a href="/page/{{ pageindex|add:"1" }}">下一页 &raquo;</a></div>
+			{% endif %}
+		</div>        
+      </div><!-- end g-c-gc-home -->
+    </div><!-- end g-unit -->
+ <div class="g-unit g-first">
+      	{% include "sidebar.html" %}
+        
+      </div>
+  </div><!-- end g-sections 0 -->
+
+
+
+
+</div><!-- end gc-home -->
+{% endblock %}

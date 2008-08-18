@@ -7,8 +7,8 @@ from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
 from functools import wraps
 
 sys.path.append('modules')
-from app.base import *
-from app.model import *
+from base import *
+from model import *
 
 def checkauth(pos=1):
     def _decorate(method):
@@ -31,6 +31,8 @@ def entry_struct(entry):
     categories=[]
     if entry.categorie_keys:
         categories =[cate.name for cate in  entry.categories]
+
+
     struct = {
         'postid': entry.key().id(),
         'title': entry.title,
@@ -39,6 +41,9 @@ def entry_struct(entry):
         'description': unicode(entry.content),
         'categories': categories,
         'userid': 1,
+        'mt_keywords':','.join(entry.tags),
+        'wp_slug':entry.slug,
+        'wp_page_order':entry.menu_order,
         # 'mt_excerpt': '',
         # 'mt_text_more': '',
         # 'mt_allow_comments': 1,
@@ -53,62 +58,86 @@ class Logger(db.Model):
 	response = db.TextProperty()
 	date = db.DateTimeProperty(auto_now_add=True)
 
+
+#-------------------------------------------------------------------------------
+# blogger
+#-------------------------------------------------------------------------------
+
 @checkauth()
 def blogger_getUsersBlogs(discard):
 	return [{'url' : g_blog.baseurl, 'blogid' : '001', 'blogName' : g_blog.title}]
 
+#-------------------------------------------------------------------------------
+# metaWeblog
+#-------------------------------------------------------------------------------
+
 @checkauth()
 def metaWeblog_newPost(blogid, struct, publish):
-    if publish:
-    	if struct.has_key('categories'):
-    		cates = struct['categories']
-    	else:
-    		cates = []
-
-        newcates=[]
-        for cate in cates:
-          c=Category.all().filter('name =',cate)
-          if c:
-              newcates.append(c[0].key())
-        entry=Entry(title = struct['title'],
-                content = struct['description'],
-                categorie_keys=newcates
-         )
-        entry.publish(True)
-        postid =entry.key().id()
-        return str(postid)
+    if struct.has_key('categories'):
+    	cates = struct['categories']
     else:
-        return 'notpublished'
+    	cates = []
+
+    newcates=[]
+    for cate in cates:
+      c=Category.all().filter('name =',cate)
+      if c:
+          newcates.append(c[0].key())
+    entry=Entry(title = struct['title'],
+            content = struct['description'],
+            categorie_keys=newcates
+     )
+    if struct.has_key('mt_keywords'):
+        entry.tags=struct['mt_keywords'].split(',')
+
+    if struct.has_key('wp_slug'):
+        entry.slug=struct['wp_slug']
+
+    if publish:
+        entry.publish(True)
+    else:
+        entry.save()
+    postid =entry.key().id()
+    return str(postid)
+
 
 @checkauth()
 def metaWeblog_editPost(postid, struct, publish):
-    if publish:
-
-        if struct.has_key('categories'):
-        	cates = struct['categories']
-        else:
-        	cates = []
-        newcates=[]
-        for cate in cates:
-          c=Category.all().filter('name =',cate)
-          if c:
-              newcates.append(c[0].key())
-        entry=Entry.get_by_id(int(postid))
-
-        entry.title = struct['title']
-        entry.content = struct['description']
-        entry.categorie_keys=newcates
-        entry.publish(True)
-
-    	return True
+    if struct.has_key('categories'):
+    	cates = struct['categories']
     else:
-    	return True
+    	cates = []
+    newcates=[]
+    for cate in cates:
+      c=Category.all().filter('name =',cate).fetch(1)
+      if c:
+          newcates.append(c[0].key())
+    entry=Entry.get_by_id(int(postid))
+
+    if struct.has_key('mt_keywords'):
+        entry.tags=struct['mt_keywords'].split(',')
+
+    if struct.has_key('wp_slug'):
+        entry.slug=struct['wp_slug']
+
+
+    entry.title = struct['title']
+    entry.content = struct['description']
+    entry.categorie_keys=newcates
+    if publish:
+        entry.publish(True)
+    else:
+        entry.save()
+
+	return True
+
+
 @checkauth()
 def metaWeblog_getCategories(blogid):
 	categories =Category.all()
 	cates=[]
 	for cate in categories:
-		cates.append({  'categoryId' : cate.key().id(),
+		cates.append({  'categoryId' : cate.key().id_or_name(),
                         'parentId':0,
                         'description':cate.name,
                         'categoryName':cate.name,
@@ -129,9 +158,97 @@ def metaWeblog_getRecentPosts(blogid, num):
 
 @checkauth(pos=2)
 def blogger_deletePost(appkey, postid, publish):
-    post=Entry.get_by_id(postid)
+    post=Entry.get_by_id(int(postid))
     post.delete()
     return True
+
+#-------------------------------------------------------------------------------
+#  WordPress API
+#-------------------------------------------------------------------------------
+@checkauth()
+def wp_newCategory(blogid,struct):
+    name=struct['name']
+
+    category=Category.all().filter('name =',name).fetch(1)
+    if category and len(category):
+        return category[0].slug
+    else:
+        category=Category(key_name=urlencode(name), name=name,slug=urlencode(name))
+        category.put()
+        return category.slug
+
+
+@checkauth()
+def wp_newPage(blogid,struct,publish):
+
+        entry=Entry(title = struct['title'],
+                content = struct['description'],
+                )
+
+        if struct.has_key('wp_slug'):
+            entry.slug=struct['wp_slug']
+        if struct.has_key('wp_page_order'):
+            entry.menu_order=int(struct['wp_page_order'])
+        entry.entrytype='page'
+        if publish:
+            entry.publish(True)
+        else:
+            entry.save()
+
+        postid =entry.key().id()
+        return str(postid)
+
+
+@checkauth(2)
+def wp_getPage(blogid,pageid):
+    entry = Entry.get_by_id(int(pageid))
+    return entry_struct(entry)
+
+@checkauth()
+def wp_getPages(blogid,num):
+	entrys = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
+	return [entry_struct(entry) for entry in entrys]
+
+@checkauth(2)
+def wp_editPage(blogid,pageid,struct,publish):
+
+    entry=Entry.get_by_id(int(pageid))
+
+    ##        if struct.has_key('mt_keywords'):
+    ##            entry.tags=struct['mt_keywords'].split(',')
+
+    if struct.has_key('wp_slug'):
+        entry.slug=struct['wp_slug']
+
+    if struct.has_key('wp_page_order'):
+        entry.menu_order=int(struct['wp_page_order'])
+
+
+    entry.title = struct['title']
+    entry.content = struct['description']
+    if publish:
+        entry.publish(True)
+    else:
+        entry.save()
+
+    return True
+
+
+@checkauth()
+def wp_deletePage(blogid,pageid):
+    post=Entry.get_by_id(int(pageid))
+    post.delete()
+    return True
+@checkauth()
+def wp_getAuthors(blogid):
+    return [{'user_id':1,'user_login':'','display_name':'admin'}]
+
+@checkauth()
+def wp_getPageList(blogid):
+    return []
+
+
+#-------------------------------------------------------------------------------
 
 class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
 	def __init__(self, funcs):
@@ -140,12 +257,26 @@ class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
 
 dispatcher = PlogXMLRPCDispatcher({
 	'blogger.getUsersBlogs' : blogger_getUsersBlogs,
-	#'blogger.deletePost' : blogger_deletePost,
+	'blogger.deletePost' : blogger_deletePost,
+
 	'metaWeblog.newPost' : metaWeblog_newPost,
 	'metaWeblog.editPost' : metaWeblog_editPost,
 	'metaWeblog.getCategories' : metaWeblog_getCategories,
 	'metaWeblog.getPost' : metaWeblog_getPost,
 	'metaWeblog.getRecentPosts' : metaWeblog_getRecentPosts,
+
+	'wp.getCategories':metaWeblog_getCategories,
+	'wp.newCategory':wp_newCategory,
+	'wp.newPage':wp_newPage,
+	'wp.getPage':wp_getPage,
+	'wp.getPages':wp_getPages,
+	'wp.editPage':wp_editPage,
+	'wp.getPageList':wp_getPageList,
+	'wp.deletePage':wp_deletePage,
+    'wp.getAuthors':wp_getAuthors,
+
+
+
 	})
 
 
@@ -182,7 +313,7 @@ class DeleteLog(BaseRequestHandler):
 				log.delete()
 
 
-			self.redirect('/')
+			self.redirect('/rpc/view')
 #}}}
 
 

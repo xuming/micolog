@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+{% block content %}
+
+  <div id="gc-home">
+    <div class="g-section">
+
+     
+      <div class="g-unit">
+        <div class="g-c-gc-home2">
+
+{% if entry %}
+			<div class="post" id="post-{{ entry.id }}">
+				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
+				
+				<div class="entry">
+					{{ entry.content }}
+				</div>
+
+				
+			</div>
+				{% include "comments.html" %}
+{% else %}
+ <p>Sorry, no posts matched your criteria.</p>
+{% endif %}
+
+
+
+
+
+
+
+
+        
+      </div><!-- end g-c-gc-home -->
+    </div><!-- end g-unit -->
+ 
+  </div><!-- end g-section -->
+
+
+
+
+</div><!-- end gc-home -->
+</div> <!-- end codesite content -->
+
+    	
+
+  
+
+   
+{% endblock %}
