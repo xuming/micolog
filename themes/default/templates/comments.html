@@ -12,7 +12,7 @@
 			<a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a>
 			{% else %}{{comment.author}}{%endif%}
 			</cite> 说:
-			
+
 
 			<small class="commentmetadata"><a href="#comment-<?php comment_ID() ?>" title=""><?php comment_date('Y-m-d  H:i') ?> </a> <?php edit_comment_link('编辑','&nbsp;&nbsp;',''); ?></small>
 
@@ -20,17 +20,12 @@
 
 		</li>
 
-	<?php
-		/* Changes every other comment to a different class */
-		$oddcomment = ( empty( $oddcomment ) ) ? 'class="alt" ' : '';
-	?>
-
 	{% endfor %}
 
 	</ol>
 
 {% endif %}
- 
+
 <h3 id="respond">我要留言</h3>
 <form action="/post_comment" method="post" id="commentform">
 
@@ -45,6 +40,12 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
 
+<p>麻烦，计算一下：{{checknum1}}+{{checknum2}}=
+<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
+
+<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
+</p>
+
 {%endif%}
 
 <!--<p><small><strong>XHTML:</strong> You can use these tags: <code><?php echo allowed_tags(); ?></code></small></p>-->
@@ -55,7 +56,7 @@
 <input type="hidden" name="key" value="{{entry.key}}" />
 </p>
 
-  
+
 
 
 

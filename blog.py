@@ -7,7 +7,7 @@ import app.webapp as webapp2
 from google.appengine.ext import db
 from base import *
 from datetime import datetime ,timedelta
-import base64
+import base64,random
 from django.utils import simplejson
 
 
@@ -118,6 +118,8 @@ class SinglePost(BasePublicPage):
                         'user_name':commentuser[0],
                         'user_email':commentuser[1],
                         'user_url':commentuser[2],
+                        'checknum1':random.randint(1,10),
+                        'checknum2':random.randint(1,10)
                         })
 
         else:
@@ -127,8 +129,8 @@ class SinglePost(BasePublicPage):
                         'user_name':commentuser[0],
                         'user_email':commentuser[1],
                         'user_url':commentuser[2],
-
-
+                        'checknum1':random.randint(1,10),
+                        'checknum2':random.randint(1,10)
                         })
 
 
@@ -161,6 +163,11 @@ class Post_comment(BaseRequestHandler):
             url=self.param('url')
         key=self.param('key')
         content=self.param('comment')
+        checknum=self.param('checknum')
+        checkret=self.param('checkret')
+        if eval(checknum)<>int(checkret):
+            self.error(-101,'Valid your check code faiure .')
+            return
         if not (name and email and content):
             self.error(-101,'Please input name, email and comment .')
         else:
@@ -180,7 +187,7 @@ class Post_comment(BaseRequestHandler):
                    )
             )
 
-            comment.put()
+            comment.save()
             self.redirect(self.referer)
 
 class ChangeTheme(BaseRequestHandler):
@@ -203,6 +210,16 @@ class admin_init_blog(BaseRequestHandler):
 
         g_blog.entrycount=0
         self.write('"Init succeed."')
+
+class admin_updatecomments(BaseRequestHandler):
+    @requires_admin
+    def get(self,slug=None):
+        for entry in Entry.all():
+            cnt=entry.comments().count()
+            if cnt<>entry.commentcount:
+                entry.commentcount=cnt
+                entry.put()
+        self.write('ok')
 
 class admin_updatelink(BaseRequestHandler):
     @requires_admin
@@ -287,7 +304,7 @@ class admin_import_next(BaseRequestHandler):
                             comment.weburl=com['weburl']
                         except:
                             pass
-                        comment.put()
+                        comment.save()
                 self.write(simplejson.dumps(('entry',next['title'],True)))
                 return
         self.blog.import_wp=None
@@ -514,6 +531,8 @@ def main():
                      ('/admin/import_next',admin_import_next),
                      ('/admin/init_blog',admin_init_blog),
                      ('/admin/updatelink',admin_updatelink),
+                     ('/admin/updatecomments',admin_updatecomments),
+
 
                      ('/category/(.*)',EntrysByCategory),
                      ('/tag/(.*)',EntrysByTag),

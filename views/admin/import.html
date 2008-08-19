@@ -33,6 +33,14 @@ $(document).ready(function() {
 
 	 		});
 	 }
+	 function update_comments()
+	 {
+	 	$.getJSON("{{self.blog.baseurl}}/admin/updatecomments",{}, function(json){
+	 		  alert(json);
+
+	 		});
+	 }
+	 
 {%endif%}
 </script>
 
@@ -57,6 +65,9 @@ $(document).ready(function() {
 <br>
 可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s 
 
+</p>
+<p>
+<input type='button' value='更新文章评论数' id='update_comments' onclick='update_comments()'/>
 </p>
 {%endif%}
 

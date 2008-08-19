@@ -274,16 +274,22 @@ class User(db.Model):
 		return self.__unicode__().encode('utf-8')
 
 class Comment(db.Model):
-	entry = db.ReferenceProperty(Entry)
-	date = db.DateTimeProperty(auto_now_add=True)
-	content = db.TextProperty(required=True)
-	author=db.StringProperty()
-	email=db.EmailProperty()
-	weburl=db.URLProperty()
-	status=db.IntegerProperty(default=0)
-	@property
-	def shortcontent(self,len=20):
-	    return self.content[:len]
+    entry = db.ReferenceProperty(Entry)
+    date = db.DateTimeProperty(auto_now_add=True)
+    content = db.TextProperty(required=True)
+    author=db.StringProperty()
+    email=db.EmailProperty()
+    weburl=db.URLProperty()
+    status=db.IntegerProperty(default=0)
+    @property
+    def shortcontent(self,len=20):
+        return self.content[:len]
+    def save(self):
+        self.entry.commentcount+=1
+        self.put()
+
+    def delete(self):
+        self.entry.commentcount-=1
 
 
 #setting
