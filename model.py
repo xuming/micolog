@@ -191,7 +191,7 @@ class Entry(BaseModel):
 
 
     def comments(self):
-        return Comment.all().filter('entry =',self).order('-date')
+        return Comment.all().filter('entry =',self).order('date')
 
     def update_archive(self):
         """Checks to see if there is a month-year entry for the
@@ -286,10 +286,14 @@ class Comment(db.Model):
         return self.content[:len]
     def save(self):
         self.entry.commentcount+=1
+        self.entry.put()
         self.put()
 
     def delete(self):
+
         self.entry.commentcount-=1
+        self.entry.put()
+        self.delete()
 
 
 #setting

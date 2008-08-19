@@ -119,7 +119,7 @@ class SinglePost(BasePublicPage):
                         'user_email':commentuser[1],
                         'user_url':commentuser[2],
                         'checknum1':random.randint(1,10),
-                        'checknum2':random.randint(1,10)
+                        'checknum2':random.randint(1,10),
                         })
 
         else:
@@ -130,7 +130,7 @@ class SinglePost(BasePublicPage):
                         'user_email':commentuser[1],
                         'user_url':commentuser[2],
                         'checknum1':random.randint(1,10),
-                        'checknum2':random.randint(1,10)
+                        'checknum2':random.randint(1,10),
                         })
 
 
@@ -161,13 +161,21 @@ class Post_comment(BaseRequestHandler):
             name=self.param('author')
             email=self.param('email')
             url=self.param('url')
+
+        if not self.is_login:
+            checknum=self.param('checknum')
+            checkret=self.param('checkret')
+            try:
+                if eval(checknum)<>int(checkret):
+                    self.error(-102,'Your check code is invalid .')
+                    return
+            except:
+                self.error(-102,'Your check code is invalid .')
+                return
+
+
         key=self.param('key')
         content=self.param('comment')
-        checknum=self.param('checknum')
-        checkret=self.param('checkret')
-        if eval(checknum)<>int(checkret):
-            self.error(-101,'Valid your check code faiure .')
-            return
         if not (name and email and content):
             self.error(-101,'Please input name, email and comment .')
         else:

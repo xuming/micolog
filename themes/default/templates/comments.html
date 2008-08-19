@@ -31,21 +31,22 @@
 
 {%if self.is_admin%}
 {%else%}
-<p><input type="text" name="author" id="author" value="{{user_name}}" size="22" tabindex="1" />
+<p><input type="text" name="author" id="author" value="{{user_name}}" size="25" tabindex="1" />
 <label for="author">名字(name) <span style='color:red'>*</span></label></p>
 
-<p><input type="text" name="email" id="email" value="{{user_email}}" size="22" tabindex="2" />
+<p><input type="text" name="email" id="email" value="{{user_email}}" size="25" tabindex="2" />
 <label for="email">邮件(email) <span style='color:red'>*</span></label></p>
 
-<p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
+<p><input type="text" name="url" id="url" value="{{user_url}}" size="25" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
 
-<p>麻烦，计算一下：{{checknum1}}+{{checknum2}}=
+{% if not self.is_login%}
+<p>麻烦，计算一下：<span style="color:#D50000">{{checknum1}}+{{checknum2}}=</span>
 <input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
 
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
-</p>
-
+我不想算，<a href="{{self.loginurl}}">点击这里登录</a>，不用计算直接留言</p>
+{%endif%}
 {%endif%}
 
 <!--<p><small><strong>XHTML:</strong> You can use these tags: <code><?php echo allowed_tags(); ?></code></small></p>-->
