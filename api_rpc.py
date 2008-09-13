@@ -153,8 +153,8 @@ def metaWeblog_getPost(postid):
 
 @checkauth()
 def metaWeblog_getRecentPosts(blogid, num):
-	entrys = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
-	return [entry_struct(entry) for entry in entrys]
+	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
+	return [entry_struct(entry) for entry in entries]
 
 @checkauth(pos=2)
 def blogger_deletePost(appkey, postid, publish):
@@ -206,8 +206,8 @@ def wp_getPage(blogid,pageid):
 
 @checkauth()
 def wp_getPages(blogid,num):
-	entrys = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
-	return [entry_struct(entry) for entry in entrys]
+	entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
+	return [entry_struct(entry) for entry in entries]
 
 @checkauth(2)
 def wp_editPage(blogid,pageid,struct,publish):

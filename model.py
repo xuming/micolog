@@ -2,6 +2,7 @@ import os,logging
 from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext.db import Model as DBModel
+from google.appengine.api import memcache
 from datetime import datetime
 
 logging.info('module base reloaded')
@@ -55,7 +56,8 @@ class ThemeIterator:
 		else:
 			value = self.list[self.cursor]
 			self.cursor += 1
-			return (str(value), unicode(value))
+			return value
+			#return (str(value), unicode(value))
 
 
 class BaseModel(db.Model):
@@ -89,7 +91,7 @@ class Blog(db.Model):
     rpcuser=db.StringProperty(default='admin')
     rpcpassowrd=db.StringProperty(default='mlog')
     description = db.TextProperty()
-    baseurl = db.StringProperty(multiline=False,default='http://yourapp.appspot.com')
+    baseurl = db.StringProperty(multiline=False,default='/')
     urlpath = db.StringProperty(multiline=False)
     title = db.StringProperty(multiline=False,default='Mlog')
     subtitle = db.StringProperty(multiline=False,default='Your Blog Subtitle')
@@ -98,9 +100,11 @@ class Blog(db.Model):
     feedurl = db.StringProperty(multiline=False,default='http://feeds.feedburner.com/yoursitesname')
     blogversion = db.StringProperty(multiline=False,default='1.00')
     theme_name = db.StringProperty(multiline=False,default='default')
-    enable_memcache = db.BooleanProperty(default = False)
+    enable_memcache = db.BooleanProperty(default = True)
     link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
     theme=None
+    #postcount=db.IntegerProperty(default=0)
+    #pagecount=db.IntegerProperty(default=0)
 
     def save(self):
         self.put()
@@ -143,6 +147,7 @@ class Link(db.Model):
     href = db.StringProperty(multiline=False,default='')
     linktype = db.StringProperty(multiline=False,default='blogroll')
     linktext = db.StringProperty(multiline=False,default='')
+    createdate=db.DateTimeProperty(auto_now=True)
 
 class Entry(BaseModel):
     author = db.UserProperty()
@@ -188,7 +193,13 @@ class Entry(BaseModel):
 ##            self.catesnew = [cate for cate in catestemp if not cate in self.categories]
 ##            self.categorie = tagstemp
 ##    scates = property(get_categories,set_categories)
+    @property
+    def strtags(self):
+        return ','.join(self.tags)
 
+    @property
+    def edit_url(self):
+        return '/admin/%s?key=%s&action=edit'%(self.entrytype,self.key())
 
     def comments(self):
         return Comment.all().filter('entry =',self).order('date')
@@ -257,6 +268,12 @@ class Entry(BaseModel):
                 g_blog.entrycount-=1
             g_blog.save()
             self.save()
+        self.removecache()
+
+    def removecache(self):
+        memcache.delete('/')
+        memcache.delete('/'+self.link)
+
 
 class User(db.Model):
 	user = db.UserProperty(required = True)
@@ -304,8 +321,7 @@ def gblog_init():
     g_blog = Blog.get_by_key_name('default')
     if not g_blog:
     	g_blog = Blog(key_name = 'default')
-
-    g_blog.put()
+    	g_blog.put()
 
     g_blog.get_theme()
 

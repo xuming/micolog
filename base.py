@@ -47,6 +47,40 @@ def printinfo(method):
         return method(self, *args, **kwargs)
     return wrapper
 
+def format_date(dt):
+	return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+def cache(key="",time=3600):
+    def _decorate(method):
+        def _wrapper(*args, **kwargs):
+            if not g_blog.enable_memcache:
+                method(*args, **kwargs)
+                return
+
+            request=args[0].request
+            response=args[0].response
+            skey=key+ request.path_qs
+            #logging.info('skey:'+skey)
+            html= memcache.get(skey)
+            #arg[0] is BaseRequestHandler object
+
+
+            if html:
+                 logging.info('cache:'+skey)
+                 response.last_modified =html[1]
+                 response.out.write(html[0])
+            else:
+                if 'last-modified' not in response.headers:
+                    response.last_modified = format_date(datetime.utcnow())
+
+                method(*args, **kwargs)
+                result=response.out.getvalue()
+                memcache.set(skey,(result,response.last_modified),time)
+
+        return _wrapper
+    return _decorate
+
+
 
 class Pager(object):
 
@@ -69,7 +103,9 @@ class Pager(object):
         offset = (p - 1) * self.items_per_page
         results = self.query.fetch(self.items_per_page, offset)
 
-        links = {'prev': p - 1, 'next': p + 1, 'last': n}
+
+
+        links = {'count':max_offset,'page_index':p,'prev': p - 1, 'next': p + 1, 'last': n}
         if links['next'] > n:
             links['next'] = 0
 
@@ -78,6 +114,7 @@ class Pager(object):
 
 class BaseRequestHandler(webapp2.RequestHandler):
     def __init__(self):
+        self.current='home'
         pass
 
     def initialize(self, request, response):
@@ -107,7 +144,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
 
 
 
-		self.template_vals = {'self':self,'blog':self.blog}
+		self.template_vals = {'self':self,'blog':self.blog,'current':self.current}
 
     def __before__(self,*args):
         pass
@@ -139,21 +176,10 @@ class BaseRequestHandler(webapp2.RequestHandler):
         Helper method to render the appropriate template
         """
 
-
-        html = memcache.get('%s:page:%s' % (self.login_user, self.request.path_qs))
-
-
-    	if html == None:
-    		#try:
-		    sfile=getattr(self.blog.theme, template_file)
-		    logging.debug('template:'+sfile)
-		    self.template_vals.update(values)
-		    html = template.render(sfile, self.template_vals)
-    		#except Exception, e: # if theme files are not found, fall back to default theme
-    		    #return self.response.out.write('template file "%s" dose not exist.'%(template_file))
-    		    #return self.error(-1,'template file "%s" dose not exist.'%(sfile))
-
-#		    memcache.set('%s:page:%s' % (self.login_user, self.request.path_qs), html)
+        sfile=getattr(self.blog.theme, template_file)
+        logging.debug('template:'+sfile)
+        self.template_vals.update(values)
+        html = template.render(sfile, self.template_vals)
 
     	self.response.out.write(html)
 

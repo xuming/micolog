@@ -5,7 +5,7 @@
   <div id="gc-home">
     <div class="g-section g-tpl-330-alt">
 
-     
+
       <div class="g-unit">
         <div class="g-c-gc-home">
 
@@ -18,7 +18,7 @@
 					{{ entry.content }}
 				</div>
 
-				<p class="postmetadata">{% if entry.tags%}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} </p>
+				<p class="postmetadata">{% if entry.tags%}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} {%if self.is_admin%}<a href="{{entry.edit_url}}">edit</a>{%endif%}</p>
 			</div>
 				{% include "comments.html" %}
 {% else %}
@@ -32,13 +32,13 @@
 
 
 
-        
+
       </div><!-- end g-c-gc-home -->
     </div><!-- end g-unit -->
  <div class="g-unit g-first">
  	 {{ blog.theme }}
       	{% include "sidebar.html" %}
-        
+
       </div>
   </div><!-- end g-section -->
 
@@ -47,9 +47,9 @@
 
 </div><!-- end gc-home -->
 
-    	
 
-  
 
-   
+
+
+
 {% endblock %}

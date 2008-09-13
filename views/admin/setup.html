@@ -1,0 +1,102 @@
+﻿{% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}
+{% block content %}
+
+	 <!-- Admin Full Width -->
+    <div id="m_admin">
+        <form method="post">
+            <div class="wrap">
+            <h2>Setup and Configuraiton for this Blog</h2>
+
+            <table class="form-table">
+                 <tr valign="top">
+                <th scope="row">Blog Title:</th>
+                <td><input type="text" size="45" value="{{ blog.title }}"  id="title" name="title"/>
+               </td>
+                </tr>
+
+                <tr valign="top">
+                <th scope="row">Sub Title:</th>
+                <td><input type="text" size="45" value="{{ blog.subtitle }}" style="width: 95%;" id="subtitle" name="subtitle" />
+                <br/>
+                In a few words, explain what this blog is about.</td>
+                </tr>
+ <tr valign="top">
+                <th scope="row">Permalink Structure:</th>
+                <td><input type="text" size="45" style="width: 95%;" value="{{ blog.link_format }}"  id="link_format" name="link_format" />
+                 <br>Allowed variants：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
+               </td>
+                </tr>
+                  <tr valign="top">
+                <th scope="row">Mlog Address(URL):</th>
+                <td><input type="text" size="45" value="{{ blog.baseurl }}"  id="baseurl" name="baseurl" />
+               </td>
+                </tr>
+
+                 <tr valign="top">
+                <th scope="row">RSS Feed URL:</th>
+                <td><input type="text" size="45" value="{{ blog.feedurl }}"  id="feedurl" name="feedurl" />
+               </td>
+                </tr>
+
+
+            <tr valign="top">
+                <th scope="row">Theme:</th>
+                <td>
+                    <select  id="theme_name" name="theme_name" >
+                    {%for theme in themes%}
+                    <option value="{{theme}}" {%ifequal blog.theme_name theme%}selected='selected'{%endifequal%}>{{theme}}</option>
+                    {%endfor%}
+
+                    </select>
+               </td>
+                  <tr valign="top">
+                <th scope="row">Posts per page:</th>
+                <td><input type="text" size="8" value="{{ blog.posts_per_page }}"  id="posts_per_page" name="posts_per_page" />
+               </td>
+
+                   <tr valign="top">
+                <th scope="row">Enable memcache:</th>
+                <td><input type="checkbox" size="45" {% if blog.enable_memcache %} checked="checked" {%endif%}  id="enable_memcache" name="enable_memcache" />
+               </td>
+                </tr>
+
+
+
+            </table>
+            <h3>Xmlrpc  setting</h3>
+            <p>Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). </p>
+            <table class="form-table">
+               <tr valign="top">
+                <th scope="row">User name:</th>
+                <td><input type="text" size="45" value="{{ blog.rpcuser }}"  id="rpcuser" name="rpcuser" />
+               </td>
+                </tr>
+
+                <tr valign="top">
+                <th scope="row">Password:</th>
+                <td><input type="password" size="45" value="{{ blog.rpcpassowrd }}"  id="rpcpassowrd" name="rpcpassowrd" />
+               </td>
+                </tr>
+            </table>
+
+
+<p class="submit"><input type="submit" value="Save Changes" name="Submit"/>
+<input type="hidden" value="update" name="action"/>
+<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name" name="str_options"/>
+<input type="hidden" value="enable_memcache" name="bool_options"/>
+<input type="hidden" value="posts_per_page" name="int_options"/>
+
+
+</p>
+
+  </div>
+
+        </form>
+    </div>
+    <!-- Featured Ends -->
+{% endblock %}

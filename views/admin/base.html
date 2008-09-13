@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+    <title>{% block title %} {{ blog.title }}{% endblock %}</title>
+    <meta name="generator" content="Mlog" />
+    <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
+     <script type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script>
+
+    {% block header %}{% endblock %}
+</head>
+<body>
+
+<!-- Dashboard Starts -->
+<div id="dashboard">
+ <a title="Are you lost?" href="/admin/"> Mlog Dashboard</a>
+</div>
+<!-- Dashboard Ends -->
+
+<!-- Header Starts -->
+<div id="header">
+    <div class="headings">
+      <h1><a href="/" >{{ blog.title }}</a></h1>
+      <h2>{{ blog.subtitle }}</h2>
+      <div class="clear"></div>
+    </div>
+</div>
+<!-- Header Ends -->
+
+<!-- Nav Starts -->
+<div id="nav">
+<ul >
+    <li class='page_item page-item-2 {{current|check_current:"write"}}'><a href="/admin/post" title="Write post">Write</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"posts"}}'><a href="/admin/entries/post" title="Posts">Posts</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"pages"}}'><a href="/admin/entries/page" title="Pages">Pages</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"links"}}' ><a href="/admin/links" title="Blogroll">Links</a></li>
+     <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">Categories</a></li>
+   <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="About">Configuration</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"import"}}'><a href="/admin/import" title="Import">Import</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">Cache</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">help</a></li>
+    {% block topmenu %}
+    {% endblock %}
+    <div class="clear"></div>
+
+</ul>
+</div>
+<div id="nav2">{%block nav2%}{%endblock%}</div>
+    <div id="hiddenmessage" >{% block h_message%}{%endblock%}</div>
+<!-- Nav Ends -->
+
+<!-- Container Starts -->
+<div id="container">
+
+
+    <!-- Full Width Start-->
+    {% block featured %}
+    {% endblock %}
+    <!-- Featured Ends -->
+
+    {% block content %}{% endblock %}
+
+
+
+
+<div class="clear"></div>
+</div>
+<!-- Container Ends -->
+
+<!-- Footer Starts -->
+<div id="footer">
+
+    <div class="fontmlog">
+        <div id="credits">
+            <!-- Credit link can be removed by giving a $5 donation, it'll help us all build good karma! -->
+            <div class="flogo">
+                <a href="http://xuming.net"> Mlog</a> for <br><a href="http://code.google.com/appengine/" > google app engine</a>
+            </div>
+            <span>Theme from: <a href="http://www.freshpressthemes.com" title="See more fresh themes" target="_blank">FreshPress Themes</a> {% now "Y" %}</span>
+            <!-- Do Not Remove -->
+
+        </div>
+         <div class="clear"></div>
+
+    </div>
+</div>
+<!-- Footer Ends -->
+
+</body>
+</html>

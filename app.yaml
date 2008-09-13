@@ -22,6 +22,11 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
 
+- url: /admin/.*
+  script: admin.py
+
+- url: /admin
+  script: admin.py
 
 - url: /.*
   script: blog.py

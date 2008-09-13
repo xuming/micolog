@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block head_javascript %}
+
+<script type='text/javascript' src='/static/jquery.dimensions.js'></script>
+<script type="text/javascript" src="/static/ui.mouse.js"></script>
+<script type="text/javascript" src="/static/ui.draggable.js"></script>
+<script type="text/javascript" src="/static/ui.sortable.js"></script>
+<script type="text/javascript" src="/static/jquery.form.js"></script>
+<!--<script type="text/javascript" src="/static/jquery-ui.min.js"></script>-->
+<script type="text/javascript" src="/static/admin.js"></script>
+
+{% endblock %}
+{% block topmenu %}
+<ul>
+    <li class="page_item page-item-2"><a href="/admin/entry/list/post" title="Write">Posts</a></li>
+    <li class="page_item page-item-2"><a href="/admin/links/blogroll" title="Blogroll">Blogroll</a></li>
+    <li class="page_item page-item-2"><a href="/admin/entry/list/page" title="Pages">Pages</a></li>
+    <li class="page_item page-item-2"><a href="/admin/setup" title="About">Configuration</a></li>
+    <li class="page_item page-item-2" style="float:right;"><a href="{{ url }}" title="Admin">{{ url_linktext }}</a></li>
+    <li class="page_item page-item-2" style="float:right;font-size:1em"><a href="#" id="dshelp" rel="facebox" title="help">help</a></li>
+    <div class="clear"></div>
+</ul>
+
+<div id="hiddenmessage" style="" ></div>
+
+{% endblock %}
+
+{% block rightsidebar %}
+<!-- Right Sidebar Starts -->
+<div id="rightsidebar">
+    <h3>ADMIN</h3>
+    <ul>
+        {% for entry in recententries %}
+        <li><a href="#">{{ entry.title }} type={{ entry.entrytype }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="actionbar" style="heightxx:34px; ">
+        <div class="boxlinks"  style="margin-top:-4px;">
+            <ul class="boxlink">
+                <li style="list-style-type:none;"><a href="/admin/entry/post" id="addpost" objid="">
+                    <img  alt="Add New Post" src="/static/images/icon_add.png" style="vertical-align: bottom;" border="0" />
+                    Add New Post</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="actionbar" style="heightxx:34px; ">
+        <div class="boxlinks"  style="margin-top:-4px;">
+            <ul>
+                <li style="list-style-type:none;"><a href="/admin/entry/page" id="addpage" objid="">
+                    <img  alt="Add New Page" src="/static/images/icon_add.png" style="vertical-align: bottom;" border="0" />
+                    Add New Page</a></li>
+            </ul>
+        </div>
+    </div>
+    <br />
+    <h3>Potlatch Blog</h3>
+    
+        Blog Version={{ blog.blogversion }}
+    
+</div>
+<!-- Right Sidebar Ends -->
+{% endblock %}

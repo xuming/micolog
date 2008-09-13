@@ -1,7 +1,6 @@
-﻿<html>
-	<head>
-<script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>
-
+﻿{% extends "base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
 <script type="text/javascript">
 {%if postback%}
 $(document).ready(function() {
@@ -18,34 +17,47 @@ $(document).ready(function() {
 
 });
 {%else%}
+	
+	$(document).ajaxError(function(request, settings){
+       $('#bmsg').html('Error<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	   $('.blockUI').css('cursor','');
+   });
+
 	 function init_blog()
 	 {
-	 	$.getJSON("{{self.blog.baseurl}}/admin/init_blog", function(json){
-	 		  alert(json);
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在初始化博客数据...</h3>' });
+	 	$.getJSON("{{self.blog.baseurl}}/admin/do/init_blog", function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
 
 	 		});
 	 }
-	 
+
 	 function update_link()
 	 {
-	 	$.getJSON("{{self.blog.baseurl}}/admin/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
-	 		  alert(json);
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在更新URL...</h3>' });
+	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
 
 	 		});
 	 }
 	 function update_comments()
 	 {
-	 	$.getJSON("{{self.blog.baseurl}}/admin/updatecomments",{}, function(json){
-	 		  alert(json);
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在更新评论数...</h3>' });
+	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatecomments", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
 
 	 		});
 	 }
-	 
+
 {%endif%}
 </script>
 
-</head>
-<body>
+{% endblock %}
+ {% block content %}
 	{%if postback%}
 	正在导入．．．：<br>
 	<ul id="list"></ul>
@@ -53,23 +65,54 @@ $(document).ready(function() {
 
 
 	{%else%}
+    <div class="wrap">
+            <h2>Import from wordpress</h2>
+
+<p>
 	<form action="" method='post' enctype="multipart/form-data">
-	请上传wordpress export rss文件：<input type="file" name="wpfile"><input type="submit" value="上传"/>
+	<table class="form-table">
+	 <tr valign="top">
+                <th scope="row">Permalink Structure：</th>
+                <td><input type="text" name="link_format"  size="65" value="{{ blog.link_format }}" >
+                <br>可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
+               </td>
+                </tr>
+	  <tr valign="top">
+                <th scope="row">请选择wordpress export rss文件：</th>
+                <td><input type="file" name="wpfile">
+               </td>
+                </tr>
+
+
+	</table>
+    <p>
+	<input type="submit" value=" 　开始导入　 "/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
+    </p>
 </form>
-<p>
-<input type='button' value='初始化博客数据' id='init_blog' onclick='init_blog()'/>
 </p>
-<p>
+    <div class="wrap">
+            <h2>辅助工具（请慎重使用）</h2>
+            </div>
+
+<div style="">
+<div class="grid">
+<input type='button' value='初始化博客数据' id='init_blog' onclick='init_blog()'/>  该操作将删除所有文章和相关评论
+
+</div>
+<div class="grid">
+<input type='button' value='更新文章评论数' id='update_comments' onclick='update_comments()'/> 该操作将重新计算所有文章的评论数
+
+</div>
+<div class="grid">
+
+
 <input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
-<input type='button' value='更新文章URL' id='update_link' onclick='update_link()'/>
-<br>
-可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s 
+<br>可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br><input type='button' value='更新文章URL  ' id='update_link' onclick='update_link()'/> 该操作将修改所有文章的访问地址
 
-</p>
-<p>
-<input type='button' value='更新文章评论数' id='update_comments' onclick='update_comments()'/>
-</p>
+
+</div>
+
+</div>
+</div>
 {%endif%}
-
-</body>
-</html>
+{% endblock %}
