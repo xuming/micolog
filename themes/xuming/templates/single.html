@@ -20,7 +20,16 @@
 
 				<p class="postmetadata">{% if entry.tags%}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} {%if self.is_admin%}<a href="{{entry.edit_url}}">edit</a>{%endif%}</p>
 			</div>
-				{% include "comments.html" %}
+				{# include "comments.html" #}
+                <div id="comment_area">
+
+                </div>
+                <script>
+       $.getJSON("{{self.blog.baseurl}}/do/getcomments?key={{entry.key}}", function(ret){
+
+              $('#comment_area').html(ret);
+       });
+</script>
 {% else %}
  <p>Sorry, no posts matched your criteria.</p>
 {% endif %}
