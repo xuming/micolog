@@ -17,7 +17,7 @@ $(document).ready(function() {
 
 });
 {%else%}
-	
+
 	$(document).ajaxError(function(request, settings){
        $('#bmsg').html('Error<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
 	   $('.blockUI').css('cursor','');
@@ -59,7 +59,7 @@ $(document).ready(function() {
 {% endblock %}
  {% block content %}
 	{%if postback%}
-	正在导入．．．：<br>
+	Importing．．．：<br>
 	<ul id="list"></ul>
 
 
@@ -74,11 +74,11 @@ $(document).ready(function() {
 	 <tr valign="top">
                 <th scope="row">Permalink Structure：</th>
                 <td><input type="text" name="link_format"  size="65" value="{{ blog.link_format }}" >
-                <br>可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
+                <br>Available parameters：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
                </td>
                 </tr>
 	  <tr valign="top">
-                <th scope="row">请选择wordpress export rss文件：</th>
+                <th scope="row">Select wordpress export file (WXR file)：</th>
                 <td><input type="file" name="wpfile">
                </td>
                 </tr>
@@ -86,28 +86,28 @@ $(document).ready(function() {
 
 	</table>
     <p>
-	<input type="submit" value=" 　开始导入　 "/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
+	<input type="submit" value=" 　Import　 "/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
     </p>
 </form>
 </p>
     <div class="wrap">
-            <h2>辅助工具（请慎重使用）</h2>
+            <h2>Tools（Careless use of it will be dangerous!）</h2>
             </div>
 
 <div style="">
 <div class="grid">
-<input type='button' value='初始化博客数据' id='init_blog' onclick='init_blog()'/>  该操作将删除所有文章和相关评论
+<input type='button' value='Init datas' id='init_blog' onclick='init_blog()'/>  Will delete all posts, pages and comments
 
 </div>
 <div class="grid">
-<input type='button' value='更新文章评论数' id='update_comments' onclick='update_comments()'/> 该操作将重新计算所有文章的评论数
+<input type='button' value='Update comment count' id='update_comments' onclick='update_comments()'/> Will refresh the number of comments for each entry.
 
 </div>
 <div class="grid">
 
 
 <input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
-<br>可用变量：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br><input type='button' value='更新文章URL  ' id='update_link' onclick='update_link()'/> 该操作将修改所有文章的访问地址
+<br>Available parameters：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br><input type='button' value='Rebuild URL  ' id='update_link' onclick='update_link()'/>The URL of all entries (post or page) will be rebuild.
 
 
 </div>

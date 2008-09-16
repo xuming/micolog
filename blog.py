@@ -56,7 +56,8 @@ class MainPage(BasePublicPage):
         return self.render('index',{'entries':entries,
        	                'show_prev' : show_prev,
 				        'show_next' : show_next,
-				        'pageindex':page
+				        'pageindex':page,
+				        'ishome':True
                             })
 
 
@@ -156,7 +157,7 @@ class FeedHandler(BaseRequestHandler):
         self.render2('views/atom.xml',{'entries':entries,'last_updated':last_updated})
 
 class Error404(BaseRequestHandler):
-    #@printinfo
+    @cache(36000)
     def get(self,slug=None):
          self.error(404)
 
@@ -220,6 +221,61 @@ class ChangeTheme(BaseRequestHandler):
        self.redirect('/')
 
 
+class do_action(BaseRequestHandler):
+    def get(self,slug=None):
+        try:
+            func=getattr(self,'action_'+slug)
+            if func and callable(func):
+                func()
+            else:
+                self.error(404)
+        except:
+             self.error(404)
+
+    def post(self,slug=None):
+        try:
+            func=getattr(self,'action_'+slug)
+            if func and callable(func):
+                func()
+            else:
+                self.error(404)
+        except:
+             self.error(404)
+
+    def action_info_login(self):
+        if self.login_user:
+            self.write(simplejson.dumps({'islogin':True,
+                                         'isadmin':self.is_admin,
+                                         'name': self.login_user.nickname()}))
+        else:
+            self.write(simplejson.dumps({'islogin':False}))
+
+    def action_getcomments(self):
+        key=self.param('key')
+        entry=Entry.get(key)
+        comments=Comment.all().filter("entry =",key)
+
+        commentuser=self.request.cookies.get('commentuser', '')
+        if commentuser:
+            commentuser=base64.b64decode(commentuser).split('#@#')
+        else:
+            commentuser=['','','']
+
+
+        vals={
+            'entry':entry,
+            'comments':comments,
+            'user_name':commentuser[0],
+            'user_email':commentuser[1],
+            'user_url':commentuser[2],
+            'checknum1':random.randint(1,10),
+            'checknum2':random.randint(1,10),
+            }
+        html=self.get_render('comments',vals)
+
+        self.write(simplejson.dumps(html.decode('utf8')))
+
+
 
 
 
@@ -234,6 +290,8 @@ def main():
                      ('/tag/(.*)',entriesByTag),
 ##                     ('/\?p=(?P<postid>\d+)',SinglePost),
                      ('/', MainPage),
+                     ('/do/(\w+)', do_action),
+
                      ('/([\\w\\-\\./]+)', SinglePost),
                      ('.*',Error404),
                      ],debug=True)

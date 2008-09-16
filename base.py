@@ -122,12 +122,14 @@ class BaseRequestHandler(webapp2.RequestHandler):
 		self.blog = g_blog
 		self.login_user = users.get_current_user()
 		self.is_login = (self.login_user != None)
-		if self.is_login:
-		    self.loginurl=users.create_logout_url(self.request.uri)
-		    #self.user = User.all().filter('user = ', self.login_user).get() or User(user = self.login_user)
-		else:
-		    self.loginurl=users.create_login_url(self.request.uri)
-		    #self.user = None
+		self.loginurl=users.create_login_url(self.request.uri)
+		self.logouturl=users.create_logout_url(self.request.uri)
+##		if self.is_login:
+##		    self.loginurl=users.create_logout_url(self.request.uri)
+##		    #self.user = User.all().filter('user = ', self.login_user).get() or User(user = self.login_user)
+##		else:
+##		    self.loginurl=users.create_login_url(self.request.uri)
+##		    #self.user = None
 
 		self.is_admin = users.is_current_user_admin()
 		if self.is_admin:
@@ -170,18 +172,23 @@ class BaseRequestHandler(webapp2.RequestHandler):
             errorfile=self.blog.theme.error
         self.response.out.write( template.render(errorfile, self.template_vals))
 
+    def get_render(self,template_file,values):
+        sfile=getattr(self.blog.theme, template_file)
+        logging.debug('template:'+sfile)
+        self.template_vals.update(values)
+        html = template.render(sfile, self.template_vals)
+        return html
 
     def render(self,template_file,values):
         """
         Helper method to render the appropriate template
         """
 
-        sfile=getattr(self.blog.theme, template_file)
-        logging.debug('template:'+sfile)
-        self.template_vals.update(values)
-        html = template.render(sfile, self.template_vals)
-
+        html=self.get_render(template_file,values)
     	self.response.out.write(html)
+
+
+
 
 
     def render2(self,template_file,template_vals={}):
@@ -192,6 +199,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
         self.template_vals.update(template_vals)
         path = os.path.join(self.blog.rootdir, template_file)
         self.response.out.write(template.render(path, self.template_vals))
+
 
 
     def param(self, name, **kw):
@@ -230,3 +238,20 @@ class BasePublicPage(BaseRequestHandler):
                         'blogroll':blogroll,
                         'recent_comments':Comment.all().order('-date').fetch(5)
         })
+
+    def m_list_pages(self):
+        menu_pages=None
+        entry=None
+        if self.template_vals.has_key('menu_pages'):
+            menu_pages= self.template_vals['menu_pages']
+        if self.template_vals.has_key('entry'):
+            entry=self.template_vals['entry']
+        ret=''
+        current=''
+        for page in menu_pages:
+            if entry and entry.entrytype=='page' and entry.key()==page.key():
+                current= 'current_page_item'
+            else:
+                current= 'page_item'
+            ret+='<li class="%s"><a href="%s" >%s</a></li>'%( current,self.blog.baseurl+"/"+page.link, page.title)
+        return ret

@@ -27,4 +27,22 @@
 <input type='button' value='Clear cache' id='clear_cache' onclick='clear_cache()'/>  Clear cache data.
 
 </div>
+ <h3>Environ </h3>
+ <table class="widefat">
+ <thead>
+ <tr>
+ <th>Name</th><th>value</th>
+ </tr>
+ </thead>
+ <tbody>
+    {%for env in environ%}
+    <tr>
+    <td>{{env}}</td>
+    <td>
+       {{environ|dict_value:env}}
+    </td>
+    </tr>
+   {%endfor%}
+ </tbody>
+  </table>
  {% endblock  %}

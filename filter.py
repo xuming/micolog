@@ -1,5 +1,6 @@
 import logging
 from django import template
+from model import *
 import urllib
 register = template.Library()
 
@@ -14,3 +15,10 @@ def check_current(v1,v2):
         return "current"
     else:
         return ""
+
+@register.filter
+def dict_value(v1,v2):
+    return v1[v2]
+
+
+

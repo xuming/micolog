@@ -38,7 +38,7 @@ class admin_do_action(BaseRequestHandler):
              self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
 
     def action_test(self):
-        self.write('"this is a test"')
+        self.write(os.environ)
 
     def action_cacheclear(self):
         memcache.flush_all()
@@ -396,8 +396,8 @@ class admin_setup(BaseRequestHandler):
             except:
                 pass
 
-
-        g_blog.put()
+        g_blog.owner=self.login_user
+        g_blog.save()
         gblog_init()
         vals={'themes':ThemeIterator()}
         self.render2('views/admin/setup.html',vals)
@@ -437,17 +437,21 @@ class admin_entry(BaseRequestHandler):
         cats=self.request.get_all('cats')
         key=self.param('key')
         published=self.param('publish')
+        entry_slug=self.param('slug')
         def mapit(cat):
             return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
         vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,'cats':map(mapit,Category.all()),
-              'entry':{'title':title,'content':content,'strtags':tags,'key':key,'published':published}}
+              'entry':{'title':title,'content':content,'strtags':tags,'key':key,'published':published,
+              'slug':entry_slug}}
         if not (title and content):
             vals.update({'result':False, 'msg':'Please input title and content.'})
             self.render2('views/admin/entry.html',vals)
         else:
             if action=='add':
                entry= Entry(title=title,content=content,tags=tags.split(','))
+               entry.entrytype=slug
+               entry.slug=entry_slug
                newcates=[]
 
                if cats:
@@ -558,6 +562,39 @@ class admin_categories(BaseRequestHandler):
                 cat.delete()
         finally:
             self.redirect('/admin/categories')
+
+class admin_comments(BaseRequestHandler):
+    @requires_admin
+    def get(self,slug=None):
+        try:
+            page_index=int(self.param('page'))
+        except:
+            page_index=1
+
+
+
+
+        comments=Comment.all().order('-date')
+        entries,pager=Pager(query=comments,items_per_page=15).fetch(page_index)
+
+        self.render2('views/admin/comments.html',
+         {
+           'current':'comments',
+           'comments':comments,
+           'pager':pager
+          }
+        )
+
+    @requires_admin
+    def post(self,slug=None):
+        try:
+            linkcheck= self.request.get_all('checks')
+            for key in linkcheck:
+
+                comment=Comment.get(key)
+                comment.delit()
+        finally:
+            self.redirect('/admin/comments')
 
 class admin_links(BaseRequestHandler):
     @requires_admin
@@ -670,10 +707,11 @@ class admin_category(BaseRequestHandler):
                 except:
                     vals.update({'result':False,'msg':'Error:Category can''t been saved.'})
                     self.render2('views/admin/category.html',vals)
+
 class admin_status(BaseRequestHandler):
     @requires_admin
     def get(self):
-        self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status'})
+        self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
 
 
 def main():
@@ -685,6 +723,7 @@ def main():
                     ('/admin/entries/(post|page)',admin_entries),
                     ('/admin/links',admin_links),
                     ('/admin/categories',admin_categories),
+                    ('/admin/comments',admin_comments),
                     ('/admin/link',admin_link),
                     ('/admin/category',admin_category),
                      ('/admin/(post|page)',admin_entry),

@@ -3,7 +3,9 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext.db import Model as DBModel
 from google.appengine.api import memcache
+from google.appengine.api import mail
 from datetime import datetime
+import urllib, hashlib
 
 logging.info('module base reloaded')
 
@@ -91,17 +93,19 @@ class Blog(db.Model):
     rpcuser=db.StringProperty(default='admin')
     rpcpassowrd=db.StringProperty(default='mlog')
     description = db.TextProperty()
-    baseurl = db.StringProperty(multiline=False,default='/')
+    baseurl = db.StringProperty(multiline=False,default=None)
     urlpath = db.StringProperty(multiline=False)
-    title = db.StringProperty(multiline=False,default='Mlog')
+    title = db.StringProperty(multiline=False,default='Microlog')
     subtitle = db.StringProperty(multiline=False,default='Your Blog Subtitle')
     entrycount = db.IntegerProperty(default=0)
     posts_per_page= db.IntegerProperty(default=10)
-    feedurl = db.StringProperty(multiline=False,default='http://feeds.feedburner.com/yoursitesname')
+    feedurl = db.StringProperty(multiline=False,default='/feed')
     blogversion = db.StringProperty(multiline=False,default='1.00')
     theme_name = db.StringProperty(multiline=False,default='default')
     enable_memcache = db.BooleanProperty(default = True)
     link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
+    comment_notify_mail=db.BooleanProperty(default=True)
+
     theme=None
     #postcount=db.IntegerProperty(default=0)
     #pagecount=db.IntegerProperty(default=0)
@@ -298,30 +302,64 @@ class Comment(db.Model):
     email=db.EmailProperty()
     weburl=db.URLProperty()
     status=db.IntegerProperty(default=0)
+
     @property
     def shortcontent(self,len=20):
         return self.content[:len]
-    def save(self):
-        self.entry.commentcount+=1
-        self.entry.put()
-        self.put()
 
-    def delete(self):
+    def gravatar_url(self):
+
+        # Set your variables here
+        default = g_blog.baseurl+'/static/images/homsar.jpeg'
+        if not self.email:
+            return default
+
+        size = 50
+
+        # construct the url
+        imgurl = "http://www.gravatar.com/avatar/"
+        imgurl +=hashlib.md5(self.email).hexdigest()+"?"+ urllib.urlencode({
+        	'd':default, 's':str(size),'r':'G'})
+        return imgurl
+
+
+    def save(self):
+        self.entry.put()
+        self.entry.commentcount+=1
+        self.put()
+        if g_blog.comment_notify_mail and g_blog.owner:
+            mail.send_mail_to_admins(g_blog.owner.email(),'Comment for '+self.entry.title,self.content)
+            logging.info('send %s . entry: %s'%(g_blog.owner.email(),self.entry.title))
+
+    def delit(self):
 
         self.entry.commentcount-=1
         self.entry.put()
         self.delete()
 
 
+
 #setting
 g_blog=None
+
+def InitBlogData():
+    global g_blog
+    g_blog = Blog(key_name = 'default')
+    g_blog.baseurl="http://"+os.environ['HTTP_HOST']
+    g_blog.feedurl=g_blog.baseurl+"/feed"
+    g_blog.save()
+    entry=Entry(title="Hello world!")
+    entry.content='<p>Welcome to microlog. This is your first post. Edit or delete it, then start blogging!</p>'
+    entry.publish()
+
 def gblog_init():
     logging.info('module setting reloaded')
     global g_blog
     g_blog = Blog.get_by_key_name('default')
     if not g_blog:
-    	g_blog = Blog(key_name = 'default')
-    	g_blog.put()
+        InitBlogData()
+
+
 
     g_blog.get_theme()
 
@@ -329,4 +367,7 @@ def gblog_init():
 
     logging.info(g_blog.rootdir)
 gblog_init()
+
+
+
 

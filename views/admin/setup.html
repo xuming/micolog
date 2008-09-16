@@ -65,6 +65,12 @@
                </td>
                 </tr>
 
+                   <tr valign="top">
+                <th scope="row">Enable comment notify by mail:</th>
+                <td><input type="checkbox" size="45" {% if blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
+               </td>
+                </tr>
+
 
 
             </table>
@@ -88,7 +94,7 @@
 <p class="submit"><input type="submit" value="Save Changes" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name" name="str_options"/>
-<input type="hidden" value="enable_memcache" name="bool_options"/>
+<input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
 <input type="hidden" value="posts_per_page" name="int_options"/>
 
 
