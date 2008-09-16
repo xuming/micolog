@@ -16,13 +16,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used once in query history.
+# Used 4 times in query history.
 - kind: Comment
   properties:
   - name: date
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Comment
   properties:
   - name: entry
@@ -35,7 +35,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used once in query history.
+# Used 3 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -50,7 +50,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Entry
   properties:
   - name: entrytype

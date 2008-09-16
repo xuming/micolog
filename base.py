@@ -205,6 +205,13 @@ class BaseRequestHandler(webapp2.RequestHandler):
     def param(self, name, **kw):
 		return self.request.get(name, **kw)
 
+    def paramint(self, name, default=0):
+        try:
+	       return int(self.request.get(name))
+        except:
+           return default
+
+
     def write(self, s):
 		self.response.out.write(s)
 

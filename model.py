@@ -91,20 +91,21 @@ class Blog(db.Model):
     owner = db.UserProperty()
     author=db.StringProperty(default='admin')
     rpcuser=db.StringProperty(default='admin')
-    rpcpassowrd=db.StringProperty(default='mlog')
+    rpcpassowrd=db.StringProperty(default='')
     description = db.TextProperty()
     baseurl = db.StringProperty(multiline=False,default=None)
     urlpath = db.StringProperty(multiline=False)
     title = db.StringProperty(multiline=False,default='Microlog')
-    subtitle = db.StringProperty(multiline=False,default='Your Blog Subtitle')
+    subtitle = db.StringProperty(multiline=False,default='This is a micro blog.')
     entrycount = db.IntegerProperty(default=0)
     posts_per_page= db.IntegerProperty(default=10)
     feedurl = db.StringProperty(multiline=False,default='/feed')
-    blogversion = db.StringProperty(multiline=False,default='1.00')
+    blogversion = db.StringProperty(multiline=False,default='0.30')
     theme_name = db.StringProperty(multiline=False,default='default')
-    enable_memcache = db.BooleanProperty(default = True)
+    enable_memcache = db.BooleanProperty(default = False)
     link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
     comment_notify_mail=db.BooleanProperty(default=True)
+    domain=db.StringProperty()
 
     theme=None
     #postcount=db.IntegerProperty(default=0)
@@ -167,7 +168,7 @@ class Entry(BaseModel):
     entrytype = db.StringProperty(multiline=False,default='post',choices=[
         'post','page'])
     entry_parent=db.IntegerProperty(default=0)#When level=0 show on main menu.
-    menu_order=db.IntegerProperty()
+    menu_order=db.IntegerProperty(default=0)
     commentcount = db.IntegerProperty(default=0)
 
     #compatible with wordpress
@@ -345,7 +346,8 @@ g_blog=None
 def InitBlogData():
     global g_blog
     g_blog = Blog(key_name = 'default')
-    g_blog.baseurl="http://"+os.environ['HTTP_HOST']
+    g_blog.domain=os.environ['HTTP_HOST']
+    g_blog.baseurl="http://"+g_blog.domain
     g_blog.feedurl=g_blog.baseurl+"/feed"
     g_blog.save()
     entry=Entry(title="Hello world!")

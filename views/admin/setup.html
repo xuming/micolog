@@ -32,7 +32,13 @@
                </td>
                 </tr>
                   <tr valign="top">
-                <th scope="row">Mlog Address(URL):</th>
+                <th scope="row">Domain:</th>
+                <td><input type="text" size="45" value="{{ blog.domain }}"  id="domain" name="domain" />
+               </td>
+                </tr>
+                </tr>
+                  <tr valign="top">
+                <th scope="row">Microlog Address(URL):</th>
                 <td><input type="text" size="45" value="{{ blog.baseurl }}"  id="baseurl" name="baseurl" />
                </td>
                 </tr>
@@ -93,7 +99,7 @@
 
 <p class="submit"><input type="submit" value="Save Changes" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
-<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name" name="str_options"/>
+<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name,domain" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
 <input type="hidden" value="posts_per_page" name="int_options"/>
 

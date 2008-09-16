@@ -42,7 +42,7 @@ class admin_do_action(BaseRequestHandler):
 
     def action_cacheclear(self):
         memcache.flush_all()
-        self.write('"Cache clear ok"')
+        self.write('"Cache cleared successful"')
 
     def action_updatecomments(self):
         for entry in Entry.all():
@@ -84,7 +84,7 @@ class admin_do_action(BaseRequestHandler):
             entry.delete()
 
         g_blog.entrycount=0
-        self.write('"Init succeed."')
+        self.write('"Init has succeed."')
 
 
 
@@ -378,6 +378,7 @@ class admin_setup(BaseRequestHandler):
 
     @requires_admin
     def post(self):
+        old_theme=g_blog.theme_name
         str_options= self.param('str_options').split(',')
         for name in str_options:
             value=self.param(name)
@@ -395,6 +396,10 @@ class admin_setup(BaseRequestHandler):
                 setattr(g_blog,name,value)
             except:
                 pass
+
+        if old_theme !=g_blog.theme_name:
+            g_blog.get_theme()
+
 
         g_blog.owner=self.login_user
         g_blog.save()
@@ -438,12 +443,18 @@ class admin_entry(BaseRequestHandler):
         key=self.param('key')
         published=self.param('publish')
         entry_slug=self.param('slug')
+        entry_parent=self.paramint('entry_parent')
+        menu_order=self.paramint('menu_order')
         def mapit(cat):
             return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
-        vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,'cats':map(mapit,Category.all()),
-              'entry':{'title':title,'content':content,'strtags':tags,'key':key,'published':published,
-              'slug':entry_slug}}
+        vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
+              'cats':map(mapit,Category.all()),
+              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
+                        'slug':entry_slug,
+                        'entry_parent':entry_parent,
+                        'menu_order':menu_order}
+              }
         if not (title and content):
             vals.update({'result':False, 'msg':'Please input title and content.'})
             self.render2('views/admin/entry.html',vals)
@@ -452,6 +463,8 @@ class admin_entry(BaseRequestHandler):
                entry= Entry(title=title,content=content,tags=tags.split(','))
                entry.entrytype=slug
                entry.slug=entry_slug
+               entry.entry_parent=entry_parent
+               entry.menu_order=menu_order
                newcates=[]
 
                if cats:
@@ -473,6 +486,9 @@ class admin_entry(BaseRequestHandler):
                     entry=Entry.get(key)
                     entry.title=title
                     entry.content=content
+                    entry.slug=entry_slug
+                    entry.entry_parent=entry_parent
+                    entry.menu_order=menu_order
                     entry.tags=tags.split(',')
                     newcates=[]
                     if cats:

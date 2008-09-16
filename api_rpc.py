@@ -16,7 +16,7 @@ def checkauth(pos=1):
             username = args[pos+0]
             password = args[pos+1]
             args = args[0:pos]+args[pos+2:]
-            if not (g_blog.rpcuser==username) and (g_blog.rpcpassword==password):
+            if not (username and password and g_blog.rpcuser==username) and (g_blog.rpcpassword==password):
                 raise ValueError("Authentication Failure")
             return method(*args, **kwargs)
 

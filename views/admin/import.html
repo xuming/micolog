@@ -19,15 +19,15 @@ $(document).ready(function() {
 {%else%}
 
 	$(document).ajaxError(function(request, settings){
-       $('#bmsg').html('Error<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+       $('#bmsg').html('Error<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	   $('.blockUI').css('cursor','');
    });
 
 	 function init_blog()
 	 {
-	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在初始化博客数据...</h3>' });
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Init data now...</h3>' });
 	 	$.getJSON("{{self.blog.baseurl}}/admin/do/init_blog", function(json){
-	 		  $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		  $('.blockUI').css('cursor','');
 
 	 		});
@@ -35,9 +35,9 @@ $(document).ready(function() {
 
 	 function update_link()
 	 {
-	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在更新URL...</h3>' });
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Rebuild URLs now...</h3>' });
 	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
-	 		  $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		  $('.blockUI').css('cursor','');
 
 
@@ -45,9 +45,9 @@ $(document).ready(function() {
 	 }
 	 function update_comments()
 	 {
-	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> 正在更新评论数...</h3>' });
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh comments now...</h3>' });
 	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatecomments", function(json){
-	 		   $('#bmsg').html(json+'<br/><input type="button" value="确定" onclick="$.unblockUI()"></input>');
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		   $('.blockUI').css('cursor','');
 
 	 		});
@@ -78,7 +78,7 @@ $(document).ready(function() {
                </td>
                 </tr>
 	  <tr valign="top">
-                <th scope="row">Select wordpress export file (WXR file)：</th>
+                <th scope="row">Wordpress export file (WXR file)：</th>
                 <td><input type="file" name="wpfile">
                </td>
                 </tr>
@@ -96,11 +96,11 @@ $(document).ready(function() {
 
 <div style="">
 <div class="grid">
-<input type='button' value='Init datas' id='init_blog' onclick='init_blog()'/>  Will delete all posts, pages and comments
+<input type='button' value='Init datas' id='init_blog' onclick='init_blog()'/> It will delete  all posts, pages and comments.
 
 </div>
 <div class="grid">
-<input type='button' value='Update comment count' id='update_comments' onclick='update_comments()'/> Will refresh the number of comments for each entry.
+<input type='button' value='Update comment count' id='update_comments' onclick='update_comments()'/>It will refresh the number of comments for each entry.
 
 </div>
 <div class="grid">

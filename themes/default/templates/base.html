@@ -65,10 +65,13 @@ myBoxObject.applyCornersToAll();
     	
 <li id="searchbox">
 
-<form method="get" id="searchform" action="/gsearch">
-		<input type="text" value="Search..." onfocus="if (this.value == 'Search...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search...';}" name="s" id="s" />
+<form method="get" id="searchform" action="http://www.google.com/search">
+		<input type="text" value="Search..." onfocus="if (this.value == 'Search...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search...';}" name="as_q" id="s" />
 		<input type="image" src="/themes/{{ blog.theme_name }}/images/transparent.gif" id="go" alt="Search" title="Search" />
+		<input name="as_sitesearch" value="{{blog.domain}}" type="hidden">
+
 		</form>
+		
 </li>
 
 </ul>
@@ -90,7 +93,7 @@ myBoxObject.applyCornersToAll();
 
 <div id="footer">
 	<div class="footer">
-			<p class="fooleft">{{blog.title}} is proudly powered by <a href="http://xuming.net">Mlog</a>. Theme by <a href="http://bob.my/" title="Simple">Bob</a>
+			<p class="fooleft">{{blog.title}} is proudly powered by <a href="http://xuming.net">Microlog</a>. Theme by <a href="http://bob.my/" title="Simple">Bob</a>
 		</p>
 		<p class="fooright"><a href="#top" title="Top">top</a></p>
 	</div>
