@@ -47,22 +47,22 @@ myBoxObject.applyCornersToAll();
 		{{self.m_list_pages}}
     <li class="page_item" ><a href="{{blog.feedurl}}">(RSS)</a></li>
     {% block topmenu %}{% endblock %}
-    
+
     {%if self.is_admin%}
      <li><a href="/admin">Admin</a> </li>
     {%endif%}
       <li>
      {%if self.is_login%}
-   
+
        <a href="{{self.logouturl}}">Logout</a>
-       
+
      {%else%}
        <a href="{{self.loginurl}}">Login</a>
-       
-     {%endif%}
-         </li> 
 
-    	
+     {%endif%}
+         </li>
+
+
 <li id="searchbox">
 
 <form method="get" id="searchform" action="http://www.google.com/search">
@@ -71,7 +71,7 @@ myBoxObject.applyCornersToAll();
 		<input name="as_sitesearch" value="{{blog.domain}}" type="hidden">
 
 		</form>
-		
+
 </li>
 
 </ul>
@@ -93,7 +93,7 @@ myBoxObject.applyCornersToAll();
 
 <div id="footer">
 	<div class="footer">
-			<p class="fooleft">{{blog.title}} is proudly powered by <a href="http://xuming.net">Microlog</a>. Theme by <a href="http://bob.my/" title="Simple">Bob</a>
+			<p class="fooleft">{{blog.title}} is proudly powered by <a href="http://xuming.net">Micolog</a>. Theme by <a href="http://bob.my/" title="Simple">Bob</a>
 		</p>
 		<p class="fooright"><a href="#top" title="Top">top</a></p>
 	</div>

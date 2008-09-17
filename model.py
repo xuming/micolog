@@ -95,7 +95,7 @@ class Blog(db.Model):
     description = db.TextProperty()
     baseurl = db.StringProperty(multiline=False,default=None)
     urlpath = db.StringProperty(multiline=False)
-    title = db.StringProperty(multiline=False,default='Microlog')
+    title = db.StringProperty(multiline=False,default='Micolog')
     subtitle = db.StringProperty(multiline=False,default='This is a micro blog.')
     entrycount = db.IntegerProperty(default=0)
     posts_per_page= db.IntegerProperty(default=10)
@@ -325,9 +325,11 @@ class Comment(db.Model):
 
 
     def save(self):
-        self.entry.put()
-        self.entry.commentcount+=1
+
+
         self.put()
+        self.entry.commentcount+=1
+        self.entry.put()
         if g_blog.comment_notify_mail and g_blog.owner:
             mail.send_mail_to_admins(g_blog.owner.email(),'Comment for '+self.entry.title,self.content)
             logging.info('send %s . entry: %s'%(g_blog.owner.email(),self.entry.title))
@@ -351,7 +353,7 @@ def InitBlogData():
     g_blog.feedurl=g_blog.baseurl+"/feed"
     g_blog.save()
     entry=Entry(title="Hello world!")
-    entry.content='<p>Welcome to microlog. This is your first post. Edit or delete it, then start blogging!</p>'
+    entry.content='<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>'
     entry.publish()
 
 def gblog_init():
