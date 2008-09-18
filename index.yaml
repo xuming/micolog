@@ -16,13 +16,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used 33 times in query history.
+# Used 10 times in query history.
 - kind: Comment
   properties:
   - name: date
     direction: desc
 
-# Used 6 times in query history.
+# Used 4 times in query history.
 - kind: Comment
   properties:
   - name: entry
@@ -35,7 +35,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used 17 times in query history.
+# Used 7 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -43,14 +43,14 @@ indexes:
   - name: published
   - name: menu_order
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Entry
   properties:
   - name: entrytype
   - name: date
     direction: desc
 
-# Used 9 times in query history.
+# Used 3 times in query history.
 - kind: Entry
   properties:
   - name: entrytype

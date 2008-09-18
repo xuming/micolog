@@ -5,6 +5,7 @@
 <title>{% block title %} {{ blog.title}}{% endblock %}</title>
 <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/style.css" type="text/css" media="screen" />
 <link rel="alternate" type="application/rss+xml" title="{{ blog.title }} RSS Feed" href="{{ blog.feedurl }}" />
+<link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
 <script type="text/javascript" src="/themes/{{ blog.theme_name }}/rounded_corners_lite.inc.js"></script>
 <script type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script>
 {% block head_block %}{% endblock %}
