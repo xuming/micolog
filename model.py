@@ -339,9 +339,9 @@ Comment:
 You can see all comments on this post here:
 %s
 '''
-        if g_blog.comment_notify_mail and g_blog.owner:
+        if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
             sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
-            "<a href='%(link)s'>%(link)s</a>"%{'link':(g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))})
+            g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
             mail.send_mail_to_admins(g_blog.owner.email(),'Comments:'+self.entry.title, sbody,reply_to=self.email)
             logging.info('send %s . entry: %s'%(g_blog.owner.email(),self.entry.title))
 

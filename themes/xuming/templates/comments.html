@@ -5,18 +5,21 @@
 
 	{% for comment in entry.comments %}
 
-		<li id="comment-{{comment.key.id}}">
-			<?php echo get_avatar( $comment, 32 ); ?>
-			<cite>
-			{%if comment.weburl %}
+		<li class="{%cycle alt1,alt %} id="comment-{{comment.key.id}}">
+			<div class="gravatar"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
+     <div class="comments">
+     				{%if comment.weburl %}
 			<a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a>
 			{% else %}{{comment.author}}{%endif%}
-			</cite> 说:
+			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date.date}} at {{comment.date|date:"H:i"}}</a> </small>
+			
+			<br />
 
+			<p>{{comment.content}}</p>
 
-			<small class="commentmetadata"><a href="#comment-<?php comment_ID() ?>" title=""><?php comment_date('Y-m-d  H:i') ?> </a> <?php edit_comment_link('编辑','&nbsp;&nbsp;',''); ?></small>
-
-			{{comment.content}}
+			</div>
+			<div style="clear:both"></div>
+		
 
 		</li>
 

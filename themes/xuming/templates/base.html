@@ -77,7 +77,7 @@
   <h1></h1>
 
   <ul id="home" class="gc-topnav-tabs">
-  	<li id="home_link">
+  	<li id="home_link" class="{%if ishome%}current_page_item{%else%}page_item{%endif%}">
       <a href="{{ blog.baseurl }}"  >首页</a>
     </li>
     {{self.m_list_pages}}
