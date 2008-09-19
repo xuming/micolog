@@ -196,7 +196,10 @@ class Post_comment(BaseRequestHandler):
                             email=email,
                             entry=Entry.get(key))
             if url:
-               comment.weburl=url
+               try:
+                    comment.weburl=url
+               except:
+                   comment.weburl='http://'+url
 
             info_str=base64.b64encode('#@#'.join([name.encode('utf8'),email.encode('utf8'),url.encode('utf8')]))
 
