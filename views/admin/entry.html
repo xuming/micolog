@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block header %}
+<link rel="stylesheet" href="/static/js/tinymce/wordpress.css" type="text/css"/>
+<style type='text/css' media='all'>
+@import 'http://localhost/wordpress/wp-includes/js/thickbox/thickbox.css?1';
+	div#TB_title {
+		background-color: #222222;
+		color: #cfcfcf;
+	}
+	div#TB_title a, div#TB_title a:visited {
+		color: #cfcfcf;
+	}
+
+</style>
+
 
 {% endblock %}
 
@@ -15,43 +28,19 @@
  {% block content %}
  <!-- tinyMCE -->
 <script language="javascript" type="text/javascript"
-src="/static/js/tiny_mce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript">
-	tinyMCE.init({
-        language : 'zh',
-		mode : "textareas",
-        theme : "advanced",
-        dialog_type : "modal",
-		plugins : "fullscreen,preview",
-        theme_advanced_buttons1 :   "bold,italic,underline,separator,strikethrough,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,formatselect,forecolor,backcolor,undo,redo,link,unlink,separator,image,code,separator,fullscreen,preview",
-        theme_advanced_buttons2 : "",
-        theme_advanced_buttons3 : "",
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_statusbar_location : "bottom",
-        theme_advanced_resizing : true,
-        theme_advanced_resize_horizontal : false
-
-	});
-
-	function toggleEditor(id,status) {
-        if (status)
-        {
-         tinyMCE.execCommand('mceAddControl', false, id);
-         $('#spn_visual').addClass('tg');
-         $('#spn_html').removeClass('tg');
-
-        }
-        else
-        {
-         tinyMCE.execCommand('mceRemoveControl', false, id);
-         $('#spn_html').addClass('tg');
-         $('#spn_visual').removeClass('tg');
-        }
-    }
-
+src="/static/js/editor.js"></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+	wpTinyMCEConfig = {
+		defaultEditor: "tinymce"
+	}
+/* ]]> */
 </script>
+
+<script language="javascript" type="text/javascript"
+src="/static/js/tinymce/tiny_mce_config.js"></script>
 <!-- /tinyMCE -->
+
 
 <form action="/admin/{{entrytype}}" method="post">
 
@@ -64,16 +53,16 @@ src="/static/js/tiny_mce/tiny_mce.js"></script>
 
 <div id="previewview">
 </div>
-{%ifequal entry.entrytype "post"%}
+{%ifequal entrytype "post"%}
 <h3>Category</h3>
 <div class="inside">
 
 <p style="height:120px;overflow-y:scroll">
+
                     {%for cat in cats%}
 
                        <input type="checkbox" name="cats"  value="{{cat.slug}}" {%if cat.select %}checked="checked"{%endif%}/>{{cat.name}}<br>
                     {%endfor%}
-                    </select>
 </p>
 
 </div>
@@ -107,25 +96,57 @@ src="/static/js/tiny_mce/tiny_mce.js"></script>
 </div>
 
 <div class="stuffbox" id="postarea">
-<h3>{{entrytype}}</h3>
+<h3>
+<div class="title">{{entrytype}}</div>
 <div class='editor-toolbar'>
-    <span class="alignright" id="spn_html"><a href="javascript:toggleEditor('t_content',false);">HTML</a></span>
-    <span class="alignright tg"  id="spn_visual"><a href="javascript:toggleEditor('t_content',true);">Visual</a></span>
+    <span class="alignright" id="spn_html"><a id="edButtonHTML" onclick="switchEditors.go('content');" class="">HTML</a></span>
+    <span class="alignright tg"  id="spn_visual" ><a id="edButtonPreview" class="active">Visual</a></span>
     <div class='clear'></div>
 </div>
-<div id="editorcontainer">
-<textarea  style='width:100%;height:200px' cols="40" rows="10" id="t_content" name="content">{{entry.content}}</textarea>
-</div>
+<div class='clear'></div>
+</h3>
+
+<div id="quicktags" style="display: none;">
+	<script type="text/javascript">
+/* <![CDATA[ */
+	quicktagsL10n = {
+		quickLinks: "(Quick Links)",
+		wordLookup: "Enter a word to look up:",
+		dictionaryLookup: "Dictionary lookup",
+		lookup: "lookup",
+		closeAllOpenTags: "Close all open tags",
+		closeTags: "close tags",
+		enterURL: "Enter the URL",
+		enterImageURL: "Enter the URL of the image",
+		enterImageDescription: "Enter a description of the image"
+	}
+/* ]]> */
+
+
+</script>
+<script src="/static/js/quicktags.js" type="text/javascript"/>
+<script type="text/javascript">edToolbar()</script>
+
+<div id="ed_toolbar"><input type="button" value="b" onclick="edInsertTag(edCanvas, 0);" class="ed_button" accesskey="b" id="ed_strong"/><input type="button" value="i" onclick="edInsertTag(edCanvas, 1);" class="ed_button" accesskey="i" id="ed_em"/><input type="button" value="link" onclick="edInsertLink(edCanvas, 2);" class="ed_button" accesskey="a" id="ed_link"/><input type="button" value="b-quote" onclick="edInsertTag(edCanvas, 3);" class="ed_button" accesskey="q" id="ed_block"/><input type="button" value="del" onclick="edInsertTag(edCanvas, 4);" class="ed_button" accesskey="d" id="ed_del"/><input type="button" value="ins" onclick="edInsertTag(edCanvas, 5);" class="ed_button" accesskey="s" id="ed_ins"/><input type="button" value="img" onclick="edInsertImage(edCanvas);" class="ed_button" accesskey="m" id="ed_img"/><input type="button" value="ul" onclick="edInsertTag(edCanvas, 7);" class="ed_button" accesskey="u" id="ed_ul"/><input type="button" value="ol" onclick="edInsertTag(edCanvas, 8);" class="ed_button" accesskey="o" id="ed_ol"/><input type="button" value="li" onclick="edInsertTag(edCanvas, 9);" class="ed_button" accesskey="l" id="ed_li"/><input type="button" value="code" onclick="edInsertTag(edCanvas, 10);" class="ed_button" accesskey="c" id="ed_code"/><input type="button" value="more" onclick="edInsertTag(edCanvas, 11);" class="ed_button" accesskey="t" id="ed_more"/><input type="button" value="lookup" title="Dictionary lookup" onclick="edSpell(edCanvas);" class="ed_button" id="ed_spell"/><input type="button" value="close tags" title="Close all open tags" onclick="edCloseAllTags();" class="ed_button" id="ed_close"/></div>
 </div>
 
+<div id="editorcontainer">
+
+  <textarea style="width: 695px;overflow:hidden" cols="40" rows="15" id="content" name="content">{{entry.content}}</textarea>
+</div>
+</div>
+<script type="text/javascript">
+ edCanvas = document.getElementById('content');
+</script>
+
 <div class="clear"></div>
-<div class="stuffbox" id="tag">
+<div class="stuffbox">
 <h3>Slug</h3>
 <div class="inside">
-	<input type="text" id="tags" value="{{entry.slug}}" tabindex="1" size="30" name="slug"/><br/>
+	<input type="text" value="{{entry.slug}}" tabindex="1" size="30" name="slug"/><br/>
 </div>
 </div>
-{%ifequal entry.entrytype "post"%}
+{%ifequal entrytype "post"%}
 <div class="clear"></div>
 <div class="stuffbox" id="tag">
 <h3>Tag</h3>
@@ -133,17 +154,15 @@ src="/static/js/tiny_mce/tiny_mce.js"></script>
 	<input type="text" id="tags" value="{{entry.strtags}}" tabindex="1" size="30" name="tags"/><br/>
 </div>
 </div>
-
 {%else%}
 <div class="clear"></div>
-<div class="stuffbox" >
+<div class="stuffbox">
 <h3>Options</h3>
 <div class="inside">
   	<p>
      <span style="font-weight:bold;width:30px"> Page level: </span><input type="text" id="entry_parent" value="{{entry.entry_parent}}" tabindex="1" size="4" name="entry_parent"/>
   	<p>
       <span  style="font-weight:bold;width:30px">Page order:</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
-
     </p>
 </div>
 </div>
