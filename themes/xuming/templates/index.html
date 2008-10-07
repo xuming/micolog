@@ -6,13 +6,13 @@
 <meta name="Description" content="我是徐明，这是我的个人博客，在这里我会发表对人生的感悟，工作生活的点滴，我的创业历史，人生的风风雨雨。这是徐明目前唯一正式的博客，欢迎大家一起讨论.">
 
 {% endblock %}
-  
+
 {% block content %}
 <div id="gc-home">
-	
+
     <div class="g-section g-tpl-330-alt">
 
-     
+
       <div class="g-unit">
         <div class="g-c-gc-home">
   {% for entry in entries %}
@@ -22,7 +22,7 @@
 				<div class="greytext">{{ entry.date|date:"F jS, Y " }} </div>
 
 				<div class="entry">
-					{{ entry.content }}
+					{{ entry.get_content }}
 				</div>
 
 				<p class="postmetadata">Topics: {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | <a href="/{{entry.link}}#comments">评论({{entry.commentcount}})</a></p>
@@ -30,7 +30,7 @@
 
 	 {% endfor %}
 
-   
+
 		<div class="navigation">
 			{% if show_prev %}
 			<div class="alignleft"><a href="/page/{{ pageindex|add:"-1" }}">&laquo; 上一页</a></div>
@@ -38,12 +38,12 @@
 			{% if show_next %}
 			<div class="alignright"><a href="/page/{{ pageindex|add:"1" }}">下一页 &raquo;</a></div>
 			{% endif %}
-		</div>        
+		</div>
       </div><!-- end g-c-gc-home -->
     </div><!-- end g-unit -->
  <div class="g-unit g-first">
       	{% include "sidebar.html" %}
-        
+
       </div>
   </div><!-- end g-sections 0 -->
 

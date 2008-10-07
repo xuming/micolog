@@ -106,6 +106,7 @@ class Blog(db.Model):
     link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
     comment_notify_mail=db.BooleanProperty(default=True)
     domain=db.StringProperty()
+    show_excerpt=db.BooleanProperty(default=True)
 
     theme=None
     #postcount=db.IntegerProperty(default=0)
@@ -174,7 +175,37 @@ class Entry(BaseModel):
     #compatible with wordpress
     is_wp=db.BooleanProperty(default=False)
     post_id= db.IntegerProperty()
+    excerpt=db.StringProperty()
+    postname=''
 
+    def get_content(self):
+        if g_blog.show_excerpt:
+            if self.excerpt:
+                return self.excerpt
+            else:
+                return self.content.split('<!--more-->')[0]
+        else:
+            return self.content
+
+    def slug_onchange(self,curval,newval):
+        if not (curval==newval):
+            self.setpostname(newval)
+
+    def setpostname(self,newval):
+             #check and fix double slug
+            if newval:
+                slugcount=Entry.all()\
+                          .filter('entrytype',self.entrytype)\
+                          .filter('date <',self.date)\
+                          .filter('slug =',newval)\
+                          .filter('published',True)\
+                          .count()
+                if slugcount>0:
+                    self.postname=newval+str(slugcount)
+                else:
+                    self.postname=newval
+            else:
+                self.postname=""
 
 
 
@@ -243,23 +274,31 @@ class Entry(BaseModel):
 
             if not self.is_saved():
                 self.save()
+
             if not self.is_wp:
                 self.post_id=self.key().id()
 
+            #fix for old version
+            if not self.postname:
+                self.setpostname(self.slug)
+
+
             vals={'year':self.date.year,'month':str(self.date.month).zfill(2),'day':self.date.day,
-                'postname':self.slug,'post_id':self.post_id}
+                'postname':self.postname,'post_id':self.post_id}
 
 
             if self.entrytype=='page':
                 if self.slug:
-                    self.link=self.slug
+                    self.link=self.postname
                 else:
                     self.link='?p=%(post_id)s'%vals
             else:
-                if g_blog.link_format and self.slug:
+                if g_blog.link_format and self.postname:
                     self.link=g_blog.link_format.strip()%vals
                 else:
                     self.link='?p=%(post_id)s'%vals
+
+
 
             if not self.published:
                  g_blog.entrycount+=1
@@ -351,6 +390,11 @@ You can see all comments on this post here:
         self.entry.put()
         self.delete()
 
+class Media(db.Model):
+   name =db.StringProperty()
+   mtype=db.StringProperty()
+   bits=db.BlobProperty()
+   date=db.DateTimeProperty(auto_now_add=True)
 
 
 #setting

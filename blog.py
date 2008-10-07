@@ -120,6 +120,7 @@ class SinglePost(BasePublicPage):
         else:
             commentuser=['','','']
 
+
         if entry.entrytype=='post':
             self.render('single',
                         {
@@ -279,13 +280,24 @@ class do_action(BaseRequestHandler):
         self.write(simplejson.dumps(html.decode('utf8')))
 
 
+class getMedia(webapp2.RequestHandler):
+    def get(self,slug):
+        media=Media.get(slug)
+        if media:
+            self.response.headers['Expires'] = 'Thu, 15 Apr 2010 20:00:00 GMT'
+            self.response.headers['Cache-Control'] = 'max-age=3600,public'
+            self.response.headers['Content-Type'] = str(media.mtype)
+            self.response.out.write(media.bits)
+
+
 
 
 
 def main():
     webapp.template.register_template_library('filter')
     application = webapp2.WSGIApplication2(
-                    [('/skin',ChangeTheme),
+                    [('/media/(.*)',getMedia),
+                     ('/skin',ChangeTheme),
                      ('/feed', FeedHandler),
                      ('/post_comment',Post_comment),
                      ('/page/(?P<page>\d+)', MainPage),

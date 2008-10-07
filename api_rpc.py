@@ -2,6 +2,7 @@ import wsgiref.handlers
 import xmlrpclib
 import sys
 import cgi
+import base64
 from datetime import datetime
 from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
 from functools import wraps
@@ -87,6 +88,9 @@ def metaWeblog_newPost(blogid, struct, publish):
             content = struct['description'],
             categorie_keys=newcates
      )
+
+    if struct.has_key('mt_text_more'):
+        entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
     if struct.has_key('mt_keywords'):
         entry.tags=struct['mt_keywords'].split(',')
 
@@ -99,7 +103,16 @@ def metaWeblog_newPost(blogid, struct, publish):
         entry.save()
     postid =entry.key().id()
     return str(postid)
+@checkauth()
+def metaWeblog_newMediaObject(postid,struct):
+    name=struct['name']
+    mtype=struct['type']
+    #logging.info( struct['bits'])
+    bits=db.Blob(str(struct['bits']))
+    media=Media(name=name,mtype=mtype,bits=bits)
+    media.put()
 
+    return {'url':g_blog.baseurl+'/media/'+str(media.key())}
 
 @checkauth()
 def metaWeblog_editPost(postid, struct, publish):
@@ -114,6 +127,7 @@ def metaWeblog_editPost(postid, struct, publish):
           newcates.append(c[0].key())
     entry=Entry.get_by_id(int(postid))
 
+
     if struct.has_key('mt_keywords'):
         entry.tags=struct['mt_keywords'].split(',')
 
@@ -123,6 +137,8 @@ def metaWeblog_editPost(postid, struct, publish):
 
     entry.title = struct['title']
     entry.content = struct['description']
+    if struct.has_key('mt_text_more'):
+        entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
     entry.categorie_keys=newcates
     if publish:
         entry.publish(True)
@@ -184,6 +200,8 @@ def wp_newPage(blogid,struct,publish):
         entry=Entry(title = struct['title'],
                 content = struct['description'],
                 )
+        if struct.has_key('mt_text_more'):
+            entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
 
         if struct.has_key('wp_slug'):
             entry.slug=struct['wp_slug']
@@ -226,6 +244,8 @@ def wp_editPage(blogid,pageid,struct,publish):
 
     entry.title = struct['title']
     entry.content = struct['description']
+    if struct.has_key('mt_text_more'):
+        entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
     if publish:
         entry.publish(True)
     else:
@@ -264,6 +284,7 @@ dispatcher = PlogXMLRPCDispatcher({
 	'metaWeblog.getCategories' : metaWeblog_getCategories,
 	'metaWeblog.getPost' : metaWeblog_getPost,
 	'metaWeblog.getRecentPosts' : metaWeblog_getRecentPosts,
+	'metaWeblog.newMediaObject':metaWeblog_newMediaObject,
 
 	'wp.getCategories':metaWeblog_getCategories,
 	'wp.newCategory':wp_newCategory,

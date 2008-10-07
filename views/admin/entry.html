@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block header %}
 <link rel="stylesheet" href="/static/js/tinymce/wordpress.css" type="text/css"/>
+<link rel="stylesheet" href="/static/js/tinymce/wordpress.css" type="text/css"/>
 <style type='text/css' media='all'>
-@import 'http://localhost/wordpress/wp-includes/js/thickbox/thickbox.css?1';
 	div#TB_title {
 		background-color: #222222;
 		color: #cfcfcf;
@@ -132,7 +132,7 @@ src="/static/js/tinymce/tiny_mce_config.js"></script>
 
 <div id="editorcontainer">
 
-  <textarea style="width: 695px;overflow:hidden" cols="40" rows="15" id="content" name="content">{{entry.content}}</textarea>
+  <textarea style="width: 695px;" cols="40" rows="15" id="content" name="content">{{entry.content}}</textarea>
 </div>
 </div>
 <script type="text/javascript">
@@ -170,7 +170,13 @@ src="/static/js/tinymce/tiny_mce_config.js"></script>
 
 {%endifequal%}
 
-
+<div class="clear"></div>
+<div class="stuffbox">
+<h3>Excerpt</h3>
+<div class="inside">
+	<textarea name="excerpt" style="width:98%"/>{%if entry.excerpt%}{{entry.excerpt}}{%endif%}</textarea><br/>
+</div>
+</div>
 
 
 <input type="hidden" value="{{entry.key}}" name="key"/>

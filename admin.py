@@ -445,6 +445,7 @@ class admin_entry(BaseRequestHandler):
         entry_slug=self.param('slug')
         entry_parent=self.paramint('entry_parent')
         menu_order=self.paramint('menu_order')
+        entry_excerpt=self.param('excerpt')
         def mapit(cat):
             return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
@@ -453,6 +454,7 @@ class admin_entry(BaseRequestHandler):
               'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
                         'slug':entry_slug,
                         'entry_parent':entry_parent,
+                        'excerpt':entry_excerpt,
                         'menu_order':menu_order}
               }
         if not (title and content):
@@ -465,6 +467,7 @@ class admin_entry(BaseRequestHandler):
                entry.slug=entry_slug
                entry.entry_parent=entry_parent
                entry.menu_order=menu_order
+               entry.excerpt=entry_excerpt
                newcates=[]
 
                if cats:
@@ -489,6 +492,7 @@ class admin_entry(BaseRequestHandler):
                     entry.slug=entry_slug
                     entry.entry_parent=entry_parent
                     entry.menu_order=menu_order
+                    entry.excerpt=entry_excerpt
                     entry.tags=tags.split(',')
                     newcates=[]
                     if cats:
@@ -590,8 +594,8 @@ class admin_comments(BaseRequestHandler):
 
 
 
-        comments=Comment.all().order('-date')
-        entries,pager=Pager(query=comments,items_per_page=15).fetch(page_index)
+        query=Comment.all().order('-date')
+        comments,pager=Pager(query=query,items_per_page=15).fetch(page_index)
 
         self.render2('views/admin/comments.html',
          {

@@ -14,11 +14,11 @@
 		  </div>
 		  <div class="alignright">
 	        {% if pager.prev %}
-			<div class="alignleft"><a href="/admin/entries/page?page={{ pager.prev}}">&laquo; 上一页</a></div>
+			<div class="alignleft"><a href="/admin/comments?page={{ pager.prev}}">&laquo; 上一页</a></div>
 			{% endif %}
 
 			{% if pager.next %}
-			<div class="alignright"><a href="/admin/entries/page?page={{ pager.next }}">下一页 &raquo;</a></div>
+			<div class="alignright"><a href="/admin/comments?page={{ pager.next }}">下一页 &raquo;</a></div>
 			{% endif %}	 <div class="alignright" style="padding:0px 10px;">第{{pager.page_index}}页</div>
          </div>
 
