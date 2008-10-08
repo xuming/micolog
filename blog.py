@@ -11,7 +11,7 @@ from base import *
 from datetime import datetime ,timedelta
 import base64,random
 from django.utils import simplejson
-
+import filter  as myfilter
 
 def doRequestHandle(old_handler,new_handler,**args):
         new_handler.initialize(old_handler.request,old_handler.response)
@@ -207,6 +207,8 @@ class Post_comment(BaseRequestHandler):
 ##            url=urldecode(url)
 ##            key=urldecode(key)
 ##            content=urldecode(content)
+
+        content=myfilter.do_filter(content)
         if not (name and email and content):
             if useajax:
                         self.write(simplejson.dumps((False,-101,'Please input name, email and comment .')))
