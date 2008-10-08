@@ -17,6 +17,10 @@ def check_current(v1,v2):
         return ""
 
 @register.filter
+def excerpt_more(entry,value='..more'):
+    return entry.get_content_excerpt(value)
+
+@register.filter
 def dict_value(v1,v2):
     return v1[v2]
 

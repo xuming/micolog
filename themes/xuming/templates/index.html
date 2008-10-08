@@ -22,7 +22,7 @@
 				<div class="greytext">{{ entry.date|date:"F jS, Y " }} </div>
 
 				<div class="entry">
-					{{ entry.get_content }}
+					{{entry|excerpt_more:"(..More)"}}
 				</div>
 
 				<p class="postmetadata">Topics: {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | <a href="/{{entry.link}}#comments">评论({{entry.commentcount}})</a></p>

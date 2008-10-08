@@ -1,32 +1,123 @@
 {% extends "base.html" %}
 {% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+
+{% block head_block %}
+{% if entry %}
+{%if entry.strtags%}<meta name="Keywords" content="{{entry.strtags}}">{%endif%}
+{%if entry.excerpt%} <meta name="Description" content="{{entry.excerpt}}">{%endif%}
+{% endif %}
+<script src="/static/js/jquery.form.utf8.js"></script>
+{% endblock %}
+
 {% block content %}
 
   <div id="gc-home">
     <div class="g-section">
 
-     
+
       <div class="g-unit">
         <div class="g-c-gc-home2">
 
 {% if entry %}
 			<div class="post" id="post-{{ entry.id }}">
 				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
-				
+
 				<div class="entry">
 					{{ entry.content }}
 				</div>
 
-				
+
 			</div>
 				{# include "comments.html" #}
                 <div id="comment_area">
 
                 </div>
-                <script>
+<script>
+       loadjs=false;
+       function showinfo(msg)
+       {
+       	  alert(msg);
+       	  /*
+       	  if (!loadjs)
+       	  {
+       	  	$("#comment_info").text(msg).show();
+       	  	$.getScript("http://dev.jquery.com/view/trunk/plugins/color/jquery.color.js", function(){
+							loadjs=true;
+						});
+       	  }else
+       	  { $("#comment_info").text(msg).animate( { backgroundColor: '#fbc7c7' }, "fast")
+       						.animate( { backgroundColor: '#F7F0EF' }, "slow")
+						      .animate( { backgroundColor: '#fbc7c7' }, "fast");
+       	  }
+       	  */
+       }
+       function add_comment(msg)
+       {
+       	  comment=$(msg)
+       	  if (!loadjs)
+       	  {
+       	  	$("#commentlist").append(comment).show();
+       	  	$.getScript("http://dev.jquery.com/view/trunk/plugins/color/jquery.color.js", function(){
+       	  		 comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
+       						.animate( { backgroundColor: 'white' }, "slow")
+							loadjs=true;
+						});
+       	  }else
+       	  {
+       	  	$("#commentlist").append(comment);
+       	  	  comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
+       						.animate( { backgroundColor: 'white' }, "slow")
+
+       	  }
+       }
        $.getJSON("{{self.blog.baseurl}}/do/getcomments?key={{entry.key}}", function(ret){
 
               $('#comment_area').html(ret);
+
+              $('#commentform').ajaxForm({
+              	type:'post',
+              	dataType:  'json',
+              	beforeSubmit:function(formData,jqForm,options){
+              		   var form = jqForm[0];
+              		   if (form.author)
+              		   {
+
+	              			 if (!form.author.value)
+		              		 {
+		              		  showinfo('请输入你的名字!');
+		              		  form.author.focus();
+		              		  return false;
+		              		 }
+		              		 if (!form.email.value)
+		              		 {
+		              		 	showinfo('请输入邮件地址');
+		              		 	form.email.focus();
+		              		 	return false;
+		              		 }
+                        }
+	              		 if (!form.comment.value)
+	              		 {
+	              		 	showinfo('请输入留言内容');
+	              		 	form.comment.focus();
+	              		 	return false;
+	              		 }
+
+	              		 return true;
+
+              		},
+              	success:function(data){
+              		  if (data[0])
+              		  {
+              		  	document.cookie=data[1];
+              		  	add_comment(data[2]);
+              		  }
+              		  else
+              		  {  if (data[1]==-102)
+              		  	 showinfo('计算错误，回幼儿园进修一下再来过。');
+              		  	 $('#checkret').focus();
+              		  }
+              		}
+              });
        });
 </script>
 {% else %}
@@ -40,10 +131,10 @@
 
 
 
-        
+
       </div><!-- end g-c-gc-home -->
     </div><!-- end g-unit -->
- 
+
   </div><!-- end g-section -->
 
 
@@ -52,9 +143,9 @@
 </div><!-- end gc-home -->
 </div> <!-- end codesite content -->
 
-    	
 
-  
 
-   
+
+
+
 {% endblock %}

@@ -1,4 +1,4 @@
-var tinyMCEPreInit = { settings : { themes : "advanced", plugins : "safari,inlinepopups,autosave,spellchecker,paste,wordpress,media,fullscreen", languages : "en", debug : false }, base : "/static/js/tinymce", suffix : "" };tinyMCEPreInit.start = function() {
+var tinyMCEPreInit = { settings : { themes : "advanced", plugins : "safari,inlinepopups,autosave,spellchecker,paste,wordpress,media,fullscreen", languages : "en", debug : false }, base : "/tinymce", suffix : "" };tinyMCEPreInit.start = function() {
 	var t = this, each = tinymce.each, s = t.settings, sl = tinymce.ScriptLoader, ln = s.languages, th = s.themes;
 
 	function load(u, sp) {

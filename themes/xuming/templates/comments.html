@@ -1,7 +1,8 @@
-{% if entry.comments.count%}
-	<h3 id="comments">&#8220;{{entry.title}}&#8221; 共有<span style='color:red;font-weight:bold;padding:0px 3px'>{{entry.comments.count}}</span>条相关评论   </h3>
+﻿	
 
-	<ol class="commentlist">
+	<h3 id="comments" {% if not entry.comments.count%} style="display:none"{%endif%}>&#8220;{{entry.title}}&#8221; 共有<span style='color:red;font-weight:bold;padding:0px 3px'>{{entry.comments.count}}</span>条留言   </h3>
+
+	<ol id="commentlist" class="commentlist">
 
 	{% for comment in entry.comments %}
 
@@ -27,9 +28,10 @@
 
 	</ol>
 
-{% endif %}
+
 
 <h3 id="respond">我要留言</h3>
+<div class="info" id="comment_info"></div>
 <form action="/post_comment" method="post" id="commentform">
 
 {%if self.is_admin%}
@@ -43,29 +45,24 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="25" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
 
-{% if not self.is_login%}
+{% if not user_name or not user_email %}
 <p>麻烦，计算一下：<span style="color:#D50000">{{checknum1}}+{{checknum2}}=</span>
 <input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
 
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
-我不想算，<a href="{{self.loginurl}}">点击这里登录／留言</a></p>
+</p>
+{%else%}
+<input type="hidden" name="checknum" id="checknum" value=""  />
 {%endif%}
 {%endif%}
 
-<!--<p><small><strong>XHTML:</strong> You can use these tags: <code><?php echo allowed_tags(); ?></code></small></p>-->
 
 <p><textarea name="comment" id="comment" style="width:96%"  rows="10" tabindex="4"></textarea></p>
 
 <p><input name="submit" type="submit" id="submit" tabindex="5" value="提交留言" />
 <input type="hidden" name="key" value="{{entry.key}}" />
+<input type="hidden" name="useajax" value="1" />
 </p>
-
-
-
-
-
-
-
 </form>
 
 

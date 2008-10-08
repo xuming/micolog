@@ -175,15 +175,19 @@ class Entry(BaseModel):
     #compatible with wordpress
     is_wp=db.BooleanProperty(default=False)
     post_id= db.IntegerProperty()
-    excerpt=db.StringProperty()
+    excerpt=db.StringProperty(multiline=True)
     postname=''
 
-    def get_content(self):
+    def get_content_excerpt(self,more='..more'):
         if g_blog.show_excerpt:
             if self.excerpt:
-                return self.excerpt
+                return self.excerpt+' <a href="%s">%s</a>'%(self.link,more)
             else:
-                return self.content.split('<!--more-->')[0]
+                sc=self.content.split('<!--more-->')
+                if len(sc)>1:
+                    return sc[0]+' <a href="%s">%s</a>'%(self.link,more)
+                else:
+                    return sc[0]
         else:
             return self.content
 

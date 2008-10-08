@@ -1,5 +1,5 @@
 #gc-home .g-first .g-c-gc-home{
-padding:0pt 0pt 0pt 30px;} 
+padding:0pt 0pt 0pt 30px;}
 #gc-home .g-c-gc-home {
 overflow:hidden;
 padding-right:331px;
@@ -20,9 +20,9 @@ margin:0.5em 1em 0pt;
 pre{overflow:visible;
 text-wrap:unrestricted;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;white-space:pre-wrap;word-wrap:break-word}.backtotop,#date,#trail{visibility:hidden}h1,h2,h3,h4,h5,h6{page-break-after:avoid}table,img{page-break-inside:avoid}.hidden,.hidden *,
 #skipto,#skipto *{display:none}}
-	
+
 p.note,p.caution,p.warning{margin:1em 0 0 0;padding:.2em .5em .2em .9em;background-color:#efefef;border-top:1px solid;border-bottom:1px solid}p.note{border-color:#36C}p.caution{border-color:#fc3}p.warning{border-color:#a03}p.warning b,p.warning em,p.warning strong{color:#a03;font-weight:bold}p.caption{padding:1px 0 0;margin:0}
-	
+
 html, body {
 height:100%;
 margin:0pt;
@@ -124,7 +124,7 @@ ol,ul{padding:0;margin:.5em 0 0 15px;line-height:150%}li ol,li ul{padding:0;marg
 
 
 
-.current_page_item a, .current_page_item a:visited 
+.current_page_item a, .current_page_item a:visited
 {
 color:#000000;
 text-decoration:none;
@@ -150,7 +150,7 @@ padding-bottom:10px;margin-bottom:10px}
 	margin-bottom: 10px;
 	height:10px;
 	}
-	
+
 .alignright {
 	float: right;
 	}
@@ -182,3 +182,5 @@ padding:1em;
 .gravatar { float:left; border:3px double #dadada; width:55px; margin-right:5px;border:none;}
 ol.commentlist li.alt { background:#fafafa; color:#333; padding:5px; margin-bottom:5px;   }
 ol.commentlist li { color:#333; padding:5px; margin-bottom:5px;  }
+
+#comment_info {padding:5px;margin:3px 0px;display:none;background:#fbc7c7;color:gray;width:95%}

@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block content%}
 {% if entries %}
 
@@ -12,7 +12,7 @@
 
 
 
-{{entry.get_content}}
+{{entry|excerpt_more:"(..More)"}}
 
 <div class="meta">{% if entry.strtags %}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}<br><br>{%endif%}  Posted in {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | {%if self.is_admin%}<a href="{{entry.edit_url}}">Edit</a> | {%endif%}  <a href="/{{entry.link}}#comments">Comments({{entry.commentcount}})&#187;</a></div>
 </div>

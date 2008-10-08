@@ -11,7 +11,7 @@
 		<li class="{%cycle alt1,alt %}" id="comment-{{comment.key.id}}">
 			<div class="gravatar"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
 			<div class="comments"><a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a> On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date.date}} at {{comment.date|date:"H:i"}}</a> </small>
-			
+
 			<br />
 
 			<p>{{comment.content}}</p>
@@ -44,12 +44,13 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
 <label for="url"><small>Website</small></label></p>
 
-{% if not self.is_login%}
+{% if not user_name or not user_email %}
 <p><span style="color:#D50000">{{checknum1}}+{{checknum2}}=</span>
 <input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
 
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
- <a href="{{self.loginurl}}">Click here to login</a></p>
+{%else%}
+<input type="hidden" name="checknum" id="checknum" value=""  />
 {%endif%}
 {%endif%}
 
@@ -60,7 +61,46 @@
 </p>
 <input type="hidden" name="key" value="{{entry.key}}" />
 </form>
+<script>
+  $('#commentform').submit(function(){
+         var form = this;
+           if (form.author)
+  		   {
 
+      			 if (!form.author.value)
+          		 {
+          		  alert('Please input your name.');
+          		  form.author.focus();
+          		  return false;
+          		 }
+          		 if (!form.email.value)
+          		 {
+          		 	alert('Please input the email address.');
+          		 	form.email.focus();
+          		 	return false;
+          		 }
+	       }
+	       if (form.checknum.value)
+	       {
+             if(eval(form.checknum.value)!=form.checkret.value)
+             {
+               alert('check code error');
+               form.checkret.value='';
+               form.checkret.focus();
+               return false;
+             }
 
+           }
+
+      		 if (!form.comment.value)
+      		 {
+      		 	alert('Please leave some reply message.');
+      		 	form.comment.focus();
+      		 	return false;
+      		 }
+
+      		 return true;
+  });
+</script>
 
 

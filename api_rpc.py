@@ -97,6 +97,9 @@ def metaWeblog_newPost(blogid, struct, publish):
     if struct.has_key('wp_slug'):
         entry.slug=struct['wp_slug']
 
+    if struct.has_key('mt_excerpt'):
+        entry.excerpt=struct['mt_excerpt']
+
     if publish:
         entry.publish(True)
     else:
@@ -133,6 +136,8 @@ def metaWeblog_editPost(postid, struct, publish):
 
     if struct.has_key('wp_slug'):
         entry.slug=struct['wp_slug']
+    if struct.has_key('mt_excerpt'):
+        entry.excerpt=struct['mt_excerpt']
 
 
     entry.title = struct['title']
@@ -318,7 +323,7 @@ class View(BaseRequestHandler):
     @requires_admin
     def get(self):
     	self.write('<html><body><h1>Logger</h1>')
-    	for log in Logger.all().order('-date'):
+    	for log in Logger.all().order('-date').fetch(5,0):
     		self.write("<p>date: %s</p>" % log.date)
     		self.write("<h1>Request</h1>")
     		self.write('<pre>%s</pre>' % cgi.escape(log.request))

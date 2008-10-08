@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import cgi, os,sys
 import wsgiref.handlers
 from google.appengine.ext.webapp import template, \
@@ -165,6 +167,7 @@ class Error404(BaseRequestHandler):
 class Post_comment(BaseRequestHandler):
     #@printinfo
     def post(self,slug=None):
+        useajax=self.param('useajax')=='1'
         if self.is_admin:
             name=self.blog.author
             email=self.login_user.email()
@@ -174,23 +177,41 @@ class Post_comment(BaseRequestHandler):
             email=self.param('email')
             url=self.param('url')
 
+
+
         if not self.is_login:
             checknum=self.param('checknum')
-            checkret=self.param('checkret')
-            try:
-                import app.gbtools as gb
-                if eval(checknum)<>int(gb.stringQ2B( checkret)):
-                    self.error(-102,'Your check code is invalid .')
+            if checknum:
+                checkret=self.param('checkret')
+                try:
+                    import app.gbtools as gb
+                    if eval(checknum)<>int(gb.stringQ2B( checkret)):
+                        if useajax:
+                            self.write(simplejson.dumps((False,-102,'Your check code is invalid ..')))
+                        else:
+                            self.error(-102,'Your check code is invalid .')
+                        return
+                except:
+                    if useajax:
+                        self.write(simplejson.dumps((False,-102,'Your check code is invalid .')))
+                    else:
+                        self.error(-102,'Your check code is invalid .')
                     return
-            except:
-                self.error(-102,'Your check code is invalid .')
-                return
 
 
         key=self.param('key')
         content=self.param('comment')
+##        if useajax:
+##            name=urldecode(name)
+##            email=urldecode(email)
+##            url=urldecode(url)
+##            key=urldecode(key)
+##            content=urldecode(content)
         if not (name and email and content):
-            self.error(-101,'Please input name, email and comment .')
+            if useajax:
+                        self.write(simplejson.dumps((False,-101,'Please input name, email and comment .')))
+            else:
+                self.error(-101,'Please input name, email and comment .')
         else:
             comment=Comment(author=name,
                             content=content,
@@ -203,18 +224,18 @@ class Post_comment(BaseRequestHandler):
                    comment.weburl='http://'+url
 
             info_str=base64.b64encode('#@#'.join([name.encode('utf8'),email.encode('utf8'),url.encode('utf8')]))
-
-            self.response.headers.add_header( 'Set-Cookie',
-            'commentuser=%s;expires=%s;domain=%s;path=/'
-                %( info_str,
-                   (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
-                   ''
-                   )
-            )
-
+            cookiestr='commentuser=%s;expires=%s;domain=%s;path=/'%( info_str,
+                       (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
+                       ''
+                       )
             comment.save()
             memcache.delete("/"+comment.entry.link)
-            self.redirect(self.referer)
+            if useajax:
+                comment_c=self.get_render('comment',{'comment':comment})
+                self.write(simplejson.dumps((True,cookiestr,comment_c.decode('utf8'))))
+            else:
+                self.response.headers.add_header( 'Set-Cookie',cookiestr)
+                self.redirect(self.referer)
 
 class ChangeTheme(BaseRequestHandler):
     @requires_admin

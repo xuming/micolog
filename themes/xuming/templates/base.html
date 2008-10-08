@@ -7,11 +7,12 @@
 <link rel="alternate" type="application/atom+xml" title="{{ blog.title }}" href="{{ blog.feedurl }}" />
 <link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
 <link rel="icon" type="image/ico" href="/favicon.ico">
-  {% block head_block %}{% endblock %}
-<script type="text/javascript" src="/themes/{{ blog.theme_name }}/jquery-1.2.6.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script src="http://www.google.com/jsapi"></script>
 <link rel="pingback" href="/pingback" />
 <script>
+    google.load("jquery", "1.2.6");
+    google.setOnLoadCallback(function() {
+
 
        $.getJSON("{{self.blog.baseurl}}/do/info_login", function(ret){
               if( ret.islogin)
@@ -24,8 +25,11 @@
               else
               {$('#langpref').html('<a href="/admin"> 登录</a>');}
        });
-</script>
 
+     });
+</script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+{% block head_block %}{% endblock %}
 </head>
 <body>
 <div id="gc-container">
