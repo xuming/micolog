@@ -107,8 +107,10 @@ class Blog(db.Model):
     comment_notify_mail=db.BooleanProperty(default=True)
     domain=db.StringProperty()
     show_excerpt=db.BooleanProperty(default=True)
+    version=0.35
 
     theme=None
+
     #postcount=db.IntegerProperty(default=0)
     #pagecount=db.IntegerProperty(default=0)
 
@@ -122,6 +124,9 @@ class Blog(db.Model):
     def get_theme(self):
         self.theme= Theme(self.theme_name);
         return self.theme
+
+    def recentposts(self):
+        return Entry.all().filter('entrytype =','post').order('-date').fetch(5)
 
 
 class Category(db.Model):
@@ -149,6 +154,32 @@ class Tag(db.Model):
     def posts(self):
         return Entry.all('entrytype =','post').filter('tags =',self)
 
+    @classmethod
+    def add(cls,value):
+        if value:
+            tag= Tag.get_by_key_name(value)
+            if not tag:
+                tag=Tag(key_name=value)
+                tag.tag=value
+
+            tag.tagcount+=1
+            tag.put()
+            return tag
+        else:
+            return None
+
+    @classmethod
+    def remove(cls,value):
+        if value:
+            tag= Tag.get_by_key_name(value)
+            if tag:
+                if tag.tagcount>1:
+                    tag.tagcount-=1
+                else:
+                    tag.delete()
+
+
+
 class Link(db.Model):
     href = db.StringProperty(multiline=False,default='')
     linktype = db.StringProperty(multiline=False,default='blogroll')
@@ -161,7 +192,7 @@ class Entry(BaseModel):
     content = db.TextProperty(default='')
     title = db.StringProperty(multiline=False,default='')
     date = db.DateTimeProperty(auto_now_add=True)
-    tags = db.StringListProperty()
+    tags = db.StringListProperty()#old version used
     categorie_keys=db.ListProperty(db.Key)
     slug = db.StringProperty(multiline=False,default='')
     link= db.StringProperty(multiline=False,default='')
@@ -177,6 +208,7 @@ class Entry(BaseModel):
     post_id= db.IntegerProperty()
     excerpt=db.StringProperty(multiline=True)
     postname=''
+    _relatepost=None
 
     def get_content_excerpt(self,more='..more'):
         if g_blog.show_excerpt:
@@ -223,6 +255,30 @@ class Entry(BaseModel):
             return db.get(self.categorie_keys)
         except:
             return []
+
+    def settags(self,values):
+        if not values:return
+        if type(values)==type([]):
+            tags=values
+        else:
+            tags=values.split(',')
+        logging.info('tags:   ok')
+
+
+
+        if not self.tags:
+            removelist=[]
+            addlist=tags
+        else:
+            #search different  tags
+            removelist=[n for n in self.tags if n not in tags]
+            addlist=[n for n in tags if n not in self.tags]
+        for v in removelist:
+            Tag.remove(v)
+        for v in addlist:
+            Tag.add(v)
+        self.tags=tags;
+
 
 ##    def get_categories(self):
 ##        return ','.join([cate for cate in self.categories])
@@ -322,6 +378,26 @@ class Entry(BaseModel):
         memcache.delete('/')
         memcache.delete('/'+self.link)
 
+    @property
+    def next(self):
+        logging.info('test______________')
+        return Entry.all().filter('entrytype =','post').order('post_id').filter('post_id >',self.post_id).fetch(1)
+
+
+    @property
+    def prev(self):
+        return Entry.all().filter('entrytype =','post').order('-post_id').filter('post_id <',self.post_id).fetch(1)
+
+    @property
+    def relateposts(self):
+        if  self._relatepost:
+            return self._relatepost
+        else:
+            if self.tags:
+                self._relatepost= Entry.gql("WHERE tags IN :1 and post_id!=:2 order by post_id desc ",self.tags,self.post_id).fetch(5)
+            else:
+                self._relatepost= []
+            return self._relatepost
 
 class User(db.Model):
 	user = db.UserProperty(required = True)
@@ -373,6 +449,7 @@ class Comment(db.Model):
         self.put()
         self.entry.commentcount+=1
         self.entry.put()
+        memcache.delete("/"+self.entry.link)
         sbody='''New comment on your post "%s"
 Author : %s
 E-mail : %s

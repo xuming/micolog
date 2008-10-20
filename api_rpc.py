@@ -90,9 +90,11 @@ def metaWeblog_newPost(blogid, struct, publish):
      )
 
     if struct.has_key('mt_text_more'):
-        entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
+        content=struct['mt_text_more']
+        if content:
+            entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
     if struct.has_key('mt_keywords'):
-        entry.tags=struct['mt_keywords'].split(',')
+        entry.settags(struct['mt_keywords'])
 
     if struct.has_key('wp_slug'):
         entry.slug=struct['wp_slug']
@@ -132,7 +134,7 @@ def metaWeblog_editPost(postid, struct, publish):
 
 
     if struct.has_key('mt_keywords'):
-        entry.tags=struct['mt_keywords'].split(',')
+       entry.settags(struct['mt_keywords'])
 
     if struct.has_key('wp_slug'):
         entry.slug=struct['wp_slug']
@@ -143,7 +145,9 @@ def metaWeblog_editPost(postid, struct, publish):
     entry.title = struct['title']
     entry.content = struct['description']
     if struct.has_key('mt_text_more'):
-        entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
+        content=struct['mt_text_more']
+        if content:
+            entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
     entry.categorie_keys=newcates
     if publish:
         entry.publish(True)

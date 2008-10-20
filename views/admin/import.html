@@ -52,6 +52,15 @@ $(document).ready(function() {
 
 	 		});
 	 }
+	 function update_tags()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh tags now...</h3>' });
+	 	$.getJSON("{{self.blog.baseurl}}/admin/do/update_tags", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
 
 {%endif%}
 </script>
@@ -66,8 +75,10 @@ $(document).ready(function() {
 
 	{%else%}
     <div class="wrap">
-            <h2>Import from wordpress</h2>
-
+            <h2>Export/Import for wordpress</h2>
+            <h3>Export</h3>
+            <p><a href="/admin/export">Export as  WordPress eXtended RSS file</a></p>
+<h3>Import</h3>
 <p>
 	<form action="" method='post' enctype="multipart/form-data">
 	<table class="form-table">
@@ -88,6 +99,7 @@ $(document).ready(function() {
     <p>
 	<input type="submit" value=" 　Import　 "/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
     </p>
+
 </form>
 </p>
     <div class="wrap">
@@ -96,6 +108,12 @@ $(document).ready(function() {
 
 <div style="">
 <div class="grid">
+<input type='button' value='Update tags' id='update_tags' onclick='update_tags()'/>It will refresh all tags for each entry.
+
+</div>
+
+<div class="grid">
+
 <input type='button' value='Init datas' id='init_blog' onclick='init_blog()'/> It will delete  all posts, pages and comments.
 
 </div>

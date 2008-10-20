@@ -116,17 +116,18 @@ class SinglePost(BasePublicPage):
         entry=entries[0]
         comments=Comment.all().filter("entry =",entry)
 
-        commentuser=self.request.cookies.get('commentuser', '')
-        if commentuser:
-            commentuser=base64.b64decode(commentuser).split('#@#')
-        else:
-            commentuser=['','','']
+##        commentuser=self.request.cookies.get('comment_user', '')
+##        if commentuser:
+##            commentuser=commentuser.split('#@#')
+##        else:
+        commentuser=['','','']
 
 
         if entry.entrytype=='post':
             self.render('single',
                         {
                         'entry':entry,
+                        'relateposts':entry.relateposts,
                         'comments':comments,
                         'user_name':commentuser[0],
                         'user_email':commentuser[1],
@@ -138,6 +139,7 @@ class SinglePost(BasePublicPage):
         else:
             self.render('page',
                         {'entry':entry,
+                        'relateposts':entry.relateposts,
                         'comments':comments,
                         'user_name':commentuser[0],
                         'user_email':commentuser[1],
@@ -150,7 +152,7 @@ class SinglePost(BasePublicPage):
 class FeedHandler(BaseRequestHandler):
     @cache(time=600)
     def get(self,tags=None):
-        entries = Entry.all().filter('entrytype =','post').order('-date').fetch(10)
+        entries = Entry.all().filter('entrytype =','post').filter('published =',True).order('-date').fetch(10)
         if entries and entries[0]:
             last_updated = entries[0].date
             last_updated = last_updated.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -168,21 +170,31 @@ class Post_comment(BaseRequestHandler):
     #@printinfo
     def post(self,slug=None):
         useajax=self.param('useajax')=='1'
-        if self.is_admin:
-            name=self.blog.author
-            email=self.login_user.email()
-            url=self.blog.baseurl
-        else:
-            name=self.param('author')
-            email=self.param('email')
-            url=self.param('url')
+##        if self.is_admin:
+##            name=self.blog.author
+##            email=self.login_user.email()
+##            url=self.blog.baseurl
+##        else:
+        name=self.param('author')
+        email=self.param('email')
+        url=self.param('url')
 
-
+        key=self.param('key')
+        content=self.param('comment')
+        checknum=self.param('checknum')
+        checkret=self.param('checkret')
+##        if useajax:
+##            name=urldecode(name)
+##            email=urldecode(email)
+##            url=urldecode(url)
+##            key=urldecode(key)
+##            content=urldecode(content)
+##            checknum=urldecode(checknum)
+##            checkret=urldecode(checkret)
 
         if not self.is_login:
-            checknum=self.param('checknum')
-            if checknum:
-                checkret=self.param('checkret')
+            if not (self.request.cookies.get('comment_user', '')):
+
                 try:
                     import app.gbtools as gb
                     if eval(checknum)<>int(gb.stringQ2B( checkret)):
@@ -199,14 +211,7 @@ class Post_comment(BaseRequestHandler):
                     return
 
 
-        key=self.param('key')
-        content=self.param('comment')
-##        if useajax:
-##            name=urldecode(name)
-##            email=urldecode(email)
-##            url=urldecode(url)
-##            key=urldecode(key)
-##            content=urldecode(content)
+
 
         content=myfilter.do_filter(content)
         if not (name and email and content):
@@ -225,18 +230,26 @@ class Post_comment(BaseRequestHandler):
                except:
                    comment.weburl='http://'+url
 
-            info_str=base64.b64encode('#@#'.join([name.encode('utf8'),email.encode('utf8'),url.encode('utf8')]))
-            cookiestr='commentuser=%s;expires=%s;domain=%s;path=/'%( info_str,
+            #name=name.decode('utf8').encode('gb2312')
+
+
+            info_str='#@#'.join([urlencode(name),urlencode(email),urlencode(url)])
+
+            logging.info("info:"+info_str)
+             #info_str='#@#'.join([name,email,url.encode('utf8')])
+            cookiestr='comment_user=%s;expires=%s;domain=%s;path=/'%( info_str,
                        (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
                        ''
                        )
             comment.save()
             memcache.delete("/"+comment.entry.link)
+
+            self.response.headers.add_header( 'Set-Cookie', cookiestr)
             if useajax:
                 comment_c=self.get_render('comment',{'comment':comment})
-                self.write(simplejson.dumps((True,cookiestr,comment_c.decode('utf8'))))
+                self.write(simplejson.dumps((True,comment_c.decode('utf8'))))
             else:
-                self.response.headers.add_header( 'Set-Cookie',cookiestr)
+
                 self.redirect(self.referer)
 
 class ChangeTheme(BaseRequestHandler):
@@ -282,9 +295,9 @@ class do_action(BaseRequestHandler):
         entry=Entry.get(key)
         comments=Comment.all().filter("entry =",key)
 
-        commentuser=self.request.cookies.get('commentuser', '')
+        commentuser=self.request.cookies.get('comment_user', '')
         if commentuser:
-            commentuser=base64.b64decode(commentuser).split('#@#')
+            commentuser=commentuser.split('#@#')
         else:
             commentuser=['','','']
 

@@ -1,10 +1,9 @@
-﻿	<div class="g-c-gc-home" id="rightbar">
-
-
-
-<div style="border-color: rgb(51, 102, 204); margin: 1em 0pt 0pt; padding: 0pt 0.9em 0.9em; background-color: rgb(229, 236, 249);"><h2 style="padding-top: 0.5em;">订阅</h2>
-  <div style="padding:0.5em">
-  <div>
+<div class="g-c-gc-home" id="rightbar">
+<div>
+<div  class="rsstop" ><a href="{{ blog.feedurl }}"> 订阅 - 徐明的博客</a></div>
+<div class="rsspanel">
+  <div style="padding:0.2em">
+  <div style="display:none">
    <span class="fg-subscribe" style="padding-right:20px"><a href="http://feeds.feedburner.com/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feeds.feedburner.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedBurner</a> </span>
 <span class="fg-subscribe"  ><a href="http://feed.feedsky/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feed.feedsky.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedSky</a> </span>
   </div>
@@ -24,12 +23,23 @@
 
 <div style="padding:5px 0px">* 更多订阅本站方式请看 <a href="/rsshelp">订阅帮助</a></div>
 </div>
- <div style="margin: 15px;"></div>
+</div>
 
 
 <ul id="sidebar">
    <li>
+   <div class="line"></div>
+    <h2>最新文章</h2>
+        <ul>
+        {% for entry in blog.recentposts %}
+        <li><a href="/{{entry.link}}">{{entry.title}}</a></li>
+        {%endfor%}
+        </ul>
+        </li>
 
+<li>
+
+<div class="line"></div>
     <h2>最近评论</h2>
         <ul>
         {% for comment in recent_comments %}
@@ -37,7 +47,10 @@
         {%endfor%}
         </ul>
         </li>
+
+
 <li>
+  <div class="line"></div>
  <h2>分类杂谈</h2>
   <ul>
  	{%for cate in categories%}
@@ -47,14 +60,17 @@
 
 </li>
     <li>
+    <div class="line"></div>
     <h2>Twitter</h2>
     <div style="margin-top:10px;"><embed src="http://twitter.com/flash/twitter_badge.swf"  flashvars="color1=10079487&type=user&id=57073"  quality="high" width="210" height="210" name="twitter_badge" align="middle" allowScriptAccess="always" wmode="transparent" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /><br><a style="font-size: 10px; color: #99CCFF; text-decoration: none" href="http://twitter.com/chyni">follow chyni at http://twitter.com</a></div>
     </li>
 <li>
+<div class="line"></div>
 <h2>我读的书</h2>
 <script type="text/javascript" src="http://www.douban.com/service/badge/chyni/?show=dolist&amp;n=3&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book" ></script>
 </li>
 <li>
+<div class="line"></div>
 <h2>友情链接</h2>
 <ul>
 {%for link in blogroll%}

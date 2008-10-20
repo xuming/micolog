@@ -16,13 +16,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used 114 times in query history.
+# Used 612 times in query history.
 - kind: Comment
   properties:
   - name: date
     direction: desc
 
-# Used 1320 times in query history.
+# Used 1941 times in query history.
 - kind: Comment
   properties:
   - name: entry
@@ -35,7 +35,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used 96 times in query history.
+# Used 8 times in query history.
+- kind: Entry
+  properties:
+  - name: date
+    direction: desc
+
+# Used 427 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -46,11 +52,31 @@ indexes:
 # Used once in query history.
 - kind: Entry
   properties:
+  - name: entry_type
+  - name: date
+    direction: desc
+
+# Used 195 times in query history.
+- kind: Entry
+  properties:
   - name: entrytype
   - name: date
     direction: desc
 
-# Used 45 times in query history.
+# Used 90 times in query history.
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: post_id
+
+# Used 90 times in query history.
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: post_id
+    direction: desc
+
+# Used 134 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
@@ -58,7 +84,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
@@ -73,11 +99,24 @@ indexes:
   - name: date
     direction: desc
 
+# Used 40 times in query history.
+- kind: Entry
+  properties:
+  - name: post_id
+    direction: desc
+
 # Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: slug
   - name: date
+
+# Used 306 times in query history.
+- kind: Entry
+  properties:
+  - name: tags
+  - name: post_id
+    direction: desc
 
 # Unused in query history -- copied from input.
 - kind: Link

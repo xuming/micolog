@@ -11,11 +11,22 @@
 
   <div id="gc-home">
     <div class="g-section g-tpl-330-alt">
+<div class="g-unit">
+<div class="g-c-gc-home">
+<div class="post_nav">
+<div style="float:right;height:10px">
+{%for next in entry.next%}
+<a href="/{{next.link}}">{{next.title}}»</a>
+{%endfor%}
+</div>
+<div style="float:left">
+{%for prev in entry.prev%}
+<a href="/{{prev.link}}">«{{prev.title}}</a>
+{%endfor%}
+</div>
 
-
-      <div class="g-unit">
-        <div class="g-c-gc-home">
-
+</div>
+<div style="clear:both"></div>
 {% if entry %}
 			<div class="post" id="post-{{ entry.id }}">
 				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
@@ -24,8 +35,17 @@
 				<div class="entry">
 					{{ entry.content }}
 				</div>
+				{%if relateposts%}
+                <h4>相关阅读：</h4>
+                  <ul>
+                {%for post in relateposts%}
+                  <li><a href="/{{post.link}}">{{post.title}}</a></li>
+                {%endfor%}
+                </ul>
+                {%endif%}
 
-				<p class="postmetadata">{% if entry.tags%}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} {%if self.is_admin%}<a href="{{entry.edit_url}}">edit</a>{%endif%}</p>
+
+				<p class="postmetadata">{% if entry.tags%}关键字: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} </p>
 			</div>
 				{% include "comments.html" %}
                 <div id="comment_area">

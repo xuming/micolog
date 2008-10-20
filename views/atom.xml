@@ -14,7 +14,19 @@
       <link href="{{ blog.baseurl }}/{{entry.link}}"/>
       <id>{{ blog.baseurl }}/entry/{{entry.slug}}</id>
       <title><![CDATA[{{entry.title}}]]></title>
-      <content type="html"><![CDATA[{{entry.content}}]]></content>
+      <content type="html"><![CDATA[
+      {{entry.content}}
+      {%if entry.relateposts%}
+                <h4>相关阅读：</h4>
+                  <ul>
+                {%for post in entry.relateposts%}
+                  <li><a href="/{{post.link}}">{{post.title}}</a></li>
+                {%endfor%}
+                </ul>
+                {%endif%}
+                <p>本文网址:<a href="{{blog.baseurl}}/{{entry.link}}">{{blog.baseurl}}/{{entry.link}}</a></p>
+
+      ]]></content>
       <author>
           <name>{{entry.author}}</name>
       </author>

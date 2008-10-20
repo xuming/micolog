@@ -1,4 +1,4 @@
-import cgi, os,sys
+import cgi, os,sys,traceback
 import wsgiref.handlers
 from google.appengine.ext.webapp import template, \
     WSGIApplication
@@ -86,6 +86,20 @@ class admin_do_action(BaseRequestHandler):
 
         g_blog.entrycount=0
         self.write('"Init has succeed."')
+
+    def action_update_tags(self,slug=None):
+        for tag in Tag.all():
+            tag.delete()
+        for entry in Entry.all().filter('entrytype =','post'):
+            if entry.tags:
+                for t in entry.tags:
+                    try:
+                        logging.info('sss:'+t)
+                        Tag.add(t)
+                    except:
+                        traceback.print_exc()
+
+        self.write('"All tags for entry have been updated."')
 
 
 
@@ -463,7 +477,8 @@ class admin_entry(BaseRequestHandler):
             self.render2('views/admin/entry.html',vals)
         else:
             if action=='add':
-               entry= Entry(title=title,content=content,tags=tags.split(','))
+               entry= Entry(title=title,content=content)
+               entry.settags(tags)
                entry.entrytype=slug
                entry.slug=entry_slug
                entry.entry_parent=entry_parent
@@ -494,7 +509,7 @@ class admin_entry(BaseRequestHandler):
                     entry.entry_parent=entry_parent
                     entry.menu_order=menu_order
                     entry.excerpt=entry_excerpt
-                    entry.tags=tags.split(',')
+                    entry.settags(tags)
                     newcates=[]
                     if cats:
 
@@ -734,6 +749,16 @@ class admin_status(BaseRequestHandler):
     def get(self):
         self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
 
+class WpHandler(BaseRequestHandler):
+
+    @requires_admin
+    def get(self,tags=None):
+        entries = Entry.all().order('-date')
+        cates=Category.all()
+        tags=Tag.all()
+
+        self.response.headers['Content-Type'] = 'application/atom+xml'
+        self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
 def main():
     webapp.template.register_template_library('filter')
@@ -752,6 +777,7 @@ def main():
 
 
                      ('/admin/import',admin_import),
+                     ('/admin/export',WpHandler),
                      ('/admin/import_next',admin_import_next),
                      ('/admin/do/(\w+)',admin_do_action),
 

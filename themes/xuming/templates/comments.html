@@ -34,28 +34,23 @@
 <div class="info" id="comment_info"></div>
 <form action="/post_comment" method="post" id="commentform">
 
-{%if self.is_admin%}
-{%else%}
-<p><input type="text" name="author" id="author" value="{{user_name}}" size="25" tabindex="1" />
+<div id="comment_area">
+<p><input type="text" name="author" id="author"  size="25" tabindex="1" />
 <label for="author">名字(name) <span style='color:red'>*</span></label></p>
 
-<p><input type="text" name="email" id="email" value="{{user_email}}" size="25" tabindex="2" />
+<p><input type="text" name="email" id="email"  size="25" tabindex="2" />
 <label for="email">邮件(email) <span style='color:red'>*</span></label></p>
 
-<p><input type="text" name="url" id="url" value="{{user_url}}" size="25" tabindex="3" />
+<p><input type="text" name="url" id="url"  size="25" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
 
-{% if not user_name or not user_email %}
-<p>麻烦，计算一下：<span style="color:#D50000">{{checknum1}}+{{checknum2}}=</span>
-<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
 
+<p id="checkarea">麻烦，计算一下：<span style="color:#D50000" id="disp_check">{{checknum1}}+{{checknum2}}</span>
+<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}" />
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
 </p>
-{%else%}
-<input type="hidden" name="checknum" id="checknum" value=""  />
-{%endif%}
-{%endif%}
 
+</div>
 
 <p><textarea name="comment" id="comment" style="width:96%"  rows="10" tabindex="4"></textarea></p>
 
@@ -67,6 +62,25 @@
 
  <script>
        loadjs=false;
+
+       commentuser=$.cookie('comment_user');
+       if (commentuser)
+       {
+         [user,email,url]=commentuser.split('#@#');
+         $('#author').val(user);
+         $('#email').val(email);
+         $('#url').val(url);
+         $('#checkarea').hide();
+       }
+       else
+       {
+       	num1=Math.round(Math.random()*10);
+       	num2=Math.round(Math.random()*10);
+       	$('#checkarea #checknum').val(num1+'+'+num2);
+       	$('#checkarea #disp_check').text(num1+'+'+num2+'=');
+       	$('#checkarea').show();
+       }
+
        function showinfo(msg)
        {
        	  alert(msg);
@@ -112,7 +126,7 @@
 		              		 	return false;
 		              		 }
            		       }
-           		        if (form.checknum.value)
+           		        if ($('#checkarea').css('display')!='none')
 								       {
 							             if(eval(form.checknum.value)!=form.checkret.value)
 							             {
@@ -137,8 +151,8 @@
               	success:function(data){
               		  if (data[0])
               		  {
-              		  	document.cookie=data[1];
-              		  	add_comment(data[2]);
+              		  	/*document.cookie=data[2];*/
+              		  	add_comment(data[1]);
               		  }
               		  else
               		  {  if (data[1]==-102)
