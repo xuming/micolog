@@ -12,7 +12,7 @@
      				{%if comment.weburl %}
 			<a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a>
 			{% else %}{{comment.author}}{%endif%}
-			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date.date}} at {{comment.date|date:"H:i"}}</a> </small>
+			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date|datetz:"Y-m-d"}} at {{comment.date|datetz:"H:i"}}</a> </small>
 
 			<br />
 
@@ -153,11 +153,14 @@
               		  {
               		  	/*document.cookie=data[2];*/
               		  	add_comment(data[1]);
+              		  	alert('留言提交成功！')
+              		  	$('#comment').val('');
               		  }
               		  else
               		  {  if (data[1]==-102)
               		  	 showinfo('计算错误，回幼儿园进修一下再来过。');
               		  	 $('#checkret').focus();
+
               		  }
               		}
               });

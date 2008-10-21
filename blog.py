@@ -214,6 +214,9 @@ class Post_comment(BaseRequestHandler):
 
 
         content=myfilter.do_filter(content)
+        name=cgi.escape(name)[:20]
+        url=cgi.escape(url)[:100]
+
         if not (name and email and content):
             if useajax:
                         self.write(simplejson.dumps((False,-101,'Please input name, email and comment .')))

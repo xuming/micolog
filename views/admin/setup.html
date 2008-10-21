@@ -48,6 +48,11 @@
                 <td><input type="text" size="45" value="{{ blog.feedurl }}"  id="feedurl" name="feedurl" />
                </td>
                 </tr>
+                 <tr valign="top">
+                <th scope="row">Time delta:(Hours)</th>
+                <td><input type="text" size="45" value="{{ blog.timedelta }}"  id="timedelta" name="timedelta" />
+               </td>
+                </tr>
 
 
             <tr valign="top">
@@ -102,7 +107,7 @@
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name,domain" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
 <input type="hidden" value="posts_per_page" name="int_options"/>
-
+<input type="hidden" value="timedelta" name="float_options"/>
 
 </p>
 

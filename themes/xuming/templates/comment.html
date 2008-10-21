@@ -4,7 +4,7 @@
      				{%if comment.weburl %}
 			<a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a>
 			{% else %}{{comment.author}}{%endif%}
-			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date.date}} at {{comment.date|date:"H:i"}}</a> </small>
+			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date.date|datetz:"Y-m-d"}} at {{comment.date|datetz:"H:i"}}</a> </small>
 
 			<br />
 

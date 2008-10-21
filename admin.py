@@ -412,6 +412,14 @@ class admin_setup(BaseRequestHandler):
                 setattr(g_blog,name,value)
             except:
                 pass
+        float_options= self.param('float_options').split(',')
+        for name in float_options:
+            try:
+                value=float( self.param(name))
+                setattr(g_blog,name,value)
+            except:
+                pass
+
 
         if old_theme !=g_blog.theme_name:
             g_blog.get_theme()

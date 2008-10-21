@@ -1,1 +1,1 @@
-dev_appserver.py -c ..\mlog
+dev_appserver.py -c ..\micolog

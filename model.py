@@ -107,7 +107,10 @@ class Blog(db.Model):
     comment_notify_mail=db.BooleanProperty(default=True)
     domain=db.StringProperty()
     show_excerpt=db.BooleanProperty(default=True)
-    version=0.35
+    version=0.32
+    timedelta=db.FloatProperty(default=8.0)# hours
+
+
 
     theme=None
 

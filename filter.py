@@ -1,8 +1,15 @@
 import logging
 from django import template
 from model import *
+import  django.template.defaultfilters as defaultfilters
 import urllib
 register = template.Library()
+from datetime import *
+
+@register.filter
+def datetz(date,format):  #datetime with timedelta
+    t=timedelta(seconds=3600*g_blog.timedelta)
+    return defaultfilters.date(date+t,format)
 
 
 @register.filter

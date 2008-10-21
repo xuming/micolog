@@ -30,7 +30,7 @@
 {% if entry %}
 			<div class="post" id="post-{{ entry.id }}">
 				<h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
-				<div class="greytext">{{ entry.date|date:"F jS, Y " }} </div>
+				<div class="greytext">{{ entry.date|datetz:"F jS, Y " }} </div>
 
 				<div class="entry">
 					{{ entry.content }}
