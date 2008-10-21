@@ -766,7 +766,7 @@ class WpHandler(BaseRequestHandler):
         cates=Category.all()
         tags=Tag.all()
 
-        self.response.headers['Content-Type'] = 'application/atom+xml'
+        self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
         self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
 def main():
@@ -786,7 +786,7 @@ def main():
 
 
                      ('/admin/import',admin_import),
-                     ('/admin/export',WpHandler),
+                     ('/admin/export/micolog.xml',WpHandler),
                      ('/admin/import_next',admin_import_next),
                      ('/admin/do/(\w+)',admin_do_action),
 
