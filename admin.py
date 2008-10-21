@@ -142,8 +142,9 @@ class admin_import_next(BaseRequestHandler):
                     c=Category.get_by_key_name('cat_'+nicename)
                     if c:
                         entry.categorie_keys.append(c.key())
-                for tag in next['tags']:
-                    entry.tags.append(tag)
+                entry.settags(','.join(next['tags']))
+##                for tag in next['tags']:
+##                    entry.tags.append(tag)
 
 
                 if next['published']:
