@@ -16,13 +16,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used 612 times in query history.
+# Used 37 times in query history.
 - kind: Comment
   properties:
   - name: date
     direction: desc
 
-# Used 1941 times in query history.
+# Used 44 times in query history.
 - kind: Comment
   properties:
   - name: entry
@@ -35,13 +35,13 @@ indexes:
   - name: date
     direction: desc
 
-# Used 8 times in query history.
+# Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: date
     direction: desc
 
-# Used 427 times in query history.
+# Used 28 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -49,34 +49,34 @@ indexes:
   - name: published
   - name: menu_order
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: entry_type
   - name: date
     direction: desc
 
-# Used 195 times in query history.
+# Used 2 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
   - name: date
     direction: desc
 
-# Used 90 times in query history.
+# Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: entrytype
   - name: post_id
 
-# Used 90 times in query history.
+# Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: entrytype
   - name: post_id
     direction: desc
 
-# Used 134 times in query history.
+# Used 6 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
@@ -84,7 +84,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used 2 times in query history.
+# Used 3 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
@@ -99,7 +99,7 @@ indexes:
   - name: date
     direction: desc
 
-# Used 40 times in query history.
+# Unused in query history -- copied from input.
 - kind: Entry
   properties:
   - name: post_id
@@ -111,7 +111,7 @@ indexes:
   - name: slug
   - name: date
 
-# Used 306 times in query history.
+# Used 26 times in query history.
 - kind: Entry
   properties:
   - name: tags

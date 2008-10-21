@@ -33,8 +33,7 @@
 
 <h3 id="respond">Leave a Reply</h3>
 <form action="/post_comment" method="post" id="commentform">
-{%if self.is_admin%}
-{%else%}
+
 <p><input type="text" name="author" id="author" value="{{user_name}}" size="22" tabindex="1" />
 <label for="author"><small>Name (required)</small></label></p>
 
@@ -44,15 +43,10 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
 <label for="url"><small>Website</small></label></p>
 
-{% if not user_name or not user_email %}
-<p><span style="color:#D50000">{{checknum1}}+{{checknum2}}=</span>
-<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}"  />
-
+<p id="checkarea"><span style="color:#D50000" id="disp_check">{{checknum1}}+{{checknum2}}</span>
+<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}" />
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
-{%else%}
-<input type="hidden" name="checknum" id="checknum" value=""  />
-{%endif%}
-{%endif%}
+</p>
 
 
 <p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
@@ -61,7 +55,26 @@
 </p>
 <input type="hidden" name="key" value="{{entry.key}}" />
 </form>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script>
+    commentuser=$.cookie('comment_user');
+       if (commentuser)
+       {
+         [user,email,url]=commentuser.split('#@#');
+         $('#author').val(user);
+         $('#email').val(email);
+         $('#url').val(url);
+         $('#checkarea').hide();
+       }
+       else
+       {
+       	num1=Math.round(Math.random()*10);
+       	num2=Math.round(Math.random()*10);
+       	$('#checkarea #checknum').val(num1+'+'+num2);
+       	$('#checkarea #disp_check').text(num1+'+'+num2+'=');
+       	$('#checkarea').show();
+       }
+
   $('#commentform').submit(function(){
          var form = this;
            if (form.author)
@@ -80,17 +93,17 @@
           		 	return false;
           		 }
 	       }
-	       if (form.checknum.value)
-	       {
-             if(eval(form.checknum.value)!=form.checkret.value)
-             {
-               alert('check code error');
-               form.checkret.value='';
-               form.checkret.focus();
-               return false;
-             }
+	        if ($('#checkarea').css('display')!='none')
+								       {
+							             if(eval(form.checknum.value)!=form.checkret.value)
+							             {
+							               alert('check code error');
+							               form.checkret.value='';
+							               form.checkret.focus();
+							               return false;
+							             }
 
-           }
+							           }
 
       		 if (!form.comment.value)
       		 {
