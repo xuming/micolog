@@ -184,7 +184,7 @@ padding:1em;
 .gravatar { float:left; border:3px double #dadada; width:55px; margin-right:5px;border:none;}
 ol.commentlist li.alt { background:#fafafa; color:#333; padding:5px; margin-bottom:5px;   }
 ol.commentlist li { color:#333; padding:5px; margin-bottom:5px;  }
-
+ol.commentlist .comments{margin-left:60px}
 #comment_info {padding:5px;margin:3px 0px;display:none;background:#fbc7c7;color:gray;width:95%}
 .line{
 border-top:thin dotted #BBBBBB;

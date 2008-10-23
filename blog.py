@@ -212,7 +212,7 @@ class Post_comment(BaseRequestHandler):
 
 
 
-
+        content=content.replace('\n','<br>')
         content=myfilter.do_filter(content)
         name=cgi.escape(name)[:20]
         url=cgi.escape(url)[:100]
