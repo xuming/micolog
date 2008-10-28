@@ -4,13 +4,13 @@
 <script type="text/javascript">
 {%if postback%}
 $(document).ready(function() {
-  $.getJSON("{{self.blog.baseurl}}/admin/import_next", next_result);
+  $.getJSON("/admin/import_next", next_result);
   function next_result(json)
   {
   	$('#list').prepend('<li>'+json[0]+':'+json[1]+'</li>')
   	if (json[2])
   	{
-  		 $.getJSON("{{self.blog.baseurl}}/admin/import_next", next_result);
+  		 $.getJSON("/admin/import_next", next_result);
   	}
 
   }
@@ -26,7 +26,7 @@ $(document).ready(function() {
 	 function init_blog()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Init data now...</h3>' });
-	 	$.getJSON("{{self.blog.baseurl}}/admin/do/init_blog", function(json){
+	 	$.getJSON("/admin/do/init_blog", function(json){
 	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		  $('.blockUI').css('cursor','');
 
@@ -36,7 +36,7 @@ $(document).ready(function() {
 	 function update_link()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Rebuild URLs now...</h3>' });
-	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
+	 	$.getJSON("/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
 	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		  $('.blockUI').css('cursor','');
 
@@ -46,7 +46,7 @@ $(document).ready(function() {
 	 function update_comments()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh comments now...</h3>' });
-	 	$.getJSON("{{self.blog.baseurl}}/admin/do/updatecomments", function(json){
+	 	$.getJSON("/admin/do/updatecomments", function(json){
 	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		   $('.blockUI').css('cursor','');
 
@@ -55,7 +55,7 @@ $(document).ready(function() {
 	 function update_tags()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh tags now...</h3>' });
-	 	$.getJSON("{{self.blog.baseurl}}/admin/do/update_tags", function(json){
+	 	$.getJSON("/admin/do/update_tags", function(json){
 	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		   $('.blockUI').css('cursor','');
 

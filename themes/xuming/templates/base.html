@@ -14,7 +14,7 @@
     google.setOnLoadCallback(function() {
 
 
-       $.getJSON("{{self.blog.baseurl}}/do/info_login", function(ret){
+       $.getJSON("/do/info_login", function(ret){
               if( ret.islogin)
               {
                 html='<span style="color:gray;padding:0px 6px">你好，'+ret.name+'</span> <a href="{{self.logouturl}}"> 注销</a>';

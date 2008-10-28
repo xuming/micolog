@@ -10,7 +10,7 @@
 	 function clear_cache()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Clearing cache data now...</h3>' });
-	 	$.getJSON("{{self.blog.baseurl}}/admin/do/cacheclear", function(json){
+	 	$.getJSON("/admin/do/cacheclear", function(json){
 	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 	 		  $('.blockUI').css('cursor','');
 
