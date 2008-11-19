@@ -268,6 +268,7 @@ def wp_deletePage(blogid,pageid):
     post=Entry.get_by_id(int(pageid))
     post.delete()
     return True
+
 @checkauth()
 def wp_getAuthors(blogid):
     return [{'user_id':1,'user_login':'','display_name':'admin'}]
@@ -276,7 +277,8 @@ def wp_getAuthors(blogid):
 def wp_getPageList(blogid):
     return []
 
-
+def mt_setPostCategories(*arg):
+    return True
 #-------------------------------------------------------------------------------
 
 class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
@@ -304,6 +306,8 @@ dispatcher = PlogXMLRPCDispatcher({
 	'wp.getPageList':wp_getPageList,
 	'wp.deletePage':wp_deletePage,
     'wp.getAuthors':wp_getAuthors,
+
+    'mt.setPostCategories':mt_setPostCategories
 
 
 
