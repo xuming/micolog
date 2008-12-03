@@ -13,6 +13,7 @@ wpEditorInit = function() {
 switchEditors = {
 
     saveCallback : function(el, content, body) {
+        return;
 
         document.getElementById(el).style.color = '#fff';
         if ( tinyMCE.activeEditor.isHidden() )
@@ -21,6 +22,7 @@ switchEditors = {
             content = this.pre_wpautop(content);
 
         return content;
+
     },
 
     pre_wpautop : function(content) {
@@ -78,6 +80,7 @@ switchEditors = {
         var ec = document.getElementById('editorcontainer');
 
         if ( ! ed || ed.isHidden() ) {
+
             ta.style.color = '#fff';
 
             this.edToggle(P, H);
@@ -93,12 +96,16 @@ switchEditors = {
             else tinyMCE.execCommand("mceAddControl", false, id);
 
             this.wpSetDefaultEditor('tinymce');
+
         } else {
+
             this.edToggle(H, P);
             ta.style.height = ed.getContentAreaContainer().offsetHeight + 6 + 'px';
 
+
             ed.hide();
             qt.style.display = 'block';
+
 
             if ( tinymce.isIE6 ) {
 				ta.style.width = '98%';
@@ -110,6 +117,7 @@ switchEditors = {
             }
 
 			ta.style.color = '';
+			 ta.value = this.pre_wpautop(ta.value);
             this.wpSetDefaultEditor('html');
         }
     },
@@ -120,6 +128,8 @@ switchEditors = {
 
         B.onclick = A.onclick;
         A.onclick = null;
+
+
     },
 
     wpSetDefaultEditor : function(editor) {
