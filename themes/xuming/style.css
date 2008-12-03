@@ -166,7 +166,7 @@ border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;background-color:
 
 #cse-search-results iframe{width:100%}
 
-.entry{ line-height:150%;margin:10px 0px}
+.entry{ line-height:150%;margin:10px 0px;font-size:105%}
 .entry p{line-height:150%;}
 
 .rcomment span{color:#999999}

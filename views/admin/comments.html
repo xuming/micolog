@@ -1,25 +1,26 @@
+{% load i18n %}
 {% extends "base.html" %}
  {% block content %}
  <form action="/admin/comments" method="post" >
    <div class="wrap">
 
-      <h2>Manage Comments</h2>
-      <div class="" style="padding:10px 5px 5px 5px"><B>All Comments</b><span style='color:gray'> ({{pager.count}}) </span></div>
+      <h2>{% trans "Manage Comments"%}</h2>
+      <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Comments"%}</b><span style='color:gray'> ({{pager.count}}) </span></div>
 
       <div class="clear"></div>
 
 	   <div class="tablenav">
 		  <div class="alignleft">
-		  <input type="submit" class="button-secondary delete" name="deleteit" value="Delete"/>
+		  <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}"/>
 		  </div>
 		  <div class="alignright">
 	        {% if pager.prev %}
-			<div class="alignleft"><a href="/admin/comments?page={{ pager.prev}}">&laquo; 上一页</a></div>
+			<div class="alignleft"><a href="/admin/comments?page={{ pager.prev}}">{% trans "&laquo; prev"%}</a></div>
 			{% endif %}
 
 			{% if pager.next %}
-			<div class="alignright"><a href="/admin/comments?page={{ pager.next }}">下一页 &raquo;</a></div>
-			{% endif %}	 <div class="alignright" style="padding:0px 10px;">第{{pager.page_index}}页</div>
+			<div class="alignright"><a href="/admin/comments?page={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
+			{% endif %}	 <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
          </div>
 
 		      <br class="clear"/>
@@ -30,7 +31,7 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
-		<th>Date</th>	<th style="width: 15%;">Author</th><th>Content</th><th>Email</th>	<th>Entry</th>	</tr>
+		<th>{% trans "Date"%}</th>	<th style="width: 15%;">{% trans "Author"%}</th><th>{%trans "Content"%}</th><th>{% trans "Email" %}</th>	<th>{% trans "Entry"%}</th>	</tr>
 			</thead>
 			<tbody>
             {%for comment in comments%}

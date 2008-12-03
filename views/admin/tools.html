@@ -1,0 +1,111 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+<script type="text/javascript">
+
+
+	$(document).ajaxError(function(request, settings){
+       $('#bmsg').html('Error<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	   $('.blockUI').css('cursor','');
+   });
+
+	 function init_blog()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Init data now...</h3>' });
+	 	$.getJSON("/admin/do/init_blog", function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+
+	 function update_link()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Rebuild URLs now...</h3>' });
+	 	$.getJSON("/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
+
+	 		});
+	 }
+	 function update_comments()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh comments now...</h3>' });
+	 	$.getJSON("/admin/do/updatecomments", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+	 function update_tags()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh tags now...</h3>' });
+	 	$.getJSON("/admin/do/update_tags", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+
+</script>
+
+{% endblock %}
+
+
+{% block nav2 %}
+<div id="dnav2">
+ <a href="/admin/setup"  >{%trans "Basic" %}</a>
+ <a href="/admin/import" >{%trans "Import/Export" %}</a>
+ <a href="/admin/sitemap">{%trans "Sitemap" %}</a>
+ <a href="/admin/tools" class="current">{%trans "Tools" %}</a>
+</div>
+{% endblock %}
+
+ {% block content %}
+
+
+    <div class="wrap">
+            <h2>{%trans "Tools"%}</h2>
+            </div>
+<p style="color:red">{%trans "Careless use of it will be dangerous!"%}</p>
+<div style="">
+<div class="grid">
+<input type='button'  class="runbtn" value='{% trans "Run"%}' id='update_tags' onclick='update_tags()'/>
+<b>{% trans "Update tags"%}</b>
+<p>{%trans "It will refresh all tags for each entry."%}</p>
+</div>
+
+<div class="grid">
+<input type='button'  class="runbtn" value='{% trans "Run"%}' id='init_blog' onclick='init_blog()'/>
+
+<b>{% trans "Init datas"%}</b>
+<p>{%trans "It will delete  all posts, pages and comments."%}</p>
+
+</div>
+<div class="grid">
+<input type='button' class="runbtn" value='{% trans "Run"%}' id='update_comments' onclick='update_comments()'/>
+
+<b>{% trans "Update comments"%}</b>
+<p>{%trans "It will refresh the number of comments for each entry."%}</p>
+
+</div>
+<div class="grid">
+<input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_link' onclick='update_link()'/>
+
+<b>{% trans "Rebuild URL"%}</b>
+<p>{%trans "The URL of all entries (post or page) will be rebuild."%}</p>
+<p>
+{%trans "Permalink"%}:
+<input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
+<br>{%trans "Available parameters:"%} %(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br>
+</p>
+
+
+</div>
+
+</div>
+</div>
+
+{% endblock %}

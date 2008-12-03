@@ -1,62 +1,73 @@
-﻿{% extends "base.html" %}
+﻿{% load i18n %}
+{% extends "base.html" %}
 {% block header %}
 <script type="text/javascript">
 
 </script>
 {% endblock %}
+
+{% block nav2 %}
+<div id="dnav2">
+ <a href="/admin/setup" class="current" >{%trans "Basic" %}</a>
+ <a href="/admin/import">{%trans "Import/Export" %}</a>
+ <a href="/admin/sitemap">{%trans "Sitemap" %}</a>
+ <a href="/admin/tools">{%trans "Tools" %}</a>
+</div>
+{% endblock %}
+
 {% block content %}
 
 	 <!-- Admin Full Width -->
     <div id="m_admin">
         <form method="post">
             <div class="wrap">
-            <h2>Setup and Configuraiton for this Blog</h2>
+            <h2>{%trans "Setup and Configuraiton for this Blog"%}</h2>
 
             <table class="form-table">
                  <tr valign="top">
-                <th scope="row">Blog Title:</th>
+                <th scope="row">{% trans "Blog Title:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.title }}"  id="title" name="title"/>
                </td>
                 </tr>
 
                 <tr valign="top">
-                <th scope="row">Sub Title:</th>
+                <th scope="row">{% trans "Sub Title:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.subtitle }}" style="width: 95%;" id="subtitle" name="subtitle" />
                 <br/>
-                In a few words, explain what this blog is about.</td>
+                {% trans "In a few words, explain what this blog is about."%}</td>
                 </tr>
  <tr valign="top">
-                <th scope="row">Permalink Structure:</th>
+                <th scope="row">{% trans "Permalink Structure:"%}</th>
                 <td><input type="text" size="45" style="width: 95%;" value="{{ blog.link_format }}"  id="link_format" name="link_format" />
-                 <br>Allowed variants：%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
+                 <br>{% trans "Allowed variants: " %}%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
                </td>
                 </tr>
                   <tr valign="top">
-                <th scope="row">Domain:</th>
+                <th scope="row">{% trans "Domain:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.domain }}"  id="domain" name="domain" />
                </td>
                 </tr>
                 </tr>
                   <tr valign="top">
-                <th scope="row">Micolog Address(URL):</th>
+                <th scope="row">{% trans "Micolog Address(URL):"%}</th>
                 <td><input type="text" size="45" value="{{ blog.baseurl }}"  id="baseurl" name="baseurl" />
                </td>
                 </tr>
 
                  <tr valign="top">
-                <th scope="row">RSS Feed URL:</th>
+                <th scope="row">{% trans "RSS Feed URL:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.feedurl }}"  id="feedurl" name="feedurl" />
                </td>
                 </tr>
                  <tr valign="top">
-                <th scope="row">Time delta:(Hours)</th>
+                <th scope="row">{% trans "Time delta:(Hours)"%}</th>
                 <td><input type="text" size="45" value="{{ blog.timedelta }}"  id="timedelta" name="timedelta" />
                </td>
                 </tr>
 
 
             <tr valign="top">
-                <th scope="row">Theme:</th>
+                <th scope="row">{% trans "Theme:"%}</th>
                 <td>
                     <select  id="theme_name" name="theme_name" >
                     {%for theme in themes%}
@@ -66,18 +77,18 @@
                     </select>
                </td>
                   <tr valign="top">
-                <th scope="row">Posts per page:</th>
+                <th scope="row">{% trans "Posts per page:"%}</th>
                 <td><input type="text" size="8" value="{{ blog.posts_per_page }}"  id="posts_per_page" name="posts_per_page" />
                </td>
 
                    <tr valign="top">
-                <th scope="row">Enable memcache:</th>
+                <th scope="row">{% trans "Enable memcache:"%}</th>
                 <td><input type="checkbox" size="45" {% if blog.enable_memcache %} checked="checked" {%endif%}  id="enable_memcache" name="enable_memcache" />
                </td>
                 </tr>
 
                    <tr valign="top">
-                <th scope="row">Enable comment notify by mail:</th>
+                <th scope="row">{% trans "Enable comment notify by mail:"%}</th>
                 <td><input type="checkbox" size="45" {% if blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
                </td>
                 </tr>
@@ -85,24 +96,24 @@
 
 
             </table>
-            <h3>Xmlrpc  setting</h3>
-            <p>Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). </p>
+            <h3>{% trans "Xmlrpc  setting"%}</h3>
+            <p>{% trans "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "%}</p>
             <table class="form-table">
                <tr valign="top">
-                <th scope="row">User name:</th>
+                <th scope="row">{% trans "User name:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.rpcuser }}"  id="rpcuser" name="rpcuser" />
                </td>
                 </tr>
 
                 <tr valign="top">
-                <th scope="row">Password:</th>
+                <th scope="row">{% trans "Password:"%}</th>
                 <td><input type="password" size="45" value="{{ blog.rpcpassowrd }}"  id="rpcpassowrd" name="rpcpassowrd" />
                </td>
                 </tr>
             </table>
 
 
-<p class="submit"><input type="submit" value="Save Changes" name="Submit"/>
+<p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name,domain" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>

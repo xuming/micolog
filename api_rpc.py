@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wsgiref.handlers
 import xmlrpclib
 import sys

@@ -1,17 +1,30 @@
 # -*- coding: utf-8 -*-
-
 import cgi, os,sys
 import wsgiref.handlers
+##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+##from django.utils.translation import  activate
+
+
+# Google App Engine imports.
+from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template, \
     WSGIApplication
 from google.appengine.api import users
-import app.webapp as webapp2
+##import app.webapp as webapp2
 from google.appengine.ext import db
+# Force Django to reload its settings.
+
+##from django.conf import settings
+##settings._target = None
 from base import *
+##activate(g_blog.language)
 from datetime import datetime ,timedelta
 import base64,random
 from django.utils import simplejson
 import filter  as myfilter
+
+##settings.configure(LANGUAGE_CODE = 'zh-cn')
+# Must set this env var before importing any part of Django
 
 def doRequestHandle(old_handler,new_handler,**args):
         new_handler.initialize(old_handler.request,old_handler.response)
@@ -52,8 +65,6 @@ class MainPage(BasePublicPage):
         show_prev =entries and  (not (page == 0))
         show_next =entries and  ( not (page == max_page))
 
-        logging.debug('this is ok')
-
 
         return self.render('index',{'entries':entries,
        	                'show_prev' : show_prev,
@@ -76,7 +87,7 @@ class entriesByCategory(BasePublicPage):
         slug=urllib.unquote(slug).decode('utf8')
         cats=Category.all().filter('slug =',slug).fetch(1)
         if cats:
-            entries=Entry.all().filter('categorie_keys =',cats[0].key())
+            entries=Entry.all().filter('categorie_keys =',cats[0].key()).order("-date")
             entries,links=Pager(query=entries).fetch(page_index)
             self.render('category',{'entries':entries,'category':cats[0],'pager':links})
         else:
@@ -95,7 +106,7 @@ class entriesByTag(BasePublicPage):
         import urllib
         slug=urldecode(slug)
 
-        entries=Entry.all().filter('tags =',slug)
+        entries=Entry.all().filter('tags =',slug).order("-date")
         entries,links=Pager(query=entries).fetch(page_index)
         self.render('tag',{'entries':entries,'tag':slug,'pager':links})
 
@@ -161,6 +172,45 @@ class FeedHandler(BaseRequestHandler):
         self.response.headers['Content-Type'] = 'application/atom+xml'
         self.render2('views/atom.xml',{'entries':entries,'last_updated':last_updated})
 
+class SitemapHandler(BaseRequestHandler):
+    @cache(time=36000)
+    def get(self,tags=None):
+        urls = []
+        def addurl(loc,lastmod=None,changefreq=None,priority=None):
+            url_info = {
+                'location':   loc,
+                'lastmod':    lastmod,
+                'changefreq': changefreq,
+                'priority':   priority
+            }
+            urls.append(url_info)
+
+        addurl(g_blog.baseurl,changefreq='daily',priority=0.9 )
+
+        entries = Entry.all().filter('published =',True).order('-date').fetch(g_blog.sitemap_entries)
+
+        for item in entries:
+            loc = "%s/%s" % (g_blog.baseurl, item.link)
+            addurl(loc,item.date,'never',0.6)
+
+        if g_blog.sitemap_include_category:
+            cats=Category.all()
+            for cat in cats:
+                loc="%s/category/%s"%(g_blog.baseurl,cat.slug)
+                addurl(loc,None,'weekly',0.5)
+
+        if g_blog.sitemap_include_tag:
+            tags=Tag.all()
+            for tag in tags:
+                loc="%s/tag/%s"%(g_blog.baseurl, urlencode(tag.tag))
+                addurl(loc,None,'weekly',0.5)
+
+
+##        self.response.headers['Content-Type'] = 'application/atom+xml'
+        self.render2('views/sitemap.xml',{'urlset':urls})
+
+
+
 class Error404(BaseRequestHandler):
     @cache(36000)
     def get(self,slug=None):
@@ -199,15 +249,15 @@ class Post_comment(BaseRequestHandler):
                     import app.gbtools as gb
                     if eval(checknum)<>int(gb.stringQ2B( checkret)):
                         if useajax:
-                            self.write(simplejson.dumps((False,-102,'Your check code is invalid ..')))
+                            self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
                         else:
-                            self.error(-102,'Your check code is invalid .')
+                            self.error(-102,_('Your check code is invalid .'))
                         return
                 except:
                     if useajax:
-                        self.write(simplejson.dumps((False,-102,'Your check code is invalid .')))
+                        self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
                     else:
-                        self.error(-102,'Your check code is invalid .')
+                        self.error(-102,_('Your check code is invalid .'))
                     return
 
 
@@ -219,9 +269,9 @@ class Post_comment(BaseRequestHandler):
 
         if not (name and email and content):
             if useajax:
-                        self.write(simplejson.dumps((False,-101,'Please input name, email and comment .')))
+                        self.write(simplejson.dumps((False,-101,_('Please input name, email and comment .'))))
             else:
-                self.error(-101,'Please input name, email and comment .')
+                self.error(-101,_('Please input name, email and comment .'))
         else:
             comment=Comment(author=name,
                             content=content,
@@ -266,14 +316,15 @@ class ChangeTheme(BaseRequestHandler):
 
 class do_action(BaseRequestHandler):
     def get(self,slug=None):
+
         try:
             func=getattr(self,'action_'+slug)
             if func and callable(func):
                 func()
             else:
                 self.error(404)
-        except:
-             self.error(404)
+        except BaseException,e:
+            self.error(404)
 
     def post(self,slug=None):
         try:
@@ -318,8 +369,12 @@ class do_action(BaseRequestHandler):
 
         self.write(simplejson.dumps(html.decode('utf8')))
 
+    def action_test(self):
+        self.write(settings.LANGUAGE_CODE)
+        self.write(_("this is a test"))
 
-class getMedia(webapp2.RequestHandler):
+
+class getMedia(webapp.RequestHandler):
     def get(self,slug):
         media=Media.get(slug)
         if media:
@@ -334,10 +389,12 @@ class getMedia(webapp2.RequestHandler):
 
 def main():
     webapp.template.register_template_library('filter')
-    application = webapp2.WSGIApplication2(
+    application = webapp.WSGIApplication(
                     [('/media/(.*)',getMedia),
                      ('/skin',ChangeTheme),
                      ('/feed', FeedHandler),
+                     ('/sitemap', SitemapHandler),
+
                      ('/post_comment',Post_comment),
                      ('/page/(?P<page>\d+)', MainPage),
                      ('/category/(.*)',entriesByCategory),

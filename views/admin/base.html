@@ -1,10 +1,12 @@
+{% load i18n %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
     <title>{% block title %} {{ blog.title }}{% endblock %}</title>
     <meta name="generator" content="Mlog" />
     <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
-     <script type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script1 type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script1>
 
     {% block header %}{% endblock %}
 </head>
@@ -12,7 +14,12 @@
 
 <!-- Dashboard Starts -->
 <div id="dashboard">
- <a title="Are you lost?" href="/admin/"> Micolog Dashboard</a>
+<div style="float:left"> <a title="Are you lost?" href="/admin/">{% trans  "Micolog Dashboard" %}</a></div>
+<div style="float:right;margin-right:8px"><a href="/admin/lang?language=zh-cn">Chinese</a>
+<a href="/admin/lang?language=en-us">English</a></div>
+<div class="clear"></div>
+
+
 </div>
 <!-- Dashboard Ends -->
 
@@ -29,17 +36,18 @@
 <!-- Nav Starts -->
 <div id="nav">
 <ul >
-    <li class='page_item page-item-2 {{current|check_current:"write"}}'><a href="/admin/post" title="Write post">Write</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"posts"}}'><a href="/admin/entries/post" title="Posts">Posts</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"pages"}}'><a href="/admin/entries/page" title="Pages">Pages</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"links"}}' ><a href="/admin/links" title="Blogroll">Links</a></li>
-     <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">Categories</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"comments"}}' ><a href="/admin/comments" title="Comments">Comments</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"write"}}'><a href="/admin/post" title="Write post">{% trans "Write" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"posts"}}'><a href="/admin/entries/post" title="Posts">{% trans "Posts" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"pages"}}'><a href="/admin/entries/page" title="Pages">{% trans "Pages" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"links"}}' ><a href="/admin/links" title="Blogroll">{% trans "Links" %}</a></li>
+     <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">{% trans "Categories" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"comments"}}' ><a href="/admin/comments" title="Comments">{% trans "Comments" %}</a></li>
 
-   <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="About">Configuration</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"import"}}'><a href="/admin/import" title="advance">Advance</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">Cache</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">help</a></li>
+   <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="About">{% trans "Configuration" %}</a></li>
+
+    <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">{% trans "Cache" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"authors"}}'><a href="/admin/authors" title="Authors">{% trans "Authors" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
     {% block topmenu %}
     {% endblock %}
     <div class="clear"></div>

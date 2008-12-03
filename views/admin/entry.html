@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block header %}
 <link rel="stylesheet" href="/tinymce/wordpress.css" type="text/css"/>
@@ -21,7 +22,8 @@
   {%endif%}
 {% endblock %}
 {% block nav2 %}
-<a href="/admin/post" {%ifequal entrytype 'post'%} class="current" {%endifequal%}>New Post</a>  <a href="/admin/page" {%ifequal entrytype 'page'%} class="current" {%endifequal%}>New Page</a>
+<div id="dnav2"><a href="/admin/post" {%ifequal entrytype 'post'%} class="current" {%endifequal%}>{%trans "New Post" %}</a>  <a href="/admin/page" {%ifequal entrytype 'page'%} class="current" {%endifequal%}>{%trans "New Page" %}</a>
+</div>
 {% endblock %}
 
  {% block content %}
@@ -45,7 +47,12 @@ src="/static/js/tiny_mce_config.js"></script>
 
    <div class="wrap">
 
-      <h2>Write {{entrytype}}</h2>
+      <h2>{%ifequal entrytype "post"%}
+      {%trans "Write Post"%}
+        {%else%}
+      {%trans "Write Page" %}
+        {%endifequal%}
+ </h2>
       <div id="poststuff">
 
 <div id="submitlink" class="submitbox">
@@ -53,7 +60,7 @@ src="/static/js/tiny_mce_config.js"></script>
 <div id="previewview">
 </div>
 {%ifequal entrytype "post"%}
-<h3>Category</h3>
+<h3>{%trans "Category" %}</h3>
 <div class="inside">
 
 <p style="height:120px;overflow-y:scroll">
@@ -67,16 +74,16 @@ src="/static/js/tiny_mce_config.js"></script>
 </div>
 {%endifequal%}
 <p class="submit">
-<input type="submit" tabindex="4" value="Save" name="save" class="button button-highlighted"/>
-  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%}/>Published
+<input type="submit" tabindex="4" value="{% trans "Save" %}" name="save" class="button button-highlighted"/>
+  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%}/>{% trans "Published" %}
 </p>
 
 <div class="side-info">
-<h5>Related</h5>
+<h5>{%trans "Related" %}</h5>
 
 <ul>
-<li><a href="/admin/entries/post">Manage All Posts</a></li>
-<li><a href="/admin/entries/page">Manage All Pages</a></li>
+<li><a href="/admin/entries/post">{%trans "Manage All Posts" %}</a></li>
+<li><a href="/admin/entries/page">{%trans "Manage All Pages" %}</a></li>
 
 </ul>
 </div>
@@ -84,7 +91,7 @@ src="/static/js/tiny_mce_config.js"></script>
 
 <div id="post-body2">
 <div id="titlediv">
-<h3>Title</h3>
+<h3>{%trans "Title" %}</h3>
 <div id="titlewrap">
 	<input type="text" autocomplete="off" id="title" value="{{entry.title}}" tabindex="1" size="60" name="post_title"/>
 </div>
@@ -96,7 +103,13 @@ src="/static/js/tiny_mce_config.js"></script>
 
 <div class="stuffbox" id="postarea">
 <h3>
-<div class="title">{{entrytype}}</div>
+<div class="title">
+{%ifequal entrytype "post"%}
+      {%trans "Post"%}
+        {%else%}
+      {%trans "Page" %}
+        {%endifequal%}
+        </div>
 <div class='editor-toolbar'>
     <span class="alignright" id="spn_html"><a id="edButtonHTML" onclick="switchEditors.go('content');" class="">HTML</a></span>
     <span class="alignright tg"  id="spn_visual" ><a id="edButtonPreview" class="active">Visual</a></span>
@@ -140,7 +153,7 @@ src="/static/js/tiny_mce_config.js"></script>
 
 <div class="clear"></div>
 <div class="stuffbox">
-<h3>Slug</h3>
+<h3>{% trans "Slug" %}</h3>
 <div class="inside">
 	<input type="text" value="{{entry.slug}}" tabindex="1" size="30" name="slug"/><br/>
 </div>
@@ -148,7 +161,7 @@ src="/static/js/tiny_mce_config.js"></script>
 {%ifequal entrytype "post"%}
 <div class="clear"></div>
 <div class="stuffbox" id="tag">
-<h3>Tag</h3>
+<h3>{% trans "Tag" %}</h3>
 <div class="inside">
 	<input type="text" id="tags" value="{{entry.strtags}}" tabindex="1" size="30" name="tags"/><br/>
 </div>
@@ -156,12 +169,12 @@ src="/static/js/tiny_mce_config.js"></script>
 {%else%}
 <div class="clear"></div>
 <div class="stuffbox">
-<h3>Options</h3>
+<h3>{% trans "Options" %}</h3>
 <div class="inside">
   	<p>
-     <span style="font-weight:bold;width:30px"> Page level: </span><input type="text" id="entry_parent" value="{{entry.entry_parent}}" tabindex="1" size="4" name="entry_parent"/>
+     <span style="font-weight:bold;width:30px">{% trans "Page level:"%} </span><input type="text" id="entry_parent" value="{{entry.entry_parent}}" tabindex="1" size="4" name="entry_parent"/>
   	<p>
-      <span  style="font-weight:bold;width:30px">Page order:</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
+      <span  style="font-weight:bold;width:30px">{% trans "Page order:"%}"</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
     </p>
 </div>
 </div>
@@ -171,7 +184,7 @@ src="/static/js/tiny_mce_config.js"></script>
 
 <div class="clear"></div>
 <div class="stuffbox">
-<h3>Excerpt</h3>
+<h3>{% trans "Excerpt" %}</h3>
 <div class="inside">
 	<textarea name="excerpt" style="width:98%"/>{%if entry.excerpt%}{{entry.excerpt}}{%endif%}</textarea><br/>
 </div>

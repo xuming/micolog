@@ -1,20 +1,60 @@
 import cgi, os,sys,traceback
 import wsgiref.handlers
+import settings
+
+
+
 from google.appengine.ext.webapp import template, \
     WSGIApplication
 from google.appengine.api import users
-import app.webapp as webapp2
+#import app.webapp as webapp2
 from google.appengine.ext import db
 from google.appengine.ext import zipserve
+from google.appengine.api import urlfetch
 from base import *
 from datetime import datetime ,timedelta
 import base64,random,math
 from django.utils import simplejson
 
+
+
 class Error404(BaseRequestHandler):
     #@printinfo
     def get(self,slug=None):
         self.render2('views/admin/404.html')
+
+class setlanguage(BaseRequestHandler):
+    def get(self):
+        lang_code = self.param('language')
+        next = self.param('next')
+        if (not next) and os.environ.has_key('HTTP_REFERER'):
+            next = os.environ['HTTP_REFERER']
+        if not next:
+            next = '/'
+        from django.utils.translation import check_for_language, activate, to_locale, get_language
+
+        if lang_code and check_for_language(lang_code):
+            g_blog.language=lang_code
+
+            activate(lang_code)
+            g_blog.save()
+        self.redirect(next)
+
+
+
+##            if hasattr(request, 'session'):
+##                request.session['django_language'] = lang_code
+##            else:
+
+##            cookiestr='django_language=%s;expires=%s;domain=%s;path=/'%( lang_code,
+##                       (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
+##                       ''
+##                       )
+##            self.write(cookiestr)
+
+            #self.response.headers.add_header('Set-Cookie', cookiestr)
+
+
 
 class admin_do_action(BaseRequestHandler):
     @requires_admin
@@ -167,10 +207,59 @@ class admin_import_next(BaseRequestHandler):
                 return
         self.blog.import_wp=None
         self.write(simplejson.dumps(('Ok','Finished',False)))
+class admin_tools(BaseRequestHandler):
+    def __init__(self):
+        self.current="config"
+
+    @requires_admin
+    def get(self,slug=None):
+        self.render2('views/admin/tools.html')
+
+
+class admin_sitemap(BaseRequestHandler):
+    def __init__(self):
+        self.current="config"
+
+    @requires_admin
+    def get(self,slug=None):
+        self.render2('views/admin/sitemap.html')
+
+
+    @requires_admin
+    def post(self):
+        str_options= self.param('str_options').split(',')
+        for name in str_options:
+            value=self.param(name)
+            setattr(g_blog,name,value)
+
+        bool_options= self.param('bool_options').split(',')
+        for name in bool_options:
+            value=self.param(name)=='on'
+            setattr(g_blog,name,value)
+
+        int_options= self.param('int_options').split(',')
+        for name in int_options:
+            try:
+                value=int( self.param(name))
+                setattr(g_blog,name,value)
+            except:
+                pass
+        float_options= self.param('float_options').split(',')
+        for name in float_options:
+            try:
+                value=float( self.param(name))
+                setattr(g_blog,name,value)
+            except:
+                pass
+
+
+        g_blog.save()
+        self.render2('views/admin/sitemap.html',{})
 
 class admin_import(BaseRequestHandler):
     def __init__(self):
-        self.current='import'
+        self.current='config'
+
     @requires_admin
     def get(self,slug=None):
         gblog_init()
@@ -757,6 +846,87 @@ class admin_status(BaseRequestHandler):
     @requires_admin
     def get(self):
         self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
+class admin_authors(BaseRequestHandler):
+    @requires_admin
+    def get(self):
+        try:
+            page_index=int(self.param('page'))
+        except:
+            page_index=1
+
+
+
+
+        authors=User.all().filter('isAuthor =',True)
+        entries,pager=Pager(query=authors,items_per_page=15).fetch(page_index)
+
+        self.render2('views/admin/authors.html',
+         {
+           'current':'authors',
+           'authors':authors,
+           'pager':pager
+          }
+        )
+
+
+    @requires_admin
+    def post(self,slug=None):
+        try:
+            linkcheck= self.request.get_all('checks')
+            for key in linkcheck:
+
+                author=User.get(key)
+                author.delete()
+        finally:
+            self.redirect('/admin/authors')
+class admin_author(BaseRequestHandler):
+    def __init__(self):
+        self.current='authors'
+
+    @requires_admin
+    def get(self,slug=None):
+        action=self.param("action")
+        author=None
+        if action and  action=='edit':
+                try:
+                    key=self.param('key')
+                    author=User.get(key)
+
+                except:
+                    pass
+        else:
+            action='add'
+        vals={'action':action,'author':author}
+        self.render2('views/admin/author.html',vals)
+
+    @requires_admin
+    def post(self):
+        action=self.param("action")
+        name=self.param("name")
+        slug=self.param("email")
+
+        vals={'action':action,'postback':True}
+        if not (name and slug):
+            vals.update({'result':False,'msg':'Please input dispname and email.'})
+            self.render2('views/admin/author.html',vals)
+        else:
+            if action=='add':
+               author= User(dispname=name,email=slug    )
+               author.put()
+               vals.update({'result':True,'msg':'Saved ok'})
+               self.render2('views/admin/author.html',vals)
+            elif action=='edit':
+                try:
+                    key=self.param('key')
+                    author=User.get(key)
+                    author.dispname=name
+                    author.email=slug
+                    author.put()
+                    self.redirect('/admin/authors')
+
+                except:
+                    vals.update({'result':False,'msg':'Error:Author can''t been saved.'})
+                    self.render2('views/admin/author.html',vals)
 
 class WpHandler(BaseRequestHandler):
 
@@ -769,9 +939,13 @@ class WpHandler(BaseRequestHandler):
         self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
         self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
+
+
+
+
 def main():
     webapp.template.register_template_library('filter')
-    application = webapp2.WSGIApplication2(
+    application = webapp.WSGIApplication(
                     [
                     ('/admin/{0,1}',admin_setup),
                     ('/admin/setup',admin_setup),
@@ -783,12 +957,17 @@ def main():
                     ('/admin/category',admin_category),
                      ('/admin/(post|page)',admin_entry),
                      ('/admin/status',admin_status),
-
+                     ('/admin/authors',admin_authors),
+                     ('/admin/author',admin_author),
 
                      ('/admin/import',admin_import),
+                     ('/admin/tools',admin_tools),
+
+                     ('/admin/sitemap',admin_sitemap),
                      ('/admin/export/micolog.xml',WpHandler),
                      ('/admin/import_next',admin_import_next),
                      ('/admin/do/(\w+)',admin_do_action),
+                     ('/admin/lang',setlanguage),
 
                      ('.*',Error404),
                      ],debug=True)

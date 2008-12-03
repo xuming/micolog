@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block h_message %}
   {%if postback%}
@@ -7,7 +8,7 @@
  {% block content %}
 <form action="/admin/link" method="post" id="addlink" name="addlink">
    <div class="wrap">
-      <h2>{%ifequal action 'edit'%}Edit link{%else%}Add Link {%endifequal%}</h2>
+      <h2>{%ifequal action 'edit'%}{%trans "Edit link"%}{%else%}{%trans "Add Link"%} {%endifequal%}</h2>
       <div id="poststuff">
 
 <div id="submitlink" class="submitbox">
@@ -20,14 +21,14 @@
 </div>
 
 <p class="submit">
-<input type="submit" tabindex="4" value="Save" name="save" class="button button-highlighted"/>
+<input type="submit" tabindex="4" value="{% trans "Save"%}" name="save" class="button button-highlighted"/>
 </p>
 
 <div class="side-info">
-<h5>Related</h5>
+<h5>{%trans "Related"%}</h5>
 
 <ul>
-<li><a href="/admin/links">Manage All Links</a></li>
+<li><a href="/admin/links">{%trans "Manage All Links"%}</a></li>
 
 
 </ul>
@@ -36,17 +37,17 @@
 
 <div id="post-body">
 <div class="stuffbox" id="namediv">
-<h3>Name</h3>
+<h3>{%trans "Name"%}</h3>
 <div class="inside">
 	<input type="text" id="link_name" value="{{link.linktext}}" tabindex="1" size="30" name="link_name"/><br/>
-    Example: Nifty blogging software</div>
+    {%trans "Example: Nifty blogging software"%}</div>
 </div>
 
 <div class="stuffbox" id="addressdiv">
-<h3>Web Address</h3>
+<h3>{%trans "Web Address"%}</h3>
 <div class="inside">
 	<input type="text" id="link_url" value="{{link.href}}" tabindex="1" size="30" name="link_url"/><br/>
-    Example: <code>http://xuming.net</code> - don't forget the <code>http://</code></div>
+    {% blocktrans%}Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>{%endblocktrans%}</div>
 </div>
 
 

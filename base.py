@@ -1,19 +1,30 @@
+# -*- coding: utf-8 -*-
 import os,logging
 import re
+
 from functools import wraps
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
-import app.webapp as webapp2
+##import app.webapp as webapp2
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.utils.translation import  activate
+
+from django.conf import settings
+settings._target = None
 from  model import *
+activate(g_blog.language)
+
+
 import wsgiref.handlers
 from mimetypes import types_map
 from datetime import datetime, timedelta
 import urllib
-logging.info('module base reloaded')
+import traceback
 
+logging.info('module base reloaded')
 def urldecode(value):
     return  urllib.unquote(urllib.unquote(value)).decode('utf8')
 
@@ -112,13 +123,13 @@ class Pager(object):
         return (results, links)
 
 
-class BaseRequestHandler(webapp2.RequestHandler):
+class BaseRequestHandler(webapp.RequestHandler):
     def __init__(self):
         self.current='home'
         pass
 
     def initialize(self, request, response):
-		webapp2.RequestHandler.initialize(self, request, response)
+		webapp.RequestHandler.initialize(self, request, response)
 		self.blog = g_blog
 		self.login_user = users.get_current_user()
 		self.is_login = (self.login_user != None)
@@ -162,7 +173,14 @@ class BaseRequestHandler(webapp2.RequestHandler):
         elif errorcode == 500:
             message = "Sorry, the server encountered an error.  We have logged this error and will look into it."
 
+        message+="<p><pre>"+traceback.format_exc()+"</pre><br></p>"
         self.template_vals.update( {'errorcode':errorcode,'message':message})
+
+
+
+
+
+
         if errorcode>0:
             self.response.set_status(errorcode)
 

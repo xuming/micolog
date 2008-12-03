@@ -53,7 +53,7 @@
 </div>
 
 <p><textarea name="comment" id="comment" style="width:96%"  rows="10" tabindex="4"></textarea></p>
-
+<div id="s_msg" style="display:none;color:red">正在提交留言...</div>
 <p><input name="submit" type="submit" id="submit" tabindex="5" value="提交留言" />
 <input type="hidden" name="key" value="{{entry.key}}" />
 <input type="hidden" name="useajax" value="1" />
@@ -145,6 +145,8 @@
                   		 	return false;
                   		 }
 
+                  		 $('#s_msg').text('正在提交留言...').show();
+
 	              		 return true;
 
               		},
@@ -153,12 +155,13 @@
               		  {
               		  	/*document.cookie=data[2];*/
               		  	add_comment(data[1]);
-              		  	alert('留言提交成功！')
+            		  	$('#s_msg').text('留言提交成功！');
               		  	$('#comment').val('');
               		  }
               		  else
               		  {  if (data[1]==-102)
               		  	 showinfo('计算错误，回幼儿园进修一下再来过。');
+              		  	 $('#s_msg').text('留言提交失败！');
               		  	 $('#checkret').focus();
 
               		  }

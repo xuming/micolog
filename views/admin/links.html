@@ -1,14 +1,15 @@
+{% load i18n %}
 {% extends "base.html" %}
  {% block content %}
  <form action="/admin/links" method="post" >
    <div class="wrap">
 
-      <h2>Manage Links (<a href="/admin/link?action=add">add new</a>)</h2>
+      <h2>{% trans "Manage Links" %} (<a href="/admin/link?action=add">{%trans "add new"%}</a>)</h2>
       <div class="clear"></div>
 
 	   <div class="tablenav">
 		  <div class="alignleft">
-		  <input type="submit" class="button-secondary delete" name="deleteit" value="Delete"/>
+		  <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}"/>
 		  </div>
 		<br class="clear"/>
 	   </div>
@@ -18,7 +19,7 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=linkcheck]').attr('checked',this.checked);"/></th>
-		<th style="width: 15%;">Name</th><th>URL</th>	</tr>
+		<th style="width: 15%;">{%trans "Name"%}</th><th>{%trans "URL"%}</th>	</tr>
 			</thead>
 			<tbody>
             {%for link in links%}

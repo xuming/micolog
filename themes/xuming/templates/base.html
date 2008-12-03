@@ -7,13 +7,23 @@
 <link rel="alternate" type="application/atom+xml" title="{{ blog.title }}" href="{{ blog.feedurl }}" />
 <link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
 <link rel="icon" type="image/ico" href="/favicon.ico">
-<script src="http://www.google.com/jsapi"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
 <link rel="pingback" href="/pingback" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+{% block head_block %}{% endblock %}
+</head>
+<body>
+<div id="gc-container">
+<div id="langpref">
+ <span style="background:#CC4444 none repeat scroll 0% 0%;color:white;padding:5px;">
+ 正在加载...
+ </span>
+</div>
 <script>
-    google.load("jquery", "1.2.6");
-    google.setOnLoadCallback(function() {
 
-
+    function loginp()
+    {
        $.getJSON("/do/info_login", function(ret){
               if( ret.islogin)
               {
@@ -25,19 +35,9 @@
               else
               {$('#langpref').html('<a href="/admin"> 登录</a>');}
        });
-
-     });
+    }
+    loginp();
 </script>
-<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
-{% block head_block %}{% endblock %}
-</head>
-<body>
-<div id="gc-container">
-<div id="langpref">
- <span style="background:#CC4444 none repeat scroll 0% 0%;color:white;padding:5px;">
- 正在加载...
- </span>
-</div>
 <div id="gc-header">
   <div id="logo"><a href="{{ blog.baseurl }}">
 
@@ -45,7 +45,7 @@
 
   </a></div>
   <div id="search">
-<!-- Google CSE Search Box Ends -->
+<!-- Google CSE Search Box End -->
 
     <div id="searchForm" class="searchForm">
       <form action="{{ blog.baseurl }}/gsearch" id="cse-search-box" >

@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 import os,logging
 from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext.db import Model as DBModel
 from google.appengine.api import memcache
 from google.appengine.api import mail
+from google.appengine.api import urlfetch
+
 from datetime import datetime
-import urllib, hashlib
+import urllib, hashlib,urlparse
 
 logging.info('module base reloaded')
 
@@ -109,6 +112,13 @@ class Blog(db.Model):
     show_excerpt=db.BooleanProperty(default=True)
     version=0.32
     timedelta=db.FloatProperty(default=8.0)# hours
+    language=db.StringProperty(default="en-us")
+
+    sitemap_entries=db.IntegerProperty(default=30)
+    sitemap_include_category=db.BooleanProperty(default=False)
+    sitemap_include_tag=db.BooleanProperty(default=False)
+    sitemap_ping=db.BooleanProperty(default=False)
+
 
 
 
@@ -213,6 +223,10 @@ class Entry(BaseModel):
     postname=''
     _relatepost=None
 
+    @property
+    def content_excerpt(self):
+        return self.get_content_excerpt(_('..more').decode('utf8'))
+
     def get_content_excerpt(self,more='..more'):
         if g_blog.show_excerpt:
             if self.excerpt:
@@ -220,7 +234,7 @@ class Entry(BaseModel):
             else:
                 sc=self.content.split('<!--more-->')
                 if len(sc)>1:
-                    return sc[0]+' <a href="%s">%s</a>'%(self.link,more)
+                    return sc[0]+u' <a href="%s">%s</a>'%(self.link,more)
                 else:
                     return sc[0]
         else:
@@ -376,10 +390,13 @@ class Entry(BaseModel):
             g_blog.save()
             self.save()
         self.removecache()
+        if g_blog.sitemap_ping:
+            Sitemap_NotifySearch()
 
     def removecache(self):
         memcache.delete('/')
         memcache.delete('/'+self.link)
+        memcache.delete('/sitemap')
 
     @property
     def next(self):
@@ -403,16 +420,19 @@ class Entry(BaseModel):
             return self._relatepost
 
 class User(db.Model):
-	user = db.UserProperty(required = True)
+	user = db.UserProperty(required = False)
 	dispname = db.StringProperty()
+	email=db.StringProperty()
 	website = db.LinkProperty()
 	isadmin=db.BooleanProperty(default=False)
+	isAuthor=db.BooleanProperty(default=True)
+	rpcpwd=db.StringProperty()
 
 	def __unicode__(self):
-		if self.dispname:
+		#if self.dispname:
 			return self.dispname
-		else:
-			return self.user.nickname()
+		#else:
+		#	return self.user.nickname()
 
 	def __str__(self):
 		return self.__unicode__().encode('utf-8')
@@ -453,7 +473,7 @@ class Comment(db.Model):
         self.entry.commentcount+=1
         self.entry.put()
         memcache.delete("/"+self.entry.link)
-        sbody='''New comment on your post "%s"
+        sbody=_('''New comment on your post "%s"
 Author : %s
 E-mail : %s
 URL    : %s
@@ -461,7 +481,7 @@ Comment:
 %s
 You can see all comments on this post here:
 %s
-'''
+''')
         if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
             sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
             g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
@@ -481,26 +501,59 @@ class Media(db.Model):
    date=db.DateTimeProperty(auto_now_add=True)
 
 
-#setting
-g_blog=None
+NOTIFICATION_SITES = [
+  ('http', 'www.google.com', 'webmasters/sitemaps/ping', {}, '', 'sitemap')
+  ]
 
+
+
+
+def Sitemap_NotifySearch():
+    """ Send notification of the new Sitemap(s) to the search engines. """
+
+
+    url=g_blog.baseurl+"/sitemap"
+
+    # Cycle through notifications
+    # To understand this, see the comment near the NOTIFICATION_SITES comment
+    for ping in NOTIFICATION_SITES:
+      query_map             = ping[3]
+      query_attr            = ping[5]
+      query_map[query_attr] = url
+      query = urllib.urlencode(query_map)
+      notify = urlparse.urlunsplit((ping[0], ping[1], ping[2], query, ping[4]))
+
+      # Send the notification
+      logging.info('Notifying search engines. %s'%ping[1])
+      logging.info('url: %s'%notify)
+
+      try:
+        urlfetch.fetch(notify)
+
+      except :
+        logging.error('Cannot contact: %s' % ping[1])
+
+g_blog=None
 def InitBlogData():
+    import settings
     global g_blog
     g_blog = Blog(key_name = 'default')
     g_blog.domain=os.environ['HTTP_HOST']
     g_blog.baseurl="http://"+g_blog.domain
     g_blog.feedurl=g_blog.baseurl+"/feed"
+    g_blog.language=settings.LANGUAGE_CODE
     g_blog.save()
-    entry=Entry(title="Hello world!")
-    entry.content='<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>'
+    entry=Entry(title=_("Hello world!").decode('utf8'))
+    entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
     entry.publish()
 
 def gblog_init():
     logging.info('module setting reloaded')
     global g_blog
+
     g_blog = Blog.get_by_key_name('default')
     if not g_blog:
-        InitBlogData()
+        g_blog=InitBlogData()
 
 
 
@@ -509,6 +562,7 @@ def gblog_init():
     g_blog.rootdir=os.path.dirname(__file__)
 
     logging.info(g_blog.rootdir)
+
 gblog_init()
 
 

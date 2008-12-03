@@ -603,7 +603,9 @@ border : 1px solid #dadada;
 line-height : 2em;
 margin : 10px 0;
 padding : 10px;
+background-color:infobackground;
 }
+div.grid .runbtn {float:right;margin:10px;}
 .error {
 color : red;
 padding : 0 10px;
@@ -893,9 +895,11 @@ padding : 5px 0;
 #hiddenmessage .error {
 color : red;
 }
-#nav2 {
-margin : 0 20px;
-padding : 0;
+#nav2 #dnav2{
+border-bottom:1px solid #DADADA;
+margin:0 20px;
+padding:0 0 12px;
+
 }
 #nav2 a {
 color : #2583ad;

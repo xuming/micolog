@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 from django import template
 from model import *
@@ -11,6 +12,10 @@ def datetz(date,format):  #datetime with timedelta
     t=timedelta(seconds=3600*g_blog.timedelta)
     return defaultfilters.date(date+t,format)
 
+@register.filter
+def TimestampISO8601(t):
+  """Seconds since epoch (1970-01-01) --> ISO 8601 time string."""
+  return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(t))
 
 @register.filter
 def urlencode(value):
@@ -25,7 +30,7 @@ def check_current(v1,v2):
 
 @register.filter
 def excerpt_more(entry,value='..more'):
-    return entry.get_content_excerpt(value)
+    return entry.get_content_excerpt(value.decode('utf8'))
 
 @register.filter
 def dict_value(v1,v2):
