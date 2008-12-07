@@ -212,7 +212,7 @@ class SitemapHandler(BaseRequestHandler):
 
 
 class Error404(BaseRequestHandler):
-    @cache(36000)
+    @cache(time=36000)
     def get(self,slug=None):
          self.error(404)
 

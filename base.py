@@ -79,6 +79,9 @@ def cache(key="",time=3600):
             if html:
                  logging.info('cache:'+skey)
                  response.last_modified =html[1]
+                 ilen=len(html)
+                 if ilen==3:
+                    response.set_status(html[2])
                  response.out.write(html[0])
             else:
                 if 'last-modified' not in response.headers:
@@ -86,7 +89,8 @@ def cache(key="",time=3600):
 
                 method(*args, **kwargs)
                 result=response.out.getvalue()
-                memcache.set(skey,(result,response.last_modified),time)
+                status_code = response._Response__status[0]
+                memcache.set(skey,(result,response.last_modified,status_code),time)
 
         return _wrapper
     return _decorate
