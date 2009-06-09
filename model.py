@@ -94,7 +94,7 @@ class Blog(db.Model):
     owner = db.UserProperty()
     author=db.StringProperty(default='admin')
     rpcuser=db.StringProperty(default='admin')
-    rpcpassowrd=db.StringProperty(default='')
+    rpcpassword=db.StringProperty(default='')
     description = db.TextProperty()
     baseurl = db.StringProperty(multiline=False,default=None)
     urlpath = db.StringProperty(multiline=False)
@@ -448,7 +448,8 @@ class Comment(db.Model):
 
     @property
     def shortcontent(self,len=20):
-        return self.content[:len]
+        scontent=self.content[:len].replace('<','&lt;').replace('>','&gt;')
+        return scontent
 
     def gravatar_url(self):
 
@@ -458,7 +459,7 @@ class Comment(db.Model):
             return default
 
         size = 50
-        
+
         try:
             # construct the url
             imgurl = "http://www.gravatar.com/avatar/"

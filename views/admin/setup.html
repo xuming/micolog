@@ -107,7 +107,7 @@
 
                 <tr valign="top">
                 <th scope="row">{% trans "Password:"%}</th>
-                <td><input type="password" size="45" value="{{ blog.rpcpassowrd }}"  id="rpcpassowrd" name="rpcpassowrd" />
+                <td><input type="password" size="45" value="{{ blog.rpcpassword }}"  id="rpcpassowrd" name="rpcpassword" />
                </td>
                 </tr>
             </table>
@@ -115,7 +115,7 @@
 
 <p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
-<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassowrd,theme_name,domain" name="str_options"/>
+<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
 <input type="hidden" value="posts_per_page" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>
