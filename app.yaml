@@ -8,6 +8,7 @@ handlers:
 - url: /favicon\.ico
   static_files: static/images/favicon.ico
   upload: static/images/favicon.ico
+  mime_type: image/x-icon
 
 - url: /tinymce/.*
   script: $PYTHON_LIB/google/appengine/ext/zipserve
