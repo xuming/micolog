@@ -906,6 +906,7 @@ color : #2583ad;
 text-decoration : none;
 padding-right : 10px;
 }
+#titlewrap input{width:100%}
 #poststuff #titlewrap {
 border-color : #ccc;
 border-style : solid;

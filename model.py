@@ -458,13 +458,15 @@ class Comment(db.Model):
             return default
 
         size = 50
-
-        # construct the url
-        imgurl = "http://www.gravatar.com/avatar/"
-        imgurl +=hashlib.md5(self.email).hexdigest()+"?"+ urllib.urlencode({
-        	'd':default, 's':str(size),'r':'G'})
-        return imgurl
-
+        
+        try:
+            # construct the url
+            imgurl = "http://www.gravatar.com/avatar/"
+            imgurl +=hashlib.md5(self.email).hexdigest()+"?"+ urllib.urlencode({
+				'd':default, 's':str(size),'r':'G'})
+            return imgurl
+        except:
+            return default
 
     def save(self):
 

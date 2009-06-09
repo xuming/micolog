@@ -383,8 +383,83 @@ class getMedia(webapp.RequestHandler):
             self.response.headers['Content-Type'] = str(media.mtype)
             self.response.out.write(media.bits)
 
+#Thanks for cxu
+#Author web:http://cxu.yimudi.org
+class TrackBackHandler(webapp.RequestHandler):
+    error = '''
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+<error>1</error>
+<message>%s</message>
+</response>
+'''
+    success = '''
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+<error>0</error>
+</response>
+'''
 
+    def post(self, slug=None):
+        self.response.headers['Content-Type'] = "text/xml"
+        if not slug:
+            postid = self.request.get('p')
+            try:
+                postid = int(postid)
+            except:
+                postid = None
+            if not postid:
+                self.response.out.write(self.error % "empty slug/postid")
+                return
 
+        coming_url = self.request.get('url')
+        blog_name = myfilter.do_filter(self.request.get('blog_name'))
+        excerpt = myfilter.do_filter(self.request.get('excerpt'))
+        title = myfilter.do_filter(self.request.get('title'))
+
+        if not coming_url or not blog_name or not excerpt or not title:
+            self.response.out.write(self.error % "not enough post info")
+            return
+
+        import time
+        #wait for half second in case otherside hasn't been published
+        time.sleep(0.5)
+
+        #also checking the coming url is valid and contains our link
+        #this is not standard trackback behavior
+        try:
+            result = urlfetch.fetch(coming_url)
+            if result.status_code != 200 or ((g_blog.baseurl + '/' + slug)
+                    not in result.content.decode('ascii','ignore')):
+                self.response.out.write(self.error % "probably spam")
+                return
+        except Exception, e:
+            logging.info(e)
+            self.response.out.write(self.error % "urlfetch error")
+            return
+
+        if slug:
+            slug = urldecode(slug)
+            entry = Entry.all().filter("published =", True).filter('link =', slug).get()
+        else:
+            entry = Entry.all().filter("published =", True).filter('post_id =', postid).get()
+        if not entry:
+            self.response.out.write(self.error % "no target post")
+            return
+
+        comment = Comment.all().filter("entry =", entry).filter("weburl =", coming_url).get()
+        if comment:
+            self.response.out.write(self.error % "has pinged before")
+            return
+
+        comment=Comment(author=blog_name,
+                content="<strong>"+title[:250]+"...</strong><br/>" +
+                        excerpt[:250] + '...',
+                weburl=coming_url,
+                entry=entry)
+        comment.save()
+        memcache.delete("/"+entry.link)
+        self.response.out.write(self.success)
 
 
 def main():
@@ -402,7 +477,7 @@ def main():
 ##                     ('/\?p=(?P<postid>\d+)',SinglePost),
                      ('/', MainPage),
                      ('/do/(\w+)', do_action),
-
+                     ('/trackback/(.*)', TrackBackHandler),
                      ('/([\\w\\-\\./]+)', SinglePost),
                      ('.*',Error404),
                      ],debug=True)
