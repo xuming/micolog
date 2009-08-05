@@ -10,58 +10,19 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Unused in query history -- copied from input.
-- kind: Archive
-  properties:
-  - name: date
-    direction: desc
-
-# Used 31 times in query history.
-- kind: Comment
-  properties:
-  - name: date
-    direction: desc
-
 # Used once in query history.
 - kind: Comment
   properties:
   - name: entry
   - name: date
 
-# Unused in query history -- copied from input.
-- kind: Comment
-  properties:
-  - name: entry
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: categorie_keys
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: date
-    direction: desc
-
-# Used 29 times in query history.
+# Used 8 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
   - name: entrytype
   - name: published
   - name: menu_order
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: entry_type
-  - name: date
-    direction: desc
 
 # Used 4 times in query history.
 - kind: Entry
@@ -70,90 +31,10 @@ indexes:
   - name: date
     direction: desc
 
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: entrytype
-  - name: post_id
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: entrytype
-  - name: post_id
-    direction: desc
-
-# Used 11 times in query history.
+# Used 8 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
   - name: published
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: entrytype
-  - name: published
-  - name: slug
-  - name: date
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: entrytype=
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: post_id
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: published
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: slug
-  - name: date
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: tags
-  - name: date
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Entry
-  properties:
-  - name: tags
-  - name: post_id
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Link
-  properties:
-  - name: linktype
-  - name: createdate
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Link
-  properties:
-  - name: linktype
-  - name: href
-
-# Unused in query history -- copied from input.
-- kind: Logger
-  properties:
   - name: date
     direction: desc
