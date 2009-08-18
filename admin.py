@@ -107,7 +107,7 @@ class admin_do_action(BaseRequestHandler):
                 if entry.slug:
                     newlink=link_format%vals
                 else:
-                    newlink='?p=%(post_id)s'%vals
+                    newlink=g_blog.default_link_format%vals
 
                 if entry.link<>newlink:
                     entry.link=newlink
@@ -657,8 +657,10 @@ class admin_entries(BaseRequestHandler):
             linkcheck= self.request.get_all('checks')
             for id in linkcheck:
                 kid=int(id)
+
                 entry=Entry.get_by_id(kid)
                 entry.delete()
+                g_blog.entrycount-=1
         finally:
 
             self.redirect('/admin/entries/'+slug)

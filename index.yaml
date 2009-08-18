@@ -16,7 +16,7 @@ indexes:
   - name: entry
   - name: date
 
-# Used 8 times in query history.
+# Used 3 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -31,10 +31,18 @@ indexes:
   - name: date
     direction: desc
 
-# Used 8 times in query history.
+# Used 2 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
   - name: published
   - name: date
     direction: desc
+
+# Unused in query history -- copied from input.
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: slug
+  - name: date

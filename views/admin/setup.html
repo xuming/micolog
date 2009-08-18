@@ -37,7 +37,15 @@
                 {% trans "In a few words, explain what this blog is about."%}</td>
                 </tr>
  <tr valign="top">
+                <th scope="row">{% trans "Default Link Structure:"%}</th>
+
+                <td><input type="text" size="45" style="width: 95%;" value="{{ blog.default_link_format }}"  id="default_link_format" name="default_link_format" />
+                 <br>{% trans "Allowed variants: " %}%(year)s , %(month)s , %(day)s , %(post_id)s
+               </td>
+                </tr>
+ <tr valign="top">
                 <th scope="row">{% trans "Permalink Structure:"%}</th>
+
                 <td><input type="text" size="45" style="width: 95%;" value="{{ blog.link_format }}"  id="link_format" name="link_format" />
                  <br>{% trans "Allowed variants: " %}%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
                </td>
@@ -115,7 +123,7 @@
 
 <p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
-<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain" name="str_options"/>
+<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
 <input type="hidden" value="posts_per_page" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>

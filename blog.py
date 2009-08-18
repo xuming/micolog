@@ -51,7 +51,7 @@ class MainPage(BasePublicPage):
 
 
         page=int(page)
-       	max_page = (self.blog.entrycount - 1) / self.blog.posts_per_page
+       	max_page = (g_blog.entrycount - 1) / g_blog.posts_per_page
 
 
         if page < 0 or page > max_page:
@@ -63,7 +63,8 @@ class MainPage(BasePublicPage):
 
 
         show_prev =entries and  (not (page == 0))
-        show_next =entries and  ( not (page == max_page))
+        show_next =entries and  (not (page == max_page))
+        print page,max_page,g_blog.entrycount,self.blog.posts_per_page
 
 
         return self.render('index',{'entries':entries,

@@ -118,6 +118,7 @@ class Blog(db.Model):
     sitemap_include_category=db.BooleanProperty(default=False)
     sitemap_include_tag=db.BooleanProperty(default=False)
     sitemap_ping=db.BooleanProperty(default=False)
+    default_link_format=db.StringProperty(multiline=False,default='?p=%(post_id)s')
 
 
 
@@ -230,11 +231,11 @@ class Entry(BaseModel):
     def get_content_excerpt(self,more='..more'):
         if g_blog.show_excerpt:
             if self.excerpt:
-                return self.excerpt+' <a href="%s">%s</a>'%(self.link,more)
+                return self.excerpt+' <a href="/%s">%s</a>'%(self.link,more)
             else:
                 sc=self.content.split('<!--more-->')
                 if len(sc)>1:
-                    return sc[0]+u' <a href="%s">%s</a>'%(self.link,more)
+                    return sc[0]+u' <a href="/%s">%s</a>'%(self.link,more)
                 else:
                     return sc[0]
         else:
@@ -368,12 +369,12 @@ class Entry(BaseModel):
                 if self.slug:
                     self.link=self.postname
                 else:
-                    self.link='?p=%(post_id)s'%vals
+                    self.link=g_blog.default_link_format%vals
             else:
                 if g_blog.link_format and self.postname:
                     self.link=g_blog.link_format.strip()%vals
                 else:
-                    self.link='?p=%(post_id)s'%vals
+                    self.link=g_blog.default_link_format%vals
 
 
 
