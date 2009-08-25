@@ -51,7 +51,7 @@ class MainPage(BasePublicPage):
 
 
         page=int(page)
-       	max_page = (g_blog.entrycount - 1) / g_blog.posts_per_page
+       	max_page = g_blog.entrycount / g_blog.posts_per_page + ( g_blog.entrycount % g_blog.posts_per_page and 1 or 0 )
 
 
         if page < 0 or page > max_page:
