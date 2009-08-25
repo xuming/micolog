@@ -16,7 +16,7 @@ indexes:
   - name: entry
   - name: date
 
-# Used 3 times in query history.
+# Used 13 times in query history.
 - kind: Entry
   properties:
   - name: entry_parent
@@ -24,14 +24,14 @@ indexes:
   - name: published
   - name: menu_order
 
-# Used 4 times in query history.
+# Used 6 times in query history.
 - kind: Entry
   properties:
   - name: entrytype
   - name: date
     direction: desc
 
-# Used 2 times in query history.
+# Used 12 times in query history.
 - kind: Entry
   properties:
   - name: entrytype

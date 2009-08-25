@@ -15,11 +15,14 @@ from model import *
 def checkauth(pos=1):
     def _decorate(method):
         def _wrapper(*args, **kwargs):
+
             username = args[pos+0]
             password = args[pos+1]
             args = args[0:pos]+args[pos+2:]
-            if not (username and password and g_blog.rpcuser==username) and (g_blog.rpcpassword==password):
-                raise ValueError("Authentication Failure")
+            if not (username and password and g_blog.rpcuser and g_blog.rpcpassword
+                    and (g_blog.rpcuser==username)
+                    and (g_blog.rpcpassword==password)):
+                 raise ValueError("Authentication Failure")
             return method(*args, **kwargs)
 
         return _wrapper
