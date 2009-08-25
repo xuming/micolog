@@ -659,6 +659,8 @@ class admin_entries(BaseRequestHandler):
                 kid=int(id)
 
                 entry=Entry.get_by_id(kid)
+                for comment in entry.comments():#delete it's comments beofre delete the entry
+                    comment.delete()
                 entry.delete()
                 g_blog.entrycount-=1
         finally:
