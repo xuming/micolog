@@ -1,0 +1,6 @@
+User-agent: *
+Crawl-delay: 10
+
+Disallow: /admin/
+Disallow: /rpc/
+Disallow: /myadmin/
