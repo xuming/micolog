@@ -142,6 +142,13 @@ class admin_do_action(BaseRequestHandler):
         self.write('"All tags for entry have been updated."')
 
 
+    def action_update_archives(self,slug=None):
+        for archive in Archive.all():
+            archive.delete()
+        entries=Entry.all()
+        for entry in entries:
+            entry.update_archive()
+        self.write('"All entries have been updated."')
 
 class admin_import_next(BaseRequestHandler):
     @requires_admin
@@ -168,9 +175,18 @@ class admin_import_next(BaseRequestHandler):
                 entry.title=next['title']
                 entry.author=self.login_user
                 entry.is_wp=True
-                entry.date=datetime.strptime( next['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
+                #entry.date=datetime.strptime( next['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
+                try:
+                    entry.date=datetime.strptime( next['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
+                except:
+                    try:
+                        entry.date=datetime.strptime( next['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
+                    except:
+                        entry.date=datetime.now()
                 entry.entrytype=next['post_type']
-                entry.content=next['encoded']
+                entry.content=next['content']
+
+                entry.excerpt=next['excerpt']
                 entry.post_id=next['post_id']
                 entry.slug=next['post_name']
                 entry.entry_parent=next['post_parent']
@@ -188,14 +204,19 @@ class admin_import_next(BaseRequestHandler):
 
 
                 if next['published']:
-                    key=entry.publish(True)
+                    entry.publish(True)
                 else:
-                    key=entry.save()
+                    entry.save()
 
                 for com in next['comments']:
+                        try:
+                            date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
+                        except:
+                            date=datetime.now()
                         comment=Comment(author=com['author'],
                                         content=com['content'],
                                         entry=entry,
+                                        date=date
                                         )
                         try:
                             comment.email=com['email']
@@ -287,9 +308,10 @@ class admin_import(BaseRequestHandler):
             wpns='{http://wordpress.org/export/1.0/}'
 
             contentns="{http://purl.org/rss/1.0/modules/content/}"
+            excerptns="{http://wordpress.org/export/1.0/excerpt/}"
             et._namespace_map[wpns]='wp'
             et._namespace_map[contentns]='content'
-
+            et._namespace_map[excerptns]='excerpt'
             channel=doc.find('channel')
             #self.write('Blog:'+channel.findtext('title')+'<br>')
             categories=channel.findall(wpns+'category')
@@ -315,7 +337,9 @@ class admin_import(BaseRequestHandler):
                     #entry.is_wp=True
                     entry['pubDate']=item.findtext('pubDate')
                     entry['post_type']=item.findtext(wpns+'post_type')
-                    entry['encoded']= item.findtext(contentns+'encoded')
+                    entry['content']= item.findtext(contentns+'encoded')
+
+                    entry['excerpt']= item.findtext(excerptns+'encoded')
                     entry['post_id']=int(item.findtext(wpns+'post_id'))
                     entry['post_name']=item.findtext(wpns+'post_name')
                     entry['post_parent']=int(item.findtext(wpns+'post_parent'))
@@ -358,7 +382,8 @@ class admin_import(BaseRequestHandler):
                             comment=dict(author=com.findtext(wpns+'comment_author'),
                                             content=com.findtext(wpns+'comment_content'),
                                             email=com.findtext(wpns+'comment_author_email'),
-                                            weburl=com.findtext(wpns+'comment_author_url')
+                                            weburl=com.findtext(wpns+'comment_author_url'),
+                                            date=com.findtext(wpns+'comment_date')
                                             )
 
                             entry['comments'].append(comment)
@@ -443,9 +468,9 @@ class admin_import(BaseRequestHandler):
 
                 pub_status=item.findtext(wpns+'status')
                 if pub_status=='publish':
-                    key=entry.publish(True)
+                    entry.publish(True)
                 else:
-                    key=entry.save()
+                    entry.save()
 
                 comments=item.findall(wpns+'comment')
 
@@ -555,6 +580,7 @@ class admin_entry(BaseRequestHandler):
         cats=self.request.get_all('cats')
         key=self.param('key')
         published=self.param('publish')
+        allow_comment=self.param('allow_comment')
         entry_slug=self.param('slug')
         entry_parent=self.paramint('entry_parent')
         menu_order=self.paramint('menu_order')
@@ -564,7 +590,7 @@ class admin_entry(BaseRequestHandler):
 
         vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
               'cats':map(mapit,Category.all()),
-              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
+              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,'allow_comment':allow_comment,
                         'slug':entry_slug,
                         'entry_parent':entry_parent,
                         'excerpt':entry_excerpt,
@@ -575,35 +601,40 @@ class admin_entry(BaseRequestHandler):
             self.render2('views/admin/entry.html',vals)
         else:
             if action=='add':
-               entry= Entry(title=title,content=content)
-               entry.settags(tags)
-               entry.entrytype=slug
-               entry.slug=entry_slug
-               entry.entry_parent=entry_parent
-               entry.menu_order=menu_order
-               entry.excerpt=entry_excerpt
-               newcates=[]
+                entry= Entry(title=title,content=content)
+                entry.settags(tags)
+                entry.entrytype=slug
+                entry.slug=entry_slug.replace(" ","-")
+                entry.entry_parent=entry_parent
+                entry.menu_order=menu_order
+                entry.excerpt=entry_excerpt
+                newcates=[]
+                if allow_comment:
+                    entry.allow_comment= True
+                else:
+                    entry.allow_comment = False
 
-               if cats:
+                if cats:
 
                    for cate in cats:
                         c=Category.all().filter('slug =',cate)
                         if c:
                             newcates.append(c[0].key())
-               entry.categorie_keys=newcates;
-               if published:
+                entry.categorie_keys=newcates;
+                if published:
                     entry.publish()
-               else:
-                   entry.published=False
-                   entry.save()
-               vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
-               self.render2('views/admin/entry.html',vals)
+                    entry.update_archive()
+                else:
+                    entry.published=False
+                    entry.save()
+                vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
+                self.render2('views/admin/entry.html',vals)
             elif action=='edit':
                 try:
                     entry=Entry.get(key)
                     entry.title=title
                     entry.content=content
-                    entry.slug=entry_slug
+                    entry.slug=entry_slug.replace(' ','-')
                     entry.entry_parent=entry_parent
                     entry.menu_order=menu_order
                     entry.excerpt=entry_excerpt
@@ -616,6 +647,11 @@ class admin_entry(BaseRequestHandler):
                             if c:
                                 newcates.append(c[0].key())
                     entry.categorie_keys=newcates;
+                    if allow_comment:
+                        entry.allow_comment= True
+                    else:
+                        entry.allow_comment = False
+
                     if published:
                         entry.publish()
                     else:
@@ -659,8 +695,10 @@ class admin_entries(BaseRequestHandler):
                 kid=int(id)
 
                 entry=Entry.get_by_id(kid)
-                for comment in entry.comments():#delete it's comments beofre delete the entry
-                    comment.delete()
+
+                #delete it's comments
+                entry.delete_comments()
+
                 entry.delete()
                 g_blog.entrycount-=1
         finally:
@@ -936,7 +974,24 @@ class WpHandler(BaseRequestHandler):
 
     @requires_admin
     def get(self,tags=None):
-        entries = Entry.all().order('-date')
+        try:
+            all=self.param('all')
+        except:
+            all=False
+
+        if(all):
+            entries = Entry.all().order('-date')
+        else:
+            str_date_begin=self.param('date_begin')
+            str_date_end=self.param('date_end')
+            try:
+                date_begin=datetime.strptime(str_date_begin,"%Y-%m-%d")
+                date_end=datetime.strptime(str_date_end,"%Y-%m-%d")
+                entries = Entry.all().filter('date >=',date_begin).filter('date <',date_end).order('-date')
+            except:
+                self.render2('views/admin/404.html')
+                return
+
         cates=Category.all()
         tags=Tag.all()
 

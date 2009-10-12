@@ -47,10 +47,25 @@ $(document).ready(function() {
 
 
 	{%else%}
+<script language="javascript" type="text/javascript" src="/static/My97DatePicker/WdatePicker.js"></script>
     <div class="wrap">
             <h2>{%trans "Export/Import for wordpress"%}</h2>
             <h3>{%trans "Export"%}</h3>
-            <p><a href="/admin/export/micolog.xml">{%trans "Export as  WordPress eXtended RSS file"%}</a></p>
+            <p>{%trans "Export as  WordPress eXtended RSS file"%}</p> 
+            <form action="/admin/export/micolog.xml" method='get'>
+              {%trans "Export from Date:"%}<input type="text" name="date_begin" disabled onClick="WdatePicker()" />
+              {%trans "to Date:"%}<input type="text" name="date_end" disabled onClick="WdatePicker()" />{%trans "'s posts"%}<br /><br />
+                <input type="checkbox" name="all" value="on" checked 
+                onclick="javascript:
+              if(this.checked){
+                form.date_begin.disabled=true;
+                form.date_end.disabled=true;     
+              }else{
+                form.date_begin.disabled=false;
+                form.date_end.disabled=false;
+                }" />{%trans "Export all posts"%}<br />
+                <input type="submit" value={%trans "Export"%} />
+            </form>
 <h3>{%trans "Import"%}</h3>
 <p>{%trans "Please select a file which exported from wordpress to import!"%}</p>
 	<form action="" method='post' enctype="multipart/form-data">

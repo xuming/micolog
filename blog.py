@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cgi, os,sys
+import cgi, os,sys,math
 import wsgiref.handlers
 ##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 ##from django.utils.translation import  activate
@@ -33,7 +33,7 @@ def doRequestHandle(old_handler,new_handler,**args):
 
 class MainPage(BasePublicPage):
 
-    def get(self,page=0):
+    def get(self,page=1):
 
 
         postid=self.param('p')
@@ -51,18 +51,19 @@ class MainPage(BasePublicPage):
 
 
         page=int(page)
-       	max_page = g_blog.entrycount / g_blog.posts_per_page + ( g_blog.entrycount % g_blog.posts_per_page and 1 or 0 )
+        entrycount=g_blog.postscount()
+       	max_page = entrycount / g_blog.posts_per_page + ( entrycount % g_blog.posts_per_page and 1 or 0 )
 
 
-        if page < 0 or page > max_page:
+        if page < 1 or page > max_page:
 				return	self.error(404)
 
         entries = Entry.all().filter('entrytype =','post').\
                 filter("published =", True).order('-date').\
-                fetch(self.blog.posts_per_page, offset = page * self.blog.posts_per_page)
+                fetch(self.blog.posts_per_page, offset = (page-1) * self.blog.posts_per_page)
 
 
-        show_prev =entries and  (not (page == 0))
+        show_prev =entries and  (not (page == 1))
         show_next =entries and  (not (page == max_page))
         #print page,max_page,g_blog.entrycount,self.blog.posts_per_page
 
@@ -88,11 +89,29 @@ class entriesByCategory(BasePublicPage):
         slug=urllib.unquote(slug).decode('utf8')
         cats=Category.all().filter('slug =',slug).fetch(1)
         if cats:
-            entries=Entry.all().filter('categorie_keys =',cats[0].key()).order("-date")
+            entries=Entry.all().filter("published =", True).filter('categorie_keys =',cats[0].key()).order("-date")
             entries,links=Pager(query=entries).fetch(page_index)
             self.render('category',{'entries':entries,'category':cats[0],'pager':links})
         else:
             self.error(414,slug)
+
+class archive_by_month(BasePublicPage):
+    @cache()
+    def get(self,year,month):
+        try:
+            page_index=int (self.param('page'))
+        except:
+            page_index=1
+
+        firstday=datetime(int(year),int(month),1)
+        if int(month)!=12:
+            lastday=datetime(int(year),int(month)+1,1)
+        else:
+            lastday=datetime(int(year)+1,1,1)
+        entries=db.GqlQuery("SELECT * FROM Entry WHERE date > :1 AND date <:2 AND entrytype =:3 AND published = True ORDER BY date DESC",firstday,lastday,'post')
+        entries,links=Pager(query=entries).fetch(page_index)
+
+        self.render('month',{'entries':entries,'year':year,'month':month,'pager':links})
 
 class entriesByTag(BasePublicPage):
     @cache()
@@ -107,7 +126,7 @@ class entriesByTag(BasePublicPage):
         import urllib
         slug=urldecode(slug)
 
-        entries=Entry.all().filter('tags =',slug).order("-date")
+        entries=Entry.all().filter("published =", True).filter('tags =',slug).order("-date")
         entries,links=Pager(query=entries).fetch(page_index)
         self.render('tag',{'entries':entries,'tag':slug,'pager':links})
 
@@ -125,14 +144,24 @@ class SinglePost(BasePublicPage):
         if not entries or len(entries) == 0:
             return self.error(404)
 
+        mp=self.paramint("mp",1)
+
         entry=entries[0]
-        comments=Comment.all().filter("entry =",entry)
+        entry.readtimes += 1
+        entry.put()
+        self.entry=entry
+
+
+        comments=entry.get_comments_by_page(mp,self.blog.comments_per_page)
+
 
 ##        commentuser=self.request.cookies.get('comment_user', '')
 ##        if commentuser:
 ##            commentuser=commentuser.split('#@#')
 ##        else:
         commentuser=['','','']
+
+        comments_nav=self.get_comments_nav(mp,entry.comments().count())
 
 
         if entry.entrytype=='post':
@@ -146,6 +175,7 @@ class SinglePost(BasePublicPage):
                         'user_url':commentuser[2],
                         'checknum1':random.randint(1,10),
                         'checknum2':random.randint(1,10),
+                        'comments_nav':comments_nav,
                         })
 
         else:
@@ -158,8 +188,46 @@ class SinglePost(BasePublicPage):
                         'user_url':commentuser[2],
                         'checknum1':random.randint(1,10),
                         'checknum2':random.randint(1,10),
+                        'comments_nav':comments_nav,
                         })
 
+    def get_comments_nav(self,pindex,count):
+
+        maxpage=count / g_blog.comments_per_page + ( count % g_blog.comments_per_page and 1 or 0 )
+        if maxpage==1:
+            return ""
+
+        result=""
+
+        if pindex>1:
+            result="<a class='comment_prev' href='"+self.get_comments_pagenum_link(pindex-1)+"'>«</a>"
+
+        minr=max(pindex-3,1)
+        maxr=min(pindex+3,maxpage)
+        if minr>2:
+            result+="<a class='comment_num' href='"+self.get_comments_pagenum_link(1)+"'>1</a>"
+            result+="<span class='comment_dot' >...</span>"
+
+        for  n in range(minr,maxr+1):
+            if n==pindex:
+                result+="<span class='comment_current'>"+str(n)+"</span>"
+            else:
+                result+="<a class='comment_num' href='"+self.get_comments_pagenum_link(n)+"'>"+str(n)+"</a>"
+        if maxr<maxpage-1:
+            result+="<span class='comment_dot' >...</span>"
+            result+="<a class='comment_num' href='"+self.get_comments_pagenum_link(maxpage)+"'>"+str(maxpage)+"</a>"
+
+        if pindex<maxpage:
+            result+="<a class='comment_next' href='"+self.get_comments_pagenum_link(pindex+1)+"'>»</a>"
+
+        return {'nav':result,'current':pindex,'maxpage':maxpage}
+
+    def get_comments_pagenum_link(self,pindex):
+        url=str(self.entry.link)
+        if url.find('?')>=0:
+            return url+"&mp="+str(pindex)+"#comments"
+        else:
+            return url+"?mp="+str(pindex)+"#comments"
 
 class FeedHandler(BaseRequestHandler):
     @cache(time=600)
@@ -172,6 +240,18 @@ class FeedHandler(BaseRequestHandler):
             e.formatted_date = e.date.strftime("%Y-%m-%dT%H:%M:%SZ")
         self.response.headers['Content-Type'] = 'application/atom+xml'
         self.render2('views/atom.xml',{'entries':entries,'last_updated':last_updated})
+
+class CommentsFeedHandler(BaseRequestHandler):
+    @cache(time=600)
+    def get(self,tags=None):
+        comments = Comment.all().order('-date').fetch(10)
+        if comments and comments[0]:
+            last_updated = comments[0].date
+            last_updated = last_updated.strftime("%Y-%m-%dT%H:%M:%SZ")
+        for e in comments:
+            e.formatted_date = e.date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        self.response.headers['Content-Type'] = 'application/atom+xml'
+        self.render2('views/comments.xml',{'comments':comments,'last_updated':last_updated})
 
 class SitemapHandler(BaseRequestHandler):
     @cache(time=36000)
@@ -303,8 +383,7 @@ class Post_comment(BaseRequestHandler):
                 comment_c=self.get_render('comment',{'comment':comment})
                 self.write(simplejson.dumps((True,comment_c.decode('utf8'))))
             else:
-
-                self.redirect(self.referer)
+                self.redirect(self.referer+"#comment-"+str(comment.key().id()))
 
 class ChangeTheme(BaseRequestHandler):
     @requires_admin
@@ -467,21 +546,22 @@ def main():
     webapp.template.register_template_library('filter')
     application = webapp.WSGIApplication(
                     [('/media/(.*)',getMedia),
-                     ('/skin',ChangeTheme),
-                     ('/feed', FeedHandler),
-                     ('/sitemap', SitemapHandler),
+                    ('/skin',ChangeTheme),
+                    ('/feed', FeedHandler),
+                    ('/feed/comments',CommentsFeedHandler),
+                    ('/sitemap', SitemapHandler),
+                    ('/post_comment',Post_comment),
+                    ('/page/(?P<page>\d+)', MainPage),
+                    ('/category/(.*)',entriesByCategory),
+                    ('/(\d{4})/(\d{2})',archive_by_month),
+                    ('/tag/(.*)',entriesByTag),
+##                    ('/\?p=(?P<postid>\d+)',SinglePost),
+                    ('/', MainPage),
+                    ('/do/(\w+)', do_action),
 
-                     ('/post_comment',Post_comment),
-                     ('/page/(?P<page>\d+)', MainPage),
-                     ('/category/(.*)',entriesByCategory),
-                     ('/tag/(.*)',entriesByTag),
-##                     ('/\?p=(?P<postid>\d+)',SinglePost),
-                     ('/', MainPage),
-                     ('/do/(\w+)', do_action),
-                     ('/trackback/(.*)', TrackBackHandler),
-                     ('/([\\w\\-\\./]+)', SinglePost),
-                     ('.*',Error404),
-                     ],debug=True)
+                    ('/([\\w\\-\\./]+)', SinglePost),
+                    ('.*',Error404),
+                    ],debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":

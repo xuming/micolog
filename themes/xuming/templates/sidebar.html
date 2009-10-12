@@ -27,17 +27,25 @@
 
 
 <ul id="sidebar">
-   <li>
-   <div class="line"></div>
-    <h2>最新文章</h2>
-        <ul>
-        {% for entry in blog.recentposts %}
-        <li><a href="/{{entry.link}}">{{entry.title}}</a></li>
-        {%endfor%}
-        </ul>
-        </li>
+<li>
+	<div id="blog-notice" class="line"></div>
+    <h2>博客公告</h2>
+    <ul>
+		{{blog.blognotice|escape}}
+	</ul>
+
+</li>
 
 <li>
+	<div id="hot-posts" class="line"></div>
+    <h2>热门文章</h2>
+    <ul>
+        {% for entry in blog.hotposts %}
+		<li><a href="/{{entry.link|escape}}" title="{{entry.title|escape}}">{{entry.title|escape}}({{entry.readtimes}})</a></li>
+        {%endfor%}
+	</ul>
+
+</li>
 
 <div class="line"></div>
     <h2>最近评论</h2>
@@ -46,8 +54,17 @@
         <li><a href="/{{comment.entry.link}}#comment-{{comment.key.id}}">{{comment.author}}:</a> {{comment.shortcontent}}...</li>
         {%endfor%}
         </ul>
-        </li>
+</li>
+<li>
+	<div id="recent-posts-2" class="line"></div>
+    <h2>最近文章</h2>
+    <ul>
+        {% for entry in blog.recentposts %}
+		<li><a href="/{{entry.link|escape}}" title="{{entry.title|escape}}">{{entry.title|escape}}({{entry.readtimes}})</a></li>
+        {%endfor%}
+	</ul>
 
+</li>
 
 <li>
   <div class="line"></div>
@@ -60,10 +77,27 @@
 
 </li>
     <li>
-    
+
 <div class="line"></div>
 <h2>我读的书</h2>
 <script type="text/javascript" src="http://www.douban.com/service/badge/chyni/?show=dolist&amp;n=3&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book" ></script>
+</li>
+
+<li>
+<div class="line"></div>
+<h2>标签</h2>
+{% for t in alltags %}
+<a title="{{ t.tagcount }} pages" href="/tag/{{t.tag|urlencode}}"><span style='font-size:{{ t.tagcount|add:9 }}px;'>{{t.tag}}</span></a>
+{%endfor%}
+</li>
+<li>
+<div class="line"></div>
+	<h2>归档</h2>
+		<ul>
+		{%for archive in archives%}
+		<li><a href="/{{archive.year}}/{{archive.month}}">{{archive.monthyear}}({{archive.entrycount}})</a></li>
+		{%endfor%}
+		</ul>
 </li>
 <li>
 <div class="line"></div>

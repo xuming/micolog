@@ -14,6 +14,19 @@ logging.info('module base reloaded')
 
 rootpath=os.path.dirname(__file__)
 
+def vcache(key="",time=3600):
+    def _decorate(method):
+        def _wrapper(*args, **kwargs):
+            if not g_blog.enable_memcache:
+                return method(*args, **kwargs)
+
+            result=method(*args, **kwargs)
+            memcache.set(key,result,time)
+            return result
+
+        return _wrapper
+    return _decorate
+
 class Theme:
 	def __init__(self, name='default'):
 		self.name = name
@@ -108,6 +121,13 @@ class Blog(db.Model):
     enable_memcache = db.BooleanProperty(default = False)
     link_format=db.StringProperty(multiline=False,default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
     comment_notify_mail=db.BooleanProperty(default=True)
+    #评论顺序
+    comments_order=db.IntegerProperty(default=0)
+    #每页评论数
+    comments_per_page=db.IntegerProperty(default=20)
+
+    blognotice=db.StringProperty(default='')
+
     domain=db.StringProperty()
     show_excerpt=db.BooleanProperty(default=True)
     version=0.32
@@ -138,9 +158,17 @@ class Blog(db.Model):
     def get_theme(self):
         self.theme= Theme(self.theme_name);
         return self.theme
+    @vcache("blog.hotposts")
+    def hotposts(self):
+        return Entry.all().filter('entrytype =','post').filter("published =", True).order('-readtimes').fetch(8)
 
+    @vcache("blog.recentposts")
     def recentposts(self):
-        return Entry.all().filter('entrytype =','post').order('-date').fetch(5)
+        return Entry.all().filter('entrytype =','post').filter("published =", True).order('-date').fetch(8)
+
+    @vcache("blog.postscount")
+    def postscount(self):
+        return Entry.all().filter('entrytype =','post').filter("published =", True).order('-date').count()
 
 
 class Category(db.Model):
@@ -148,7 +176,7 @@ class Category(db.Model):
     slug=db.StringProperty(multiline=False)
     @property
     def posts(self):
-        return Entry.all().filter('entrytype =','post').filter('categorie_keys =',self)
+        return Entry.all().filter('entrytype =','post').filter("published =", True).filter('categorie_keys =',self)
 
     @property
     def count(self):
@@ -157,7 +185,8 @@ class Category(db.Model):
 
 class Archive(db.Model):
     monthyear = db.StringProperty(multiline=False)
-    """March-08"""
+    year = db.StringProperty(multiline=False)
+    month = db.StringProperty(multiline=False)
     entrycount = db.IntegerProperty(default=0)
     date = db.DateTimeProperty(auto_now_add=True)
 
@@ -166,7 +195,7 @@ class Tag(db.Model):
     tagcount = db.IntegerProperty(default=0)
     @property
     def posts(self):
-        return Entry.all('entrytype =','post').filter('tags =',self)
+        return Entry.all('entrytype =','post').filter("published =", True).filter('tags =',self)
 
     @classmethod
     def add(cls,value):
@@ -204,6 +233,7 @@ class Entry(BaseModel):
     author = db.UserProperty()
     published = db.BooleanProperty(default=False)
     content = db.TextProperty(default='')
+    readtimes = db.IntegerProperty(default=0)
     title = db.StringProperty(multiline=False,default='')
     date = db.DateTimeProperty(auto_now_add=True)
     tags = db.StringListProperty()#old version used
@@ -216,6 +246,7 @@ class Entry(BaseModel):
     entry_parent=db.IntegerProperty(default=0)#When level=0 show on main menu.
     menu_order=db.IntegerProperty(default=0)
     commentcount = db.IntegerProperty(default=0)
+    allow_comment = db.BooleanProperty(default=True) #allow comment
 
     #compatible with wordpress
     is_wp=db.BooleanProperty(default=False)
@@ -295,7 +326,10 @@ class Entry(BaseModel):
             Tag.remove(v)
         for v in addlist:
             Tag.add(v)
-        self.tags=tags;
+        self.tags=tags
+
+    def get_comments_by_page(self,index,psize):
+        return self.comments().fetch(psize,offset = (index-1) * psize)
 
 
 ##    def get_categories(self):
@@ -316,16 +350,27 @@ class Entry(BaseModel):
         return '/admin/%s?key=%s&action=edit'%(self.entrytype,self.key())
 
     def comments(self):
-        return Comment.all().filter('entry =',self).order('date')
+        if g_blog.comments_order:
+            return Comment.all().filter('entry =',self).order('-date')
+        else:
+            return Comment.all().filter('entry =',self).order('date')
+
+    def delete_comments(self):
+        cmts = Comment.all().filter('entry =',self)
+        for comment in cmts:
+            comment.delete()
+        self.commentcount = 0
 
     def update_archive(self):
         """Checks to see if there is a month-year entry for the
         month of current blog, if not creates it and increments count"""
-        my = self.date.strftime('%b-%Y') # May-2008
+        my = self.date.strftime('%B %Y') # September-2008
+        sy = self.date.strftime('%Y') #2008
+        sm = self.date.strftime('%m') #09
         archive = Archive.all().filter('monthyear',my).fetch(10)
         if self.entrytype == 'post':
             if archive == []:
-                archive = Archive(monthyear=my)
+                archive = Archive(monthyear=my,year=sy,month=sm,entrycount=1)
                 self.monthyear = my
                 archive.put()
             else:
@@ -340,7 +385,7 @@ class Entry(BaseModel):
         """
 
 
-        my = self.date.strftime('%b-%Y') # May-2008
+        my = self.date.strftime('%B %Y') # September 2008
         self.monthyear = my
 
 
@@ -398,16 +443,16 @@ class Entry(BaseModel):
         memcache.delete('/')
         memcache.delete('/'+self.link)
         memcache.delete('/sitemap')
+        memcache.delete('blog.postcount')
 
     @property
     def next(self):
-        logging.info('test______________')
-        return Entry.all().filter('entrytype =','post').order('post_id').filter('post_id >',self.post_id).fetch(1)
+        return Entry.all().filter('entrytype =','post').filter("published =", True).order('post_id').filter('post_id >',self.post_id).fetch(1)
 
 
     @property
     def prev(self):
-        return Entry.all().filter('entrytype =','post').order('-post_id').filter('post_id <',self.post_id).fetch(1)
+        return Entry.all().filter('entrytype =','post').filter("published =", True).order('-post_id').filter('post_id <',self.post_id).fetch(1)
 
     @property
     def relateposts(self):
@@ -550,6 +595,8 @@ def InitBlogData():
     entry=Entry(title=_("Hello world!").decode('utf8'))
     entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
     entry.publish()
+    entry.update_archive()
+    return g_blog
 
 def gblog_init():
     logging.info('module setting reloaded')

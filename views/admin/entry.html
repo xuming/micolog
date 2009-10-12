@@ -1,7 +1,6 @@
 {% load i18n %}
 {% extends "base.html" %}
 {% block header %}
-<link rel="stylesheet" href="/tinymce/wordpress.css" type="text/css"/>
 <style type='text/css' media='all'>
 	div#TB_title {
 		background-color: #222222;
@@ -28,18 +27,18 @@
 
  {% block content %}
  <!-- tinyMCE -->
+<script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
+
 <script language="javascript" type="text/javascript"
 src="/static/js/editor.js"></script>
 <script type='text/javascript'>
-/* <![CDATA[ */
 	wpTinyMCEConfig = {
 		defaultEditor: "tinymce"
 	}
-/* ]]> */
 </script>
 
 <script language="javascript" type="text/javascript"
-src="/static/js/tiny_mce_config.js"></script>
+src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 <!-- /tinyMCE -->
 
 
@@ -75,7 +74,7 @@ src="/static/js/tiny_mce_config.js"></script>
 {%endifequal%}
 <p class="submit">
 <input type="submit" tabindex="4" value="{% trans "Save" %}" name="save" class="button button-highlighted"/>
-  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%}/>{% trans "Published" %}
+  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%}/>{% trans "Published" %} <input type="checkbox" style="margin-left:10px;" tabindex="4" value="allow_comment" name="allow_comment" class="button button-highlighted" {%if entry.allow_comment%}checked="checked"{%endif%}/>{% trans "allow comment" %}
 </p>
 
 <div class="side-info">
@@ -93,7 +92,7 @@ src="/static/js/tiny_mce_config.js"></script>
 <div id="titlediv">
 <h3>{%trans "Title" %}</h3>
 <div id="titlewrap">
-	<input type="text" autocomplete="off" id="title" value="{{entry.title}}" tabindex="1" size="60" name="post_title"/>
+	<input type="text" autocomplete="off" id="title" value="{{entry.title|escape}}" tabindex="1" size="52" name="post_title"/>
 </div>
 <div class="inside">
 	<div id="edit-slug-box">
@@ -120,6 +119,7 @@ src="/static/js/tiny_mce_config.js"></script>
 
 <div id="quicktags" style="display: none;">
 	<script type="text/javascript">
+
 /* <![CDATA[ */
 	quicktagsL10n = {
 		quickLinks: "(Quick Links)",
@@ -134,17 +134,15 @@ src="/static/js/tiny_mce_config.js"></script>
 	}
 /* ]]> */
 
-
 </script>
 <script src="/static/js/quicktags.js" type="text/javascript"/>
 <script type="text/javascript">edToolbar()</script>
-
-<div id="ed_toolbar"><input type="button" value="b" onclick="edInsertTag(edCanvas, 0);" class="ed_button" accesskey="b" id="ed_strong"/><input type="button" value="i" onclick="edInsertTag(edCanvas, 1);" class="ed_button" accesskey="i" id="ed_em"/><input type="button" value="link" onclick="edInsertLink(edCanvas, 2);" class="ed_button" accesskey="a" id="ed_link"/><input type="button" value="b-quote" onclick="edInsertTag(edCanvas, 3);" class="ed_button" accesskey="q" id="ed_block"/><input type="button" value="del" onclick="edInsertTag(edCanvas, 4);" class="ed_button" accesskey="d" id="ed_del"/><input type="button" value="ins" onclick="edInsertTag(edCanvas, 5);" class="ed_button" accesskey="s" id="ed_ins"/><input type="button" value="img" onclick="edInsertImage(edCanvas);" class="ed_button" accesskey="m" id="ed_img"/><input type="button" value="ul" onclick="edInsertTag(edCanvas, 7);" class="ed_button" accesskey="u" id="ed_ul"/><input type="button" value="ol" onclick="edInsertTag(edCanvas, 8);" class="ed_button" accesskey="o" id="ed_ol"/><input type="button" value="li" onclick="edInsertTag(edCanvas, 9);" class="ed_button" accesskey="l" id="ed_li"/><input type="button" value="code" onclick="edInsertTag(edCanvas, 10);" class="ed_button" accesskey="c" id="ed_code"/><input type="button" value="more" onclick="edInsertTag(edCanvas, 11);" class="ed_button" accesskey="t" id="ed_more"/><input type="button" value="lookup" title="Dictionary lookup" onclick="edSpell(edCanvas);" class="ed_button" id="ed_spell"/><input type="button" value="close tags" title="Close all open tags" onclick="edCloseAllTags();" class="ed_button" id="ed_close"/></div>
+<div id="ed_toolbar"><input type="button" value="b" onclick="edInsertTag(edCanvas, 0);" class="ed_button" accesskey="b" id="ed_strong"/><input type="button" value="i" onclick="edInsertTag(edCanvas, 1);" class="ed_button" accesskey="i" id="ed_em"/><input type="button" value="link" onclick="edInsertLink(edCanvas, 2);" class="ed_button" accesskey="a" id="ed_link"/><input type="button" value="b-quote" onclick="edInsertTag(edCanvas, 3);" class="ed_button" accesskey="q" id="ed_block"/><input type="button" value="del" onclick="edInsertTag(edCanvas, 4);" class="ed_button" accesskey="d" id="ed_del"/><input type="button" value="ins" onclick="edInsertTag(edCanvas, 5);" class="ed_button" accesskey="s" id="ed_ins"/><input type="button" value="img" onclick="edInsertImage(edCanvas);" class="ed_button" accesskey="m" id="ed_img"/><input type="button" value="ul" onclick="edInsertTag(edCanvas, 7);" class="ed_button" accesskey="u" id="ed_ul"/><input type="button" value="ol" onclick="edInsertTag(edCanvas, 8);" class="ed_button" accesskey="o" id="ed_ol"/><input type="button" value="li" onclick="edInsertTag(edCanvas, 9);" class="ed_button" accesskey="l" id="ed_li"/><input type="button" value="code" onclick="edInsertTag(edCanvas, 10);" class="ed_button" accesskey="c" id="ed_code"/><input type="button" value="more" onclick="edInsertTag(edCanvas, 11);" class="ed_button" accesskey="t" id="ed_more"/><input type="button" value="lookup" title="Dictionary lookup" onclick="edSpell(edCanvas);" class="ed_button" id="ed_spell"/><input type="button" value="close tags" title="Close all open tags" onclick="edCloseAllTags();" class="ed_button" id="ed_close"/>
 </div>
-
+</div>
 <div id="editorcontainer">
 
-  <textarea style="width: 695px;" cols="40" rows="15" id="content" name="content">{{entry.content}}</textarea>
+  <textarea style="width: 695px;" cols="40" rows="15" id="content" name="content">{{entry.content|escape}}</textarea>
 </div>
 </div>
 <script type="text/javascript">
@@ -155,7 +153,7 @@ src="/static/js/tiny_mce_config.js"></script>
 <div class="stuffbox">
 <h3>{% trans "Slug" %}</h3>
 <div class="inside">
-	<input type="text" value="{{entry.slug}}" tabindex="1" size="30" name="slug"/><br/>
+	<input type="text" value="{{entry.slug|escape}}" tabindex="1" size="30" name="slug"/><br/>
 </div>
 </div>
 {%ifequal entrytype "post"%}
@@ -163,7 +161,7 @@ src="/static/js/tiny_mce_config.js"></script>
 <div class="stuffbox" id="tag">
 <h3>{% trans "Tag" %}</h3>
 <div class="inside">
-	<input type="text" id="tags" value="{{entry.strtags}}" tabindex="1" size="30" name="tags"/><br/>
+	<input type="text" id="tags" value="{{entry.strtags|escape}}" tabindex="1" size="30" name="tags"/><br/>
 </div>
 </div>
 {%else%}
@@ -186,7 +184,7 @@ src="/static/js/tiny_mce_config.js"></script>
 <div class="stuffbox">
 <h3>{% trans "Excerpt" %}</h3>
 <div class="inside">
-	<textarea name="excerpt" style="width:98%"/>{%if entry.excerpt%}{{entry.excerpt}}{%endif%}</textarea><br/>
+	<textarea name="excerpt" style="width:98%"/>{%if entry.excerpt%}{{entry.excerpt|escape}}{%endif%}</textarea><br/>
 </div>
 </div>
 

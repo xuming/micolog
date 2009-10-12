@@ -34,15 +34,16 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
-		<th style="width: 15%;">{% trans "Date"%}</th><th>{%trans "Title"%}</th>	<th class="num" scope="col"><div class="vers"><img src="/static/images/comment-grey-bubble.png" alt="Comments"/></div></th><th>{%trans "Status"%}</th></tr>
+		<th style="width: 15%;">{% trans "Date"%}</th><th>{%trans "Title"%}</th>	<th class="num" scope="col"><div class="vers"><img src="/static/images/comment-grey-bubble.png" alt="Comments"/></div></th><th>{%trans "Status"%}</th><th>{%trans "allow comment"%}</th></tr>
 			</thead>
 			<tbody>
             {%for entry in entries%}
 		<tr valign="middle" id="link-{{entry.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{entry.key.id}}" name="checks"/></th>
                            <td>{{entry.date.date}}</td>
-                           <td><strong><a class="row-title" title='Edit "{{entry.title}}"' href="/admin/post?key={{entry.key}}&amp;action=edit">{{entry.title}}</a></strong><br/></td>
+                           <td><strong><a class="row-title" title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key}}&amp;action=edit">{{entry.title|escape}}</a></strong><br/></td>
                            <td class="num" scope="col">{{entry.commentcount}}</td>
                            <td>{%if entry.published%}{% trans "Published"%}{%else%}{%trans "Unpublished"%} {%endif%}</td>
+                           <td>{%if entry.allow_comment%}Yes{%else%}<span style="color:#f00">No</span>{%endif%}</td>
 			</tr>
 			{%endfor%}
 			</tbody>

@@ -281,6 +281,21 @@ def wp_getAuthors(blogid):
 def wp_getPageList(blogid):
     return []
 
+@checkauth()
+def mt_getPostCategories(blogid):
+      post=Entry.get_by_id(int(blogid))
+      categories=post.categorie_keys
+      cates=[]
+      for cate in categories:
+            cates.append({  'categoryId' : cate.id_or_name(),
+                        'parentId':0,
+                        'description':cate.name(),
+                        'categoryName':cate.name(),
+                        'htmlUrl':'',
+                        'rssUrl':''
+                        })
+      return cates
+
 def mt_setPostCategories(*arg):
     return True
 #-------------------------------------------------------------------------------
@@ -311,7 +326,8 @@ dispatcher = PlogXMLRPCDispatcher({
 	'wp.deletePage':wp_deletePage,
     'wp.getAuthors':wp_getAuthors,
 
-    'mt.setPostCategories':mt_setPostCategories
+    'mt.setPostCategories':mt_setPostCategories,
+    'mt.getPostCategories':mt_getPostCategories,
 
 
 

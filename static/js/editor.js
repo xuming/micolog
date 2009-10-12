@@ -78,7 +78,7 @@ switchEditors = {
         var P = document.getElementById('edButtonPreview');
         var ta = document.getElementById(id);
         var ec = document.getElementById('editorcontainer');
-
+		
         if ( ! ed || ed.isHidden() ) {
 
             ta.style.color = '#fff';
@@ -94,7 +94,7 @@ switchEditors = {
 
             if ( ed ) ed.show();
             else tinyMCE.execCommand("mceAddControl", false, id);
-
+            
             this.wpSetDefaultEditor('tinymce');
 
         } else {

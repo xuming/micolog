@@ -96,6 +96,8 @@ def cache(key="",time=3600):
     return _decorate
 
 
+##cache variable
+
 
 class Pager(object):
 
@@ -261,10 +263,14 @@ class BasePublicPage(BaseRequestHandler):
             .filter('entry_parent =',0)\
             .order('menu_order')
         blogroll=Link.all().filter('linktype =','blogroll')
+        archives=Archive.all()
+        alltags=Tag.all()
         self.template_vals.update({
                         'menu_pages':m_pages,
                         'categories':Category.all(),
                         'blogroll':blogroll,
+                        'archives':archives,
+                        'alltags':alltags,
                         'recent_comments':Comment.all().order('-date').fetch(5)
         })
 
@@ -282,5 +288,5 @@ class BasePublicPage(BaseRequestHandler):
                 current= 'current_page_item'
             else:
                 current= 'page_item'
-            ret+='<li class="%s"><a href="%s" >%s</a></li>'%( current,self.blog.baseurl+"/"+page.link, page.title)
+            ret+='<li class="%s"><a href="/%s" >%s</a></li>'%( current,self.blog.baseurl+"/"+page.link, page.title)
         return ret

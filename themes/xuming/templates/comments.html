@@ -2,9 +2,9 @@
 
 	<h3 id="comments" {% if not entry.comments.count%} style="display:none"{%endif%}>&#8220;{{entry.title}}&#8221; 共有<span style='color:red;font-weight:bold;padding:0px 3px'>{{entry.comments.count}}</span>条留言   </h3>
 
-	<ol id="commentlist" class="commentlist">
+	<ul id="commentlist" class="commentlist">
 
-	{% for comment in entry.comments %}
+	{% for comment in comments %}
 
 		<li class="{%cycle alt1,alt %}" id="comment-{{comment.key.id}}">
 			<div class="gravatar"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
@@ -26,10 +26,10 @@
 
 	{% endfor %}
 
-	</ol>
-
-
-
+	</ul>
+<div id="commentsnavi">
+{{comments_nav.nav}}
+</div>
 <h3 id="respond">我要留言</h3>
 <div class="info" id="comment_info"></div>
 <form action="/post_comment" method="post" id="commentform">
