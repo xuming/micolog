@@ -811,6 +811,7 @@ class admin_link(BaseRequestHandler):
         action=self.param("action")
         name=self.param("link_name")
         url=self.param("link_url")
+        comment = self.param("link_comment")
 
         vals={'action':action,'postback':True,'current':'links'}
         if not (name and url):
@@ -818,7 +819,7 @@ class admin_link(BaseRequestHandler):
             self.render2('views/admin/link.html',vals)
         else:
             if action=='add':
-               link= Link(linktext=name,href=url)
+               link= Link(linktext=name,href=url,linkcomment=comment)
                link.put()
                vals.update({'result':True,'msg':'Saved ok'})
                self.render2('views/admin/link.html',vals)
@@ -828,6 +829,7 @@ class admin_link(BaseRequestHandler):
                     link=Link.get_by_id(action_id)
                     link.linktext=name
                     link.href=url
+                    link.linkcomment = comment
                     link.put()
                     #goto link manage page
                     self.redirect('/admin/links')

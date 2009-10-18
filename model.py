@@ -227,7 +227,15 @@ class Link(db.Model):
     href = db.StringProperty(multiline=False,default='')
     linktype = db.StringProperty(multiline=False,default='blogroll')
     linktext = db.StringProperty(multiline=False,default='')
+    linkcomment = db.StringProperty(multiline=False,default='')
     createdate=db.DateTimeProperty(auto_now=True)
+    
+    @property
+    def get_icon_url(self):
+        "get ico url of the wetsite"
+        ico_path = '/favicon.ico'
+        ix = self.href.find('/',len('http://') )
+        return (ix>0 and self.href[:ix] or self.href ) + ico_path
 
 class Entry(BaseModel):
     author = db.UserProperty()
@@ -616,6 +624,9 @@ def gblog_init():
 
 gblog_init()
 
-
+if __name__=='__main__':
+    lk = Link()
+    lk.href = 'http://www.kgblog.net'
+    print lk.get_icon_url()
 
 

@@ -50,6 +50,13 @@
     {% blocktrans%}Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>{%endblocktrans%}</div>
 </div>
 
+<div class="stuffbox" id="commentdiv">
+<h3>{%trans "Web Comment"%}</h3>
+<div class="inside">
+	<input type="text" id="link_comment" value="{{link.linkcomment}}" tabindex="3" size="30" name="link_comment"/><br/>
+    {% blocktrans%}Example: Xuming's Blog{%endblocktrans%}</div>
+</div>
+
 
 
 <input type="hidden" value="{{link.key.id}}" name="id"/>
