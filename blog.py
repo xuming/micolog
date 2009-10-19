@@ -225,9 +225,9 @@ class SinglePost(BasePublicPage):
     def get_comments_pagenum_link(self,pindex):
         url=str(self.entry.link)
         if url.find('?')>=0:
-            return url+"&mp="+str(pindex)+"#comments"
+            return "/"+url+"&mp="+str(pindex)+"#comments"
         else:
-            return url+"?mp="+str(pindex)+"#comments"
+            return "/"+url+"?mp="+str(pindex)+"#comments"
 
 class FeedHandler(BaseRequestHandler):
     @cache(time=600)

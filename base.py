@@ -288,5 +288,5 @@ class BasePublicPage(BaseRequestHandler):
                 current= 'current_page_item'
             else:
                 current= 'page_item'
-            ret+='<li class="%s"><a href="/%s" >%s</a></li>'%( current,self.blog.baseurl+"/"+page.link, page.title)
+            ret+='<li class="%s"><a href="/%s" >%s</a></li>'%( current,page.link, page.title)
         return ret
