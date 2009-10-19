@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>{{ blog.title|escape }} Comments</title>
+    <id>{{ blog.baseurl }}/</id>
+    <subtitle>{{ blog.subtitle|escape }}</subtitle>
+    <link href="{{ blog.baseurl }}" />
+    <link href="{{ blog.baseurl }}/feedcomments" rel="self" />
+    <updated>{{last_updated}}</updated>
+    <author>
+      <name>{{ blog.owner.nickname|escape }}</name>
+    </author>
+{% for comment in comments %}
+  <entry>
+      <link href="{{ blog.baseurl }}/{{comment.entry.link|escape}}#comment-{{comment.key.id}}"/>
+      <id>{{ blog.baseurl }}/{{comment.entry.link|escape}}#comment-{{comment.key.id}}</id>
+      <title><![CDATA[{{comment.entry.title|escape}} - {{comment.author}}: {{comment.shortcontent}}...]]></title>
+      <content type="html"><![CDATA[
+      {{comment.content}}
+
+      ]]></content>
+      <author>
+          <name>{{comment.author}}</name>
+      </author>
+      <updated>{{comment.formatted_date}}</updated>
+  </entry>
+{% endfor %}
+</feed>

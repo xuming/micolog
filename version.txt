@@ -1,0 +1,4 @@
+更新index.yaml文件
+增加robot.txt
+修改分页more错误
+增加g_blog.default_link_format，设置默认链接格式
