@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: micolog 0.35\n"
+"Project-Id-Version: micolog 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-27 23:22+0800\n"
-"PO-Revision-Date: 2008-11-27 23:30+0800\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2009-10-19 12:46+0800\n"
+"PO-Revision-Date: 2009-10-19 13:03+0800\n"
+"Last-Translator: 徐明 <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -18,27 +18,27 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: .\blog.py:252
-#: .\blog.py:254
-#: .\blog.py:258
-#: .\blog.py:260
+#: .\blog.py:333
+#: .\blog.py:335
+#: .\blog.py:339
+#: .\blog.py:341
 msgid "Your check code is invalid ."
 msgstr "验证码错误"
 
-#: .\blog.py:272
-#: .\blog.py:274
+#: .\blog.py:353
+#: .\blog.py:355
 msgid "Please input name, email and comment ."
 msgstr "请输入姓名，Email地址和评论内容"
 
-#: .\blog.py:374
+#: .\blog.py:454
 msgid "this is a test"
 msgstr "这是一个测试"
 
-#: .\model.py:228
+#: .\model.py:260
 msgid "..more"
 msgstr "(..更多内容)"
 
-#: .\model.py:476
+#: .\model.py:525
 #, python-format
 msgid ""
 "New comment on your post \"%s\"\n"
@@ -50,12 +50,20 @@ msgid ""
 "You can see all comments on this post here:\n"
 "%s\n"
 msgstr ""
+"关于\"%s\"的新评论\n"
+"作者 : %s\n"
+"E-mail : %s\n"
+"网址    : %s\n"
+"内容:\n"
+"%s\n"
+"查看所有评论:\n"
+"%s\n"
 
-#: .\model.py:545
+#: .\model.py:595
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: .\model.py:546
+#: .\model.py:596
 msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
 msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
@@ -78,7 +86,7 @@ msgstr "导入/导出"
 #: .\views\admin\sitemap.html.py:8
 #: .\views\admin\setup.html.py:13
 msgid "Sitemap"
-msgstr ""
+msgstr "网站地图"
 
 #: .\views\admin\import.html.py:38
 #: .\views\admin\tools.html.py:62
@@ -88,38 +96,55 @@ msgstr ""
 msgid "Tools"
 msgstr "工具"
 
-#: .\views\admin\import.html.py:51
+#: .\views\admin\import.html.py:52
 msgid "Export/Import for wordpress"
 msgstr "导入/导出"
 
-#: .\views\admin\import.html.py:52
+#: .\views\admin\import.html.py:53
+#: .\views\admin\import.html.py:67
 msgid "Export"
 msgstr "导出"
 
-#: .\views\admin\import.html.py:53
+#: .\views\admin\import.html.py:54
 msgid "Export as  WordPress eXtended RSS file"
 msgstr "导出为 wordpress 文件格式"
 
-#: .\views\admin\import.html.py:54
-#: .\views\admin\import.html.py:73
+#: .\views\admin\import.html.py:56
+msgid "Export from Date:"
+msgstr "导出日期: 从"
+
+#: .\views\admin\import.html.py:57
+msgid "to Date:"
+msgstr "到"
+
+#: .\views\admin\import.html.py:57
+msgid "'s posts"
+msgstr "的文章"
+
+#: .\views\admin\import.html.py:66
+msgid "Export all posts"
+msgstr "导出所有文章"
+
+#: .\views\admin\import.html.py:69
+#: .\views\admin\import.html.py:88
 msgid "Import"
 msgstr "导入"
 
-#: .\views\admin\import.html.py:55
+#: .\views\admin\import.html.py:70
 msgid "Please select a file which exported from wordpress to import!"
 msgstr "请选择一个从wordpress导出的格式化文件进行导入！"
 
-#: .\views\admin\import.html.py:59
-#: .\views\admin\setup.html.py:40
+#: .\views\admin\import.html.py:74
+#: .\views\admin\setup.html.py:54
 msgid "Permalink Structure:"
 msgstr "结构化链接(Permalink) "
 
-#: .\views\admin\import.html.py:61
+#: .\views\admin\import.html.py:76
 #: .\views\admin\tools.html.py:102
 msgid "Available parameters:"
 msgstr "可用的参数:"
 
-#: .\views\admin\import.html.py:65
+#: .\views\admin\import.html.py:80
 msgid "Wordpress export file (WXR file):"
 msgstr "Wordpress 格式文件(WXR格式):"
 
@@ -191,9 +216,168 @@ msgid "Pinging Search Engine (Google):"
 msgstr "Ping搜索引擎(Google)"
 
 #: .\views\admin\sitemap.html.py:52
-#: .\views\admin\setup.html.py:116
+#: .\views\admin\setup.html.py:144
 msgid "Save Changes"
 msgstr "保 存"
+
+#: .\views\admin\posts.html.py:7
+msgid "Manage Posts"
+msgstr "管理文章"
+
+#: .\views\admin\posts.html.py:7
+#: .\views\admin\pages.html.py:7
+#: .\views\admin\links.html.py:7
+#: .\views\admin\categories.html.py:7
+msgid "add new"
+msgstr "新建"
+
+#: .\views\admin\posts.html.py:9
+msgid "All Posts"
+msgstr "所有文章"
+
+#: .\views\admin\posts.html.py:15
+#: .\views\admin\pages.html.py:14
+#: .\views\admin\links.html.py:12
+#: .\views\admin\categories.html.py:14
+#: .\views\admin\comments.html.py:14
+msgid "Delete"
+msgstr "删除"
+
+#: .\views\admin\posts.html.py:20
+#: .\views\admin\pages.html.py:18
+#: .\views\admin\categories.html.py:18
+#: .\views\admin\comments.html.py:18
+msgid "&laquo; prev"
+msgstr "&laquo; 前一页"
+
+#: .\views\admin\posts.html.py:24
+#: .\views\admin\pages.html.py:22
+#: .\views\admin\categories.html.py:22
+#: .\views\admin\comments.html.py:22
+msgid "next &raquo;"
+msgstr "后一页 &raquo;"
+
+#: .\views\admin\posts.html.py:26
+#: .\views\admin\pages.html.py:23
+#: .\views\admin\categories.html.py:24
+#: .\views\admin\comments.html.py:23
+msgid "  Page %(pindex)s"
+msgstr "  第%(pindex)s页"
+
+#: .\views\admin\posts.html.py:37
+#: .\views\admin\pages.html.py:34
+#: .\views\admin\comments.html.py:34
+msgid "Date"
+msgstr "日期"
+
+#: .\views\admin\posts.html.py:37
+#: .\views\admin\pages.html.py:34
+#: .\views\admin\entry.html.py:93
+msgid "Title"
+msgstr "标题"
+
+#: .\views\admin\posts.html.py:37
+#: .\views\admin\pages.html.py:34
+msgid "Status"
+msgstr "状态"
+
+#: .\views\admin\posts.html.py:37
+#: .\views\admin\entry.html.py:77
+msgid "allow comment"
+msgstr "允许评论"
+
+#: .\views\admin\posts.html.py:45
+#: .\views\admin\pages.html.py:42
+#: .\views\admin\entry.html.py:77
+msgid "Published"
+msgstr "发布"
+
+#: .\views\admin\posts.html.py:45
+#: .\views\admin\pages.html.py:42
+msgid "Unpublished"
+msgstr "未发布"
+
+#: .\views\admin\pages.html.py:7
+msgid "Manage Pages"
+msgstr "管理页面"
+
+#: .\views\admin\pages.html.py:8
+msgid "All Pages"
+msgstr "所有页面"
+
+#: .\views\admin\entry.html.py:24
+msgid "New Post"
+msgstr "新建文章"
+
+#: .\views\admin\entry.html.py:24
+msgid "New Page"
+msgstr "新建页面"
+
+#: .\views\admin\entry.html.py:50
+msgid "Write Post"
+msgstr "写文章"
+
+#: .\views\admin\entry.html.py:52
+msgid "Write Page"
+msgstr "写页面"
+
+#: .\views\admin\entry.html.py:62
+msgid "Category"
+msgstr "目录"
+
+#: .\views\admin\entry.html.py:76
+#: .\views\admin\link.html.py:24
+#: .\views\admin\category.html.py:24
+msgid "Save"
+msgstr "保存"
+
+#: .\views\admin\entry.html.py:81
+#: .\views\admin\link.html.py:28
+#: .\views\admin\category.html.py:28
+msgid "Related"
+msgstr "相关操作"
+
+#: .\views\admin\entry.html.py:84
+msgid "Manage All Posts"
+msgstr "管理所有文章"
+
+#: .\views\admin\entry.html.py:85
+msgid "Manage All Pages"
+msgstr "管理所有页面"
+
+#: .\views\admin\entry.html.py:107
+msgid "Post"
+msgstr "文章"
+
+#: .\views\admin\entry.html.py:109
+msgid "Page"
+msgstr "页面"
+
+#: .\views\admin\entry.html.py:154
+#: .\views\admin\categories.html.py:35
+#: .\views\admin\category.html.py:47
+msgid "Slug"
+msgstr "名称(slug)"
+
+#: .\views\admin\entry.html.py:162
+msgid "Tag"
+msgstr "标签"
+
+#: .\views\admin\entry.html.py:170
+msgid "Options"
+msgstr "选项"
+
+#: .\views\admin\entry.html.py:173
+msgid "Page level:"
+msgstr "页面级别:"
+
+#: .\views\admin\entry.html.py:175
+msgid "Page order:"
+msgstr "页面顺序:"
+
+#: .\views\admin\entry.html.py:185
+msgid "Excerpt"
+msgstr "摘要"
 
 #: .\views\admin\base.html.py:17
 msgid "Micolog Dashboard"
@@ -232,10 +416,6 @@ msgid "Cache"
 msgstr "缓存"
 
 #: .\views\admin\base.html.py:49
-msgid "Authors"
-msgstr "作者"
-
-#: .\views\admin\base.html.py:50
 msgid "help"
 msgstr "帮助"
 
@@ -255,76 +435,78 @@ msgstr "子标题"
 msgid "In a few words, explain what this blog is about."
 msgstr "关于这个博客的简单介绍"
 
-#: .\views\admin\setup.html.py:42
+#: .\views\admin\setup.html.py:41
+msgid "Blog notice:"
+msgstr "公告"
+
+#: .\views\admin\setup.html.py:47
+msgid "Default Link Structure:"
+msgstr "默认结构化链接 "
+
+#: .\views\admin\setup.html.py:50
+#: .\views\admin\setup.html.py:57
 msgid "Allowed variants: "
 msgstr "允许使用的变量:"
 
-#: .\views\admin\setup.html.py:46
+#: .\views\admin\setup.html.py:61
 msgid "Domain:"
 msgstr "域名:"
 
-#: .\views\admin\setup.html.py:52
+#: .\views\admin\setup.html.py:67
 msgid "Micolog Address(URL):"
 msgstr "博客网址(URL):"
 
-#: .\views\admin\setup.html.py:58
+#: .\views\admin\setup.html.py:73
 msgid "RSS Feed URL:"
 msgstr "RSS/Atom Feed地址:"
 
-#: .\views\admin\setup.html.py:63
+#: .\views\admin\setup.html.py:78
 msgid "Time delta:(Hours)"
 msgstr "时间差调整(单位:小时):"
 
-#: .\views\admin\setup.html.py:70
+#: .\views\admin\setup.html.py:85
 msgid "Theme:"
 msgstr "应用主题:"
 
-#: .\views\admin\setup.html.py:80
+#: .\views\admin\setup.html.py:96
 msgid "Posts per page:"
 msgstr "每页文章数:"
 
-#: .\views\admin\setup.html.py:85
-msgid "Enable memcache:"
-msgstr "启用缓存:"
+#: .\views\admin\setup.html.py:101
+msgid "Comments order:"
+msgstr "评论顺序"
 
-#: .\views\admin\setup.html.py:91
+#: .\views\admin\setup.html.py:108
+msgid "Comments per page:"
+msgstr "每页评论数:"
+
+#: .\views\admin\setup.html.py:115
 msgid "Enable comment notify by mail:"
 msgstr "允许将评论发送到你的邮箱:"
 
-#: .\views\admin\setup.html.py:99
+#: .\views\admin\setup.html.py:120
+msgid "Enable memcache:"
+msgstr "启用缓存:"
+
+#: .\views\admin\setup.html.py:127
 msgid "Xmlrpc  setting"
 msgstr "客户端（Xmlrpc）调用设置："
 
-#: .\views\admin\setup.html.py:100
+#: .\views\admin\setup.html.py:128
 msgid "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "
 msgstr "为了您可以通过客户端工具（如Windows live writer）进行写作，请在这里设置的用户名和密码"
 
-#: .\views\admin\setup.html.py:103
+#: .\views\admin\setup.html.py:131
 msgid "User name:"
 msgstr "用户名:"
 
-#: .\views\admin\setup.html.py:109
+#: .\views\admin\setup.html.py:137
 msgid "Password:"
 msgstr "密码:"
 
 #: .\views\admin\links.html.py:7
 msgid "Manage Links"
 msgstr "管理链接"
-
-#: .\views\admin\links.html.py:7
-#: .\views\admin\pages.html.py:7
-#: .\views\admin\posts.html.py:7
-#: .\views\admin\categories.html.py:7
-msgid "add new"
-msgstr "新建"
-
-#: .\views\admin\links.html.py:12
-#: .\views\admin\pages.html.py:14
-#: .\views\admin\posts.html.py:15
-#: .\views\admin\categories.html.py:14
-#: .\views\admin\comments.html.py:14
-msgid "Delete"
-msgstr "删除"
 
 #: .\views\admin\links.html.py:22
 #: .\views\admin\link.html.py:40
@@ -345,18 +527,6 @@ msgstr "编辑链接"
 msgid "Add Link"
 msgstr "添加链接"
 
-#: .\views\admin\link.html.py:24
-#: .\views\admin\category.html.py:24
-#: .\views\admin\entry.html.py:77
-msgid "Save"
-msgstr "保存"
-
-#: .\views\admin\link.html.py:28
-#: .\views\admin\category.html.py:28
-#: .\views\admin\entry.html.py:82
-msgid "Related"
-msgstr "相关操作"
-
 #: .\views\admin\link.html.py:31
 msgid "Manage All Links"
 msgstr "管理所有链接"
@@ -373,71 +543,6 @@ msgstr "网址"
 msgid "Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>"
 msgstr "例如: <code>http://xuming.net</code> - 请不要忘记 <code>http://</code>"
 
-#: .\views\admin\pages.html.py:7
-msgid "Manage Pages"
-msgstr "管理页面"
-
-#: .\views\admin\pages.html.py:8
-msgid "All Pages"
-msgstr "所有页面"
-
-#: .\views\admin\pages.html.py:18
-#: .\views\admin\posts.html.py:20
-#: .\views\admin\categories.html.py:18
-#: .\views\admin\comments.html.py:18
-msgid "&laquo; prev"
-msgstr "&laquo; 前一页"
-
-#: .\views\admin\pages.html.py:22
-#: .\views\admin\posts.html.py:24
-#: .\views\admin\categories.html.py:22
-#: .\views\admin\comments.html.py:22
-msgid "next &raquo;"
-msgstr "后一页 &raquo;"
-
-#: .\views\admin\pages.html.py:23
-#: .\views\admin\posts.html.py:26
-#: .\views\admin\categories.html.py:24
-#: .\views\admin\comments.html.py:23
-msgid "  Page %(pindex)s"
-msgstr "  第%(pindex)s页"
-
-#: .\views\admin\pages.html.py:34
-#: .\views\admin\posts.html.py:37
-#: .\views\admin\comments.html.py:34
-msgid "Date"
-msgstr "日期"
-
-#: .\views\admin\pages.html.py:34
-#: .\views\admin\posts.html.py:37
-#: .\views\admin\entry.html.py:94
-msgid "Title"
-msgstr "标题"
-
-#: .\views\admin\pages.html.py:34
-#: .\views\admin\posts.html.py:37
-msgid "Status"
-msgstr "状态"
-
-#: .\views\admin\pages.html.py:42
-#: .\views\admin\posts.html.py:45
-#: .\views\admin\entry.html.py:78
-msgid "Published"
-msgstr "发布"
-
-#: .\views\admin\pages.html.py:42
-#: .\views\admin\posts.html.py:45
-msgid "Unpublished"
-msgstr "未发布"
-
-#: .\views\admin\posts.html.py:7
-msgid "Manage Posts"
-msgstr "管理文章"
-
-#: .\views\admin\posts.html.py:9
-msgid "All Posts"
-msgstr "所有文章"
-
 #: .\views\admin\categories.html.py:7
 msgid "Manage Categories"
 msgstr "管理目录"
@@ -445,12 +550,6 @@ msgstr "管理目录"
 #: .\views\admin\categories.html.py:8
 msgid "All Categories"
 msgstr "所有目录"
-
-#: .\views\admin\categories.html.py:35
-#: .\views\admin\category.html.py:47
-#: .\views\admin\entry.html.py:156
-msgid "Slug"
-msgstr "名称(slug)"
 
 #: .\views\admin\category.html.py:11
 msgid "Edit category"
@@ -513,62 +612,8 @@ msgstr ""
 msgid "Entry"
 msgstr "文章/页面"
 
-#: .\views\admin\entry.html.py:25
-msgid "New Post"
-msgstr "新建文章"
-
-#: .\views\admin\entry.html.py:25
-msgid "New Page"
-msgstr "新建页面"
-
-#: .\views\admin\entry.html.py:51
-msgid "Write Post"
-msgstr "写文章"
-
-#: .\views\admin\entry.html.py:53
-msgid "Write Page"
-msgstr "写页面"
-
-#: .\views\admin\entry.html.py:63
-msgid "Category"
-msgstr "目录"
-
-#: .\views\admin\entry.html.py:85
-msgid "Manage All Posts"
-msgstr "管理所有文章"
-
-#: .\views\admin\entry.html.py:86
-msgid "Manage All Pages"
-msgstr "管理所有页面"
-
-#: .\views\admin\entry.html.py:108
-msgid "Post"
-msgstr "文章"
-
-#: .\views\admin\entry.html.py:110
-msgid "Page"
-msgstr "页面"
-
-#: .\views\admin\entry.html.py:164
-msgid "Tag"
-msgstr "标签"
-
-#: .\views\admin\entry.html.py:172
-msgid "Options"
-msgstr "选项"
-
-#: .\views\admin\entry.html.py:175
-msgid "Page level:"
-msgstr "页面级别:"
-
-#: .\views\admin\entry.html.py:177
-msgid "Page order:"
-msgstr "页面顺序:"
-
-#: .\views\admin\entry.html.py:187
-msgid "Excerpt"
-msgstr "摘要"
-
+#~ msgid "Authors"
+#~ msgstr "作者"
 #~ msgid "Advance"
 #~ msgstr "高级"
 
