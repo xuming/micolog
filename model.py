@@ -126,7 +126,7 @@ class Blog(db.Model):
     #每页评论数
     comments_per_page=db.IntegerProperty(default=20)
 
-    blognotice=db.StringProperty(default='')
+    blognotice=db.StringProperty(default='',multiline=True)
 
     domain=db.StringProperty()
     show_excerpt=db.BooleanProperty(default=True)
@@ -229,7 +229,7 @@ class Link(db.Model):
     linktext = db.StringProperty(multiline=False,default='')
     linkcomment = db.StringProperty(multiline=False,default='')
     createdate=db.DateTimeProperty(auto_now=True)
-    
+
     @property
     def get_icon_url(self):
         "get ico url of the wetsite"

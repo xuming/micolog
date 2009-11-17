@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-19 12:46+0800\n"
-"PO-Revision-Date: 2009-10-19 13:03+0800\n"
+"POT-Creation-Date: 2009-10-19 13:26+0800\n"
+"PO-Revision-Date: 2009-10-19 13:26+0800\n"
 "Last-Translator: 徐明 <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -34,11 +34,11 @@ msgstr "请输入姓名，Email地址和评论内容"
 msgid "this is a test"
 msgstr "这是一个测试"
 
-#: .\model.py:260
+#: .\model.py:268
 msgid "..more"
 msgstr "(..更多内容)"
 
-#: .\model.py:525
+#: .\model.py:533
 #, python-format
 msgid ""
 "New comment on your post \"%s\"\n"
@@ -59,11 +59,11 @@ msgstr ""
 "查看所有评论:\n"
 "%s\n"
 
-#: .\model.py:595
+#: .\model.py:603
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: .\model.py:596
+#: .\model.py:604
 msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
 msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
@@ -419,6 +419,54 @@ msgstr "缓存"
 msgid "help"
 msgstr "帮助"
 
+#: .\views\admin\links.html.py:7
+msgid "Manage Links"
+msgstr "管理链接"
+
+#: .\views\admin\links.html.py:22
+#: .\views\admin\link.html.py:40
+#: .\views\admin\categories.html.py:35
+#: .\views\admin\category.html.py:40
+msgid "Name"
+msgstr "名称"
+
+#: .\views\admin\links.html.py:22
+msgid "URL"
+msgstr ""
+
+#: .\views\admin\links.html.py:22
+#: .\views\admin\link.html.py:54
+msgid "LinkComment"
+msgstr "链接描述"
+
+#: .\views\admin\link.html.py:11
+msgid "Edit link"
+msgstr "编辑链接"
+
+#: .\views\admin\link.html.py:11
+msgid "Add Link"
+msgstr "添加链接"
+
+#: .\views\admin\link.html.py:31
+msgid "Manage All Links"
+msgstr "管理所有链接"
+
+#: .\views\admin\link.html.py:43
+msgid "Example: Nifty blogging software"
+msgstr "例如：关于GAE的博客"
+
+#: .\views\admin\link.html.py:47
+msgid "Web Address"
+msgstr "网址"
+
+#: .\views\admin\link.html.py:50
+msgid "Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>"
+msgstr "例如: <code>http://xuming.net</code> - 请不要忘记 <code>http://</code>"
+
+#: .\views\admin\link.html.py:57
+msgid "Example: Xuming's Blog"
+msgstr ""
+
 #: .\views\admin\setup.html.py:24
 msgid "Setup and Configuraiton for this Blog"
 msgstr "博客设置/系统配置"
@@ -504,45 +552,6 @@ msgstr "用户名:"
 msgid "Password:"
 msgstr "密码:"
 
-#: .\views\admin\links.html.py:7
-msgid "Manage Links"
-msgstr "管理链接"
-
-#: .\views\admin\links.html.py:22
-#: .\views\admin\link.html.py:40
-#: .\views\admin\categories.html.py:35
-#: .\views\admin\category.html.py:40
-msgid "Name"
-msgstr "名称"
-
-#: .\views\admin\links.html.py:22
-msgid "URL"
-msgstr ""
-
-#: .\views\admin\link.html.py:11
-msgid "Edit link"
-msgstr "编辑链接"
-
-#: .\views\admin\link.html.py:11
-msgid "Add Link"
-msgstr "添加链接"
-
-#: .\views\admin\link.html.py:31
-msgid "Manage All Links"
-msgstr "管理所有链接"
-
-#: .\views\admin\link.html.py:43
-msgid "Example: Nifty blogging software"
-msgstr "例如：关于GAE的博客"
-
-#: .\views\admin\link.html.py:47
-msgid "Web Address"
-msgstr "网址"
-
-#: .\views\admin\link.html.py:50
-msgid "Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>"
-msgstr "例如: <code>http://xuming.net</code> - 请不要忘记 <code>http://</code>"
-
 #: .\views\admin\categories.html.py:7
 msgid "Manage Categories"
 msgstr "管理目录"
@@ -612,6 +621,9 @@ msgstr ""
 msgid "Entry"
 msgstr "文章/页面"
 
+#, fuzzy
+#~ msgid "Web Comment"
+#~ msgstr "评论"
 #~ msgid "Authors"
 #~ msgstr "作者"
 #~ msgid "Advance"

@@ -4,7 +4,7 @@
 <div class="rsspanel">
   <div style="padding:0.2em">
   <div style="display:none">
-   <span class="fg-subscribe" style="padding-right:20px"><a href="http://feeds.feedburner.com/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feeds.feedburner.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedBurner</a> </span>
+   <span class="fg-subscribe" style="padding-right:20px"><a href="{{ blog.feedurl }}"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="{{ blog.feedurl }}" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedBurner</a> </span>
 <span class="fg-subscribe"  ><a href="http://feed.feedsky/xuming"><img alt="Subscribe" src="/themes/{{blog.theme_name}}/images/cleardot.gif"/></a><a href="http://feed.feedsky.com/xuming" style="padding-left:5px;color:#BB4900;text-decoration:none">FeedSky</a> </span>
   </div>
 
@@ -13,12 +13,12 @@
 
 
 <!-- FEED  begin -->
-<a href="http://fusion.google.com/add?feedurl=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_google.gif" alt="google reader" vspace="2" style="margin-bottom:3px" ></a>
-<a href="http://www.zhuaxia.com/add_channel.php?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_zhuaxia.gif" alt="&#25235;&#34430;" vspace="2" style="margin-bottom:3px" ></a><br />
-<a href="http://www.bloglines.com/sub/http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_bloglines.gif" alt="bloglines" vspace="2" style="margin-bottom:3px" ></a>
-<a href="http://add.my.yahoo.com/rss?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_yahoo.gif" alt="my yahoo" vspace="2" style="margin-bottom:3px" ></a><br />
-<a href="http://inezha.com/add?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_nazha.gif" alt="&#21738;&#21522;" vspace="2" style="margin-bottom:3px" ></a>
-<a href="http://www.xianguo.com/subscribe.php?url=http://feeds.feedburner.com/xuming" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_xianguo.gif" alt="&#40092;&#26524;" vspace="2" style="margin-bottom:3px" ></a><br />
+<a href="http://fusion.google.com/add?feedurl={{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_google.gif" alt="google reader" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://www.zhuaxia.com/add_channel.php?url={{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_zhuaxia.gif" alt="&#25235;&#34430;" vspace="2" style="margin-bottom:3px" ></a><br />
+<a href="http://www.bloglines.com/sub/{{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_bloglines.gif" alt="bloglines" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://add.my.yahoo.com/rss?url={{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_yahoo.gif" alt="my yahoo" vspace="2" style="margin-bottom:3px" ></a><br />
+<a href="http://inezha.com/add?url={{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_nazha.gif" alt="&#21738;&#21522;" vspace="2" style="margin-bottom:3px" ></a>
+<a href="http://www.xianguo.com/subscribe.php?url={{ blog.feedurl }}" target="_blank"><img border="0" src="http://img.feedsky.com/images/icon_subshot01_xianguo.gif" alt="&#40092;&#26524;" vspace="2" style="margin-bottom:3px" ></a><br />
 <!-- FEED end -->
 
 <div style="padding:5px 0px">* 更多订阅本站方式请看 <a href="/rsshelp">订阅帮助</a></div>
@@ -31,7 +31,7 @@
 	<div id="blog-notice" class="line"></div>
     <h2>博客公告</h2>
     <ul>
-		{{blog.blognotice|escape}}
+		{{blog.blognotice}}
 	</ul>
 
 </li>
