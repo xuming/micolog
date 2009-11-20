@@ -539,6 +539,10 @@ Comment:
 You can see all comments on this post here:
 %s
 ''')
+        sbody=sbody.decode('utf-8')
+        logging.info(type( sbody))
+        logging.info(sbody)
+
         if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
             sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
             g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))

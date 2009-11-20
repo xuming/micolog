@@ -2,7 +2,25 @@
 {% extends "base.html" %}
 {% block header %}
 <script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+<script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<style>
+#ui-datepicker-div{border:1px solid ;padding:10px ;background-color:white}
+.ui-datepicker-prev{float:left}
+.ui-datepicker-next{float:right}
+.ui-datepicker-next,.ui-datepicker-prev{
+background-color:beige;
+border:1px solid gray;
+display:block;
+padding:0 5px;
+cursor:pointer;
+}
+.ui-datepicker-title{}
+</style>
 <script type="text/javascript">
+$(document).ready(function() {
+   $("#date_begin").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
+    $("#date_end").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
+   });
 {%if postback%}
 $(document).ready(function() {
   $.getJSON("/admin/import_next", next_result);
@@ -47,23 +65,23 @@ $(document).ready(function() {
 
 
 	{%else%}
-<script language="javascript" type="text/javascript" src="/static/My97DatePicker/WdatePicker.js"></script>
     <div class="wrap">
             <h2>{%trans "Export/Import for wordpress"%}</h2>
             <h3>{%trans "Export"%}</h3>
-            <p>{%trans "Export as  WordPress eXtended RSS file"%}</p> 
+            <p>{%trans "Export as  WordPress eXtended RSS file"%}</p>
             <form action="/admin/export/micolog.xml" method='get'>
-              {%trans "Export from Date:"%}<input type="text" name="date_begin" disabled onClick="WdatePicker()" />
-              {%trans "to Date:"%}<input type="text" name="date_end" disabled onClick="WdatePicker()" />{%trans "'s posts"%}<br /><br />
-                <input type="checkbox" name="all" value="on" checked 
+              {%trans "Export from Date:"%}<input type="text" id="date_begin" name="date_begin" disabled " />
+              {%trans "to Date:"%}<input type="text" id="date_end" name="date_end"  disabled />{%trans "'s posts"%}<br /><br />
+                <input type="checkbox" name="all" value="on" checked
                 onclick="javascript:
               if(this.checked){
                 form.date_begin.disabled=true;
-                form.date_end.disabled=true;     
+                form.date_end.disabled=true;
+
               }else{
                 form.date_begin.disabled=false;
                 form.date_end.disabled=false;
-                }" />{%trans "Export all posts"%}<br />
+                }"; />{%trans "Export all posts"%}<br />
                 <input type="submit" value={%trans "Export"%} />
             </form>
 <h3>{%trans "Import"%}</h3>

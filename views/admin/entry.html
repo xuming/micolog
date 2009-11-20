@@ -74,7 +74,7 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 {%endifequal%}
 <p class="submit">
 <input type="submit" tabindex="4" value="{% trans "Save" %}" name="save" class="button button-highlighted"/>
-  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%}/>{% trans "Published" %} <input type="checkbox" style="margin-left:10px;" tabindex="4" value="allow_comment" name="allow_comment" class="button button-highlighted" {%if entry.allow_comment%}checked="checked"{%endif%}/>{% trans "allow comment" %}
+  <input type="checkbox" style="margin-left:10px;" tabindex="4" value="publish" name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%} />{% trans "Published" %} <input type="checkbox" style="margin-left:10px;" tabindex="4" value="allow_comment" name="allow_comment" class="button button-highlighted" {%if entry.allow_comment%}checked="checked"{%endif%} {%if not entry%}checked="checked"{%endif%}/>{% trans "allow comment" %}
 </p>
 
 <div class="side-info">

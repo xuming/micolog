@@ -30,7 +30,9 @@
 <div id="commentsnavi">
 {{comments_nav.nav}}
 </div>
+
 <h3 id="respond">我要留言</h3>
+{% if entry.allow_comment %}
 <div class="info" id="comment_info"></div>
 <form action="/post_comment" method="post" id="commentform">
 
@@ -90,7 +92,7 @@
        	  comment=$(msg)
        	  if (!loadjs)
        	  {
-       	  	$("#commentlist").append(comment).show();
+       	  	$("#commentlist").prepend(comment).show();
        	  	$.getScript("http://dev.jquery.com/view/trunk/plugins/color/jquery.color.js", function(){
        	  		 comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
        						.animate( { backgroundColor: 'white' }, "slow")
@@ -98,7 +100,7 @@
 						});
        	  }else
        	  {
-       	  	$("#commentlist").append(comment);
+       	  	$("#commentlist").prepend(comment);
        	  	  comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
        						.animate( { backgroundColor: 'white' }, "slow")
 
@@ -146,17 +148,20 @@
                   		 }
 
                   		 $('#s_msg').text('正在提交留言...').show();
+                        $("#submit").attr('disabled',true);
 
 	              		 return true;
 
               		},
               	success:function(data){
+                    $("#submit").attr('disabled',false);
               		  if (data[0])
               		  {
               		  	/*document.cookie=data[2];*/
               		  	add_comment(data[1]);
             		  	$('#s_msg').text('留言提交成功！');
               		  	$('#comment').val('');
+                        location="#comments";
               		  }
               		  else
               		  {  if (data[1]==-102)
@@ -170,3 +175,6 @@
 
 </script>
 
+{% else %}
+<p class="nocomments">评论已关闭</p>
+{% endif %}

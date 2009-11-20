@@ -1,0 +1,64 @@
+﻿{% extends "base.html" %}
+{% block title %} {{year}}年{{month}}月 - {{blog.title|escape}} {% endblock %}
+{% block content %}
+
+<!-- content START -->
+<div id="content">
+ <div id="gc-home">
+    <div class="g-section g-tpl-330-alt">
+
+     
+      <div class="g-unit">
+        <div class="g-c-gc-home">
+
+	<!-- main START -->
+	<div id="main">
+<h2>存档</h2>
+	
+		<div class="box">
+			&#8216;{{year}}年{{month}}月&#8217; 的文章</div>
+
+		{% for entry in entries %}
+		<div class="post">
+			<h2><a class="title" href="/{{entry.link|escape}}" >{{entry.title|escape}}</a></h2>
+			<div class="info">
+				<span class="date">{{ entry.date|datetz:"F jS, Y " }}</span>
+
+				<span class="comments"><a href="/{{entry.link|escape}}#comments" title="{{entry.title|escape}}">{{entry.commentcount}} 条评论</a></span>
+				<div class="fixed"></div>
+			</div>
+		</div>
+		{% endfor %}
+
+		<div id="pagenavi">
+			<div class="wp-pagenavi">
+				{% if pager.prev %}<a href="?page={{ pager.prev}}" >&laquo;上一页</a>{% endif %}
+				{% if pager.next %}<a href="?page={{ pager.next }}" >&raquo;下一页</a>{% endif %}
+			</div>
+
+			<div class="fixed"></div>
+		</div>
+
+		</div>
+		<!-- main END -->
+
+        
+      </div><!-- end g-c-gc-home -->
+    </div><!-- end g-unit -->
+ <div class="g-unit g-first">
+ 	 {{ blog.theme }}
+      	{% include "sidebar.html" %}
+        
+      </div>
+  </div><!-- end g-section -->
+
+
+
+
+</div><!-- end gc-home -->
+
+    	
+
+{% endblock %}
+
+
