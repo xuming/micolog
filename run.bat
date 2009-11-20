@@ -1,1 +1,1 @@
-dev_appserver.py ..\micolog_2
+dev_appserver.py ..\micolog

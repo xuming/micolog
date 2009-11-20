@@ -1,1 +1,1 @@
-appcfg.py update ../micolog_2
+appcfg.py update ../micolog
