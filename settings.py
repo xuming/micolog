@@ -10,4 +10,3 @@ LANGUAGE_CODE = 'zh-cn'
 
 TEMPLATE_LOADERS=('django.template.loaders.filesystem.load_template_source',
                     'ziploader.zip_loader.load_template_source')
-TEMPLATE_DIRS =(os.path.join( os.path.dirname(__file__),"themes"))
