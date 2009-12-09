@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os,logging
 import re
-
 from functools import wraps
 from google.appengine.api import users
 from google.appengine.ext import webapp
@@ -11,7 +10,7 @@ from google.appengine.api import memcache
 ##import app.webapp as webapp2
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.utils.translation import  activate
-
+from django.template import TemplateDoesNotExist
 from django.conf import settings
 settings._target = None
 from  model import *
@@ -23,6 +22,7 @@ from mimetypes import types_map
 from datetime import datetime, timedelta
 import urllib
 import traceback
+import micolog_template
 
 logging.info('module base reloaded')
 def urldecode(value):
@@ -57,6 +57,25 @@ def printinfo(method):
             print x
         return method(self, *args, **kwargs)
     return wrapper
+#only ajax methed allowed
+def ajaxonly(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.request.headers["X-Requested-With"]=="XMLHttpRequest":
+             self.error(404)
+        else:
+            return method(self, *args, **kwargs)
+    return wrapper
+
+#only request from same host can passed
+def hostonly(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if  self.request.headers['Referer'].startswith(os.environ['HTTP_HOST'],7):
+            return method(self, *args, **kwargs)
+        else:
+            self.error(404)
+    return wrapper
 
 def format_date(dt):
 	return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -75,13 +94,14 @@ def cache(key="",time=3600):
             html= memcache.get(skey)
             #arg[0] is BaseRequestHandler object
 
-
             if html:
                  logging.info('cache:'+skey)
                  response.last_modified =html[1]
                  ilen=len(html)
-                 if ilen==3:
+                 if ilen>=3:
                     response.set_status(html[2])
+                 if ilen>=4:
+                    response.headers['Content-Type']=html[3]
                  response.out.write(html[0])
             else:
                 if 'last-modified' not in response.headers:
@@ -90,7 +110,7 @@ def cache(key="",time=3600):
                 method(*args, **kwargs)
                 result=response.out.getvalue()
                 status_code = response._Response__status[0]
-                memcache.set(skey,(result,response.last_modified,status_code),time)
+                memcache.set(skey,(result,response.last_modified,status_code,response.headers['Content-Type']),time)
 
         return _wrapper
     return _decorate
@@ -191,16 +211,36 @@ class BaseRequestHandler(webapp.RequestHandler):
             self.response.set_status(errorcode)
 
 
-        errorfile=getattr(self.blog.theme,'error'+str(errorcode))
-        if not errorfile:
-            errorfile=self.blog.theme.error
-        self.response.out.write( template.render(errorfile, self.template_vals))
+        #errorfile=getattr(self.blog.theme,'error'+str(errorcode))
+        #logging.debug(errorfile)
+##        if not errorfile:
+##            errorfile=self.blog.theme.error
+        errorfile='error'+str(errorcode)+".html"
+        try:
+            content=micolog_template.render(self.blog.theme,errorfile, self.template_vals)
+        except TemplateDoesNotExist:
+            try:
+                content=micolog_template.render(self.blog.theme,"error.html", self.template_vals)
+            except TemplateDoesNotExist:
+                content=micolog_template.render(self.blog.default_theme,"error.html", self.template_vals)
+            except:
+                content=message
+        except:
+            content=message
+        self.response.out.write(content)
 
     def get_render(self,template_file,values):
-        sfile=getattr(self.blog.theme, template_file)
-        logging.debug('template:'+sfile)
+        template_file=template_file+".html"
         self.template_vals.update(values)
-        html = template.render(sfile, self.template_vals)
+
+        try:
+            #sfile=getattr(self.blog.theme, template_file)
+            logging.debug("get_render:"+template_file)
+            html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
+        except TemplateDoesNotExist:
+            #sfile=getattr(self.blog.default_theme, template_file)
+            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
+
         return html
 
     def render(self,template_file,values):

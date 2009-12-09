@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -37,6 +37,9 @@
        });
     }
     loginp();
+
+
+
 </script>
 <div id="gc-header">
   <div id="logo"><a href="{{ blog.baseurl }}">
@@ -85,6 +88,9 @@
       <a href="{{ blog.baseurl }}"  >首页</a>
     </li>
     {{self.m_list_pages}}
+    <li id="bbs_link" class="page_item">
+      <a href="http://micolog.xuming.net"  >Micolog论坛</a>
+    </li>
     {% block topmenu %}
 
     {% endblock %}
@@ -102,12 +108,11 @@
   <div id="gc-footer-img"></div>
   <div class="text" >
   	<div style="margin-bottom:6px;">
-  		©2008 <a href="http://xuming.net">徐明的博客</a> Powered by <a href="http://code.google.com/appengine/" rel="nofollow">Google App Engine</a>
+  		?2008 <a href="http://xuming.net">徐明的博客</a> Powered by <a href="http://code.google.com/appengine/" rel="nofollow">Google App Engine</a>
 
   	</div>
   	<div>
-
-       除非另有声明，本站文章采用 <a rel="license" href="http://creativecommons.org/licenses/by-nc/2.5/cn/"  rel="nofollow">知识共享署名-非商业性使用 2.5 中国大陆许可协议</a> 进行许可。
+        除非另有声明，本站文章采用 <a rel="license" href="http://creativecommons.org/licenses/by-nc/2.5/cn/"  rel="nofollow">知识共享署名-非商业性使用 2.5 中国大陆许可协议</a> 进行许可。
     </div>
   </div>
 </div><!-- end gc-footer -->

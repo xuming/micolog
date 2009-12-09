@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import cgi, os,sys,math
 import wsgiref.handlers
+import  google.appengine.api
 ##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 ##from django.utils.translation import  activate
-
+##from django.conf import settings
 
 # Google App Engine imports.
 from google.appengine.ext.webapp import util
@@ -12,6 +13,7 @@ from google.appengine.ext.webapp import template, \
 from google.appengine.api import users
 ##import app.webapp as webapp2
 from google.appengine.ext import db
+
 # Force Django to reload its settings.
 
 ##from django.conf import settings
@@ -22,7 +24,7 @@ from datetime import datetime ,timedelta
 import base64,random
 from django.utils import simplejson
 import filter  as myfilter
-
+from django.template.loader import *
 ##settings.configure(LANGUAGE_CODE = 'zh-cn')
 # Must set this env var before importing any part of Django
 
@@ -34,8 +36,6 @@ def doRequestHandle(old_handler,new_handler,**args):
 class MainPage(BasePublicPage):
 
     def get(self,page=1):
-
-
         postid=self.param('p')
         if postid:
             try:
@@ -416,6 +416,7 @@ class do_action(BaseRequestHandler):
         except:
              self.error(404)
 
+    @ajaxonly
     def action_info_login(self):
         if self.login_user:
             self.write(simplejson.dumps({'islogin':True,
@@ -423,6 +424,17 @@ class do_action(BaseRequestHandler):
                                          'name': self.login_user.nickname()}))
         else:
             self.write(simplejson.dumps({'islogin':False}))
+
+    @hostonly
+    @cache()
+    def action_proxy(self):
+        result=urlfetch.fetch(self.param("url"), headers=self.request.headers)
+        if result.status_code == 200:
+            self.response.headers['Expires'] = 'Thu, 15 Apr 3010 20:00:00 GMT'
+            self.response.headers['Cache-Control'] = 'max-age=3600,public'
+            self.response.headers['Content-Type'] = result.headers['Content-Type']
+            self.response.out.write(result.content)
+        return
 
     def action_getcomments(self):
         key=self.param('key')
@@ -458,7 +470,7 @@ class getMedia(webapp.RequestHandler):
     def get(self,slug):
         media=Media.get(slug)
         if media:
-            self.response.headers['Expires'] = 'Thu, 15 Apr 2010 20:00:00 GMT'
+            self.response.headers['Expires'] = 'Thu, 15 Apr 3010 20:00:00 GMT'
             self.response.headers['Cache-Control'] = 'max-age=3600,public'
             self.response.headers['Content-Type'] = str(media.mtype)
             self.response.out.write(media.bits)

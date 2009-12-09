@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
-
+from google.appengine.ext.zipserve import *
 sys.path.append('modules')
 from model import *
 
@@ -26,12 +26,29 @@ def Error404(handler):
 
 
 class GetFile(webapp.RequestHandler):
-    def get(self):
+    def get(self,prefix,name):
     	request_path = self.request.path[8:]
-    	server_path = os.path.normpath(os.path.join(cwd, 'themes', request_path))
-    	fstat=os.stat(server_path)
-    	fmtime=datetime.fromtimestamp(fstat[stat.ST_MTIME])
 
+
+    	server_path = os.path.normpath(os.path.join(cwd, 'themes', request_path))
+        try:
+            fstat=os.stat(server_path)
+        except:
+            #use zipfile
+            theme_file=os.path.normpath(os.path.join(cwd, 'themes', prefix))
+            if os.path.exists(theme_file+".zip"):
+                #is file exist?
+                fstat=os.stat(theme_file+".zip")
+                zipdo=ZipHandler()
+                zipdo.initialize(self.request,self.response)
+                return zipdo.get(theme_file,name)
+            else:
+                Error404(self)
+                return
+
+
+    	fmtime=datetime.fromtimestamp(fstat[stat.ST_MTIME])
+        logging.info(fstat)
     	if self.request.if_modified_since and self.request.if_modified_since.replace(tzinfo=None) >= fmtime:
     		self.response.headers['Date'] = format_date(datetime.utcnow())
     		self.response.headers['Last-Modified'] = format_date(fmtime)
@@ -91,7 +108,7 @@ def main():
 	application = webapp.WSGIApplication(
 			[
 				('/themes/[\\w\\-]+/templates/.*', NotFound),
-				('/themes/[\\w\\-]+/.+', GetFile),
+				('/themes/(?P<prefix>[\\w\\-]+)/(?P<name>.+)', GetFile),
 				('.*', NotFound),
 				],
 			debug=True)
