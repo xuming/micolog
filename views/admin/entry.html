@@ -28,13 +28,26 @@
  {% block content %}
  <!-- tinyMCE -->
 <script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
-
 <script language="javascript" type="text/javascript"
 src="/static/js/editor.js"></script>
 <script type='text/javascript'>
 	wpTinyMCEConfig = {
 		defaultEditor: "tinymce"
-	}
+	};
+    function taggle_ext_page(isChecked)
+    {
+        if(isChecked)
+        {
+            $('#postarea').hide();
+            $('#ext_page_area').show();
+        }else
+        {   $('#postarea').show();
+            $('#ext_page_area').hide();
+        }
+    }
+    $(function(){
+       taggle_ext_page($("#is_external_page").attr("checked"));
+    });
 </script>
 
 <script language="javascript" type="text/javascript"
@@ -89,6 +102,13 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 </div>
 
 <div id="post-body2">
+
+{%ifnotequal entrytype "post"%}
+<div style="margin-left:20px;margin-top:5px;">
+
+<input type="checkbox" onclick="taggle_ext_page(this.checked);" id="is_external_page" name="is_external_page" {%if  entry.is_external_page%}checked="checked"{%endif%}/><label for="is_external_page">{%trans "Use as  external page" %} </label>
+</div>
+{%endifnotequal%}
 <div id="titlediv">
 <h3>{%trans "Title" %}</h3>
 <div id="titlewrap">
@@ -100,7 +120,23 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 </div>
 </div>
 
-<div class="stuffbox" id="postarea">
+
+<div class="stuffbox" id="ext_page_area" {%if not entry.is_external_page%}style="display:none"{%endif%}>
+
+<h3>{%trans "External page address" %}</h3>
+<div  class="f_text">
+    <input type="text" id="external_page_address" name="external_page_address" value="{{entry.external_page_address}}">
+</div>
+<h3>{%trans "Target" %}</h3>
+<div style="padding:5px;" >
+    &nbsp;<input type="radio" name="target" id="target_self" value="_self" {%ifequal entry.target "_self"%} checked="checked"{%endifequal%}><label for="target_self">_self</label>
+    <input type="radio" name="target" id="target_blank" value="_blank" {%ifequal entry.target "_blank"%} checked="checked"{%endifequal%}><label for="target_blank">_blank</label>
+</div>
+
+</div>
+
+
+<div class="stuffbox" id="postarea" {%if entry.is_external_page%}style="display:none"{%endif%}>
 <h3>
 <div class="title">
 {%ifequal entrytype "post"%}
@@ -172,7 +208,7 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
   	<p>
      <span style="font-weight:bold;width:30px">{% trans "Page level:"%} </span><input type="text" id="entry_parent" value="{{entry.entry_parent}}" tabindex="1" size="4" name="entry_parent"/>
   	<p>
-      <span  style="font-weight:bold;width:30px">{% trans "Page order:"%}"</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
+      <span  style="font-weight:bold;width:30px">{% trans "Page order:"%}</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
     </p>
 </div>
 </div>

@@ -906,14 +906,15 @@ color : #2583ad;
 text-decoration : none;
 padding-right : 10px;
 }
-#titlewrap input{width:100%}
-#poststuff #titlewrap {
+#titlewrap input,.f_text input{width:100%}
+#poststuff #titlewrap ,.f_text{
 border-color : #ccc;
 border-style : solid;
 border-width : 1px;
 padding : 2px 3px;
 }
-#titlediv #title {
+
+#titlediv #title ,.f_text input{
 border : 0 none;
 font-size : 1.7em;
 padding : 0;

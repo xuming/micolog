@@ -585,6 +585,11 @@ class admin_entry(BaseRequestHandler):
         entry_parent=self.paramint('entry_parent')
         menu_order=self.paramint('menu_order')
         entry_excerpt=self.param('excerpt')
+
+        is_external_page=self.parambool('is_external_page')
+        target=self.param('target')
+        external_page_address=self.param('external_page_address')
+
         def mapit(cat):
             return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
@@ -594,10 +599,13 @@ class admin_entry(BaseRequestHandler):
                         'slug':entry_slug,
                         'entry_parent':entry_parent,
                         'excerpt':entry_excerpt,
-                        'menu_order':menu_order}
+                        'menu_order':menu_order,
+                        'is_external_page':is_external_page,
+                        'target':target,
+                        'external_page_address':external_page_address}
               }
-        if not (title and content):
-            vals.update({'result':False, 'msg':'Please input title and content.'})
+        if not (title and (content or (is_external_page and external_page_address))):
+            vals.update({'result':False, 'msg':'Please input title and content or external_page_address.'})
             self.render2('views/admin/entry.html',vals)
         else:
             if action=='add':
@@ -608,6 +616,9 @@ class admin_entry(BaseRequestHandler):
                 entry.entry_parent=entry_parent
                 entry.menu_order=menu_order
                 entry.excerpt=entry_excerpt
+                entry.is_external_page=is_external_page
+                entry.target=target
+                entry.external_page_address=external_page_address
                 newcates=[]
                 if allow_comment:
                     entry.allow_comment= True
@@ -638,6 +649,9 @@ class admin_entry(BaseRequestHandler):
                     entry.entry_parent=entry_parent
                     entry.menu_order=menu_order
                     entry.excerpt=entry_excerpt
+                    entry.is_external_page=is_external_page
+                    entry.target=target
+                    entry.external_page_address=external_page_address
                     entry.settags(tags)
                     newcates=[]
                     if cats:

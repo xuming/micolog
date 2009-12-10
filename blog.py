@@ -147,6 +147,8 @@ class SinglePost(BasePublicPage):
         mp=self.paramint("mp",1)
 
         entry=entries[0]
+        if entry.is_external_page:
+            self.redirect(entry.external_page_address,True)
         entry.readtimes += 1
         entry.put()
         self.entry=entry

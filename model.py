@@ -263,6 +263,12 @@ class Entry(BaseModel):
 	is_wp=db.BooleanProperty(default=False)
 	post_id= db.IntegerProperty()
 	excerpt=db.StringProperty(multiline=True)
+
+    #external page
+	is_external_page=db.BooleanProperty(default=False)
+	target=db.StringProperty(default="_self")
+	external_page_address=db.StringProperty()
+
 	postname=''
 	_relatepost=None
 
@@ -405,7 +411,6 @@ class Entry(BaseModel):
 
 	def publish(self,newval=True):
 		if newval:
-
 			if not self.is_saved():
 				self.save()
 
@@ -425,7 +430,11 @@ class Entry(BaseModel):
 				if self.slug:
 					self.link=self.postname
 				else:
-					self.link=g_blog.default_link_format%vals
+				    #use external page address as link
+				    if self.is_external_page:
+					   self.link=self.external_page_address
+				    else:
+					   self.link=g_blog.default_link_format%vals
 			else:
 				if g_blog.link_format and self.postname:
 					self.link=g_blog.link_format.strip()%vals

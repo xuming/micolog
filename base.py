@@ -275,6 +275,12 @@ class BaseRequestHandler(webapp.RequestHandler):
         except:
            return default
 
+    def parambool(self, name, default=False):
+        try:
+	       return self.request.get(name)=='on'
+        except:
+           return default
+
 
     def write(self, s):
 		self.response.out.write(s)
@@ -328,5 +334,9 @@ class BasePublicPage(BaseRequestHandler):
                 current= 'current_page_item'
             else:
                 current= 'page_item'
-            ret+='<li class="%s"><a href="/%s" >%s</a></li>'%( current,page.link, page.title)
+            #page is external page ,and page.slug is none.
+            if page.is_external_page and not page.slug:
+                ret+='<li class="%s"><a href="%s" target="%s" >%s</a></li>'%( current,page.link,page.target, page.title)
+            else:
+                ret+='<li class="%s"><a href="/%s" target="%s">%s</a></li>'%( current,page.link, page.target,page.title)
         return ret

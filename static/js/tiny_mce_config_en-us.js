@@ -5,7 +5,7 @@
         theme : "advanced",
         skin:"wp_theme",
         language : "en",
-        plugins : "wordpress,safari,pagebreak,save,advhr,advimage,advlink,emotions, inlinepopups,media,directionality,visualchars,nonbreaking,emotions,fullscreen,",
+        plugins : "wordpress,safari,pagebreak,save,advhr,advimage,advlink,emotions, inlinepopups,media,directionality,visualchars,nonbreaking,emotions,fullscreen,imagemanager",
         // Theme options
         theme_advanced_buttons1:"bold,italic,strikethrough,|,bullist,numlist,blockquote,|,justifyleft,justifycenter,justifyright,|,link,unlink,image,wp_more,|,fullscreen,wp_adv",
         theme_advanced_buttons2:"formatselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,|,media,charmap,emotions,|,outdent,indent,|,undo,redo",
@@ -23,11 +23,7 @@
     
         // Drop lists for link/image/media/template dialogs
         template_external_list_url : "lists/template_list.js",
-
-
-
-
         external_link_list_url : "lists/link_list.js",
-        external_image_list_url : "lists/image_list.js",
-        media_external_list_url : "lists/media_list.js",
+        external_image_list_url : "/static/js/image_list.js",
+        media_external_list_url : "lists/media_list.js"
     });
