@@ -1,0 +1,27 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+{% endblock %}
+
+{% block nav2 %}
+
+{% endblock %}
+{% block content %}
+<div style="float:left;width:100%">
+<div id="pcontent" style="margin-left:160px">
+{{pcontent}}
+</div>
+</div>
+
+<div id="pnav" style="float:left;margin-left:-100%;width:160px">
+  {%for item in plugins%}
+ <a href="/admin/plugins/{{item.iname}}" {%ifequal item.iname plugin.iname%}class="current"{%endifequal%}>{{item.name}}</a>
+ {%endfor%}
+</div>
+
+{% endblock %}
+
+
+
+

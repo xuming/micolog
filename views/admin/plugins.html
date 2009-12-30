@@ -1,0 +1,28 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+   <div class="wrap">
+<h2>Manage Plugins</h2>
+<table class="widefat" cellspacing="0">
+<tr><th>Plugin</th><th>Version</th><th>Description</th><th>Author</th><th>Active Status</th></tr>
+{%for plugin in plugins%}
+<tr>
+<td><a href="/admin/plugins/{{plugin.iname}}">{{plugin.name}}</a></td>
+<td><a href="{{plugin.uri}}" target="_blank">{{plugin.version}}</a></td>
+<td>{{plugin.description}}</td>
+<td><a href="{{plugin.authoruri}}" target="_blank">{{plugin.author}}</a></td>
+<td>
+{%if plugin.active%}
+<form action="?action=deactivate&plugin={{plugin.iname}}" method="post">
+<input type="submit" value="Deactivate"/>
+{%else%}
+<form action="?action=activate&plugin={{plugin.iname}}" method="post">
+<input type="submit" value="Activate"/>
+{%endif%}
+</form>
+</td>
+</tr>
+{%endfor%}
+</table>
+</div>
+ {% endblock  %}
