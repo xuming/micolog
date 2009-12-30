@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 import wsgiref.handlers
 import xmlrpclib
+from xmlrpclib import Fault
 import sys
 import cgi
 import base64
 from datetime import datetime
 from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
 from functools import wraps
-
+from django.utils.html import strip_tags
 sys.path.append('modules')
 from base import *
 from model import *
+from micolog_plugin import *
+from urlparse import urlparse
 
 def checkauth(pos=1):
     def _decorate(method):
@@ -106,8 +109,14 @@ def metaWeblog_newPost(blogid, struct, publish):
     if struct.has_key('mt_excerpt'):
         entry.excerpt=struct['mt_excerpt']
 
+    if struct.has_key('wp_password'):
+        entry.password=struct['wp_password']
+
     if publish:
         entry.publish(True)
+        if struct.has_key('mt_tb_ping_urls'):
+            for url in struct['mt_tb_ping_urls']:
+                util.do_trackback(url,entry.title,entry.get_content_excerpt(more='')[:60],entry.fullurl(),g_blog.title)
     else:
         entry.save()
     postid =entry.key().id()
@@ -144,6 +153,9 @@ def metaWeblog_editPost(postid, struct, publish):
         entry.slug=struct['wp_slug']
     if struct.has_key('mt_excerpt'):
         entry.excerpt=struct['mt_excerpt']
+
+    if struct.has_key('wp_password'):
+        entry.password=struct['wp_password']
 
 
     entry.title = struct['title']
@@ -220,6 +232,8 @@ def wp_newPage(blogid,struct,publish):
             entry.slug=struct['wp_slug']
         if struct.has_key('wp_page_order'):
             entry.menu_order=int(struct['wp_page_order'])
+        if struct.has_key('wp_password'):
+           entry.password=struct['wp_password']
         entry.entrytype='page'
         if publish:
             entry.publish(True)
@@ -254,6 +268,8 @@ def wp_editPage(blogid,pageid,struct,publish):
     if struct.has_key('wp_page_order'):
         entry.menu_order=int(struct['wp_page_order'])
 
+    if struct.has_key('wp_password'):
+        entry.password=struct['wp_password']
 
     entry.title = struct['title']
     entry.content = struct['description']
@@ -298,8 +314,107 @@ def mt_getPostCategories(blogid):
 
 def mt_setPostCategories(*arg):
     return True
-#-------------------------------------------------------------------------------
 
+#------------------------------------------------------------------------------
+#pingback
+#------------------------------------------------------------------------------
+_title_re = re.compile(r'<title>(.*?)</title>(?i)')
+_pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
+_chunk_re = re.compile(r'\n\n|<(?:p|div|h\d)[^>]*>')
+def pingback_ping(source_uri, target_uri):
+    # next we check if the source URL does indeed exist
+    if not g_blog.allow_pingback:
+        raise Fault(49,"Access denied.")
+    try:
+
+        g_blog.tigger_action("pre_ping",source_uri,target_uri)
+        response = urlfetch.fetch(source_uri)
+    except Exception ,e :
+        #logging.info(e.message)
+        raise Fault(16, 'The source URL does not exist.%s'%source_uri)
+    # we only accept pingbacks for links below our blog URL
+    blog_url = g_blog.baseurl
+    if not blog_url.endswith('/'):
+        blog_url += '/'
+    if not target_uri.startswith(blog_url):
+        raise Fault(32, 'The specified target URL does not exist.')
+    path_info = target_uri[len(blog_url):]
+
+    pingback_post(response,source_uri,target_uri,path_info)
+    try:
+
+        return "Micolog pingback succeed!"
+    except:
+        raise Fault(49,"Access denied.")
+
+
+def get_excerpt(response, url_hint, body_limit=1024 * 512):
+    """Get an excerpt from the given `response`.  `url_hint` is the URL
+    which will be used as anchor for the excerpt.  The return value is a
+    tuple in the form ``(title, body)``.  If one of the two items could
+    not be calculated it will be `None`.
+    """
+    contents = response.content[:body_limit]
+
+    title_match = _title_re.search(contents)
+    title = title_match and strip_tags(title_match.group(1)) or None
+
+    link_re = re.compile(r'<a[^>]+?"\s*%s\s*"[^>]*>(.*?)</a>(?is)' %
+                         re.escape(url_hint))
+    for chunk in _chunk_re.split(contents):
+        match = link_re.search(chunk)
+        if not match:
+            continue
+        before = chunk[:match.start()]
+        after = chunk[match.end():]
+        raw_body = '%s\0%s' % (strip_tags(before).replace('\0', ''),
+                               strip_tags(after).replace('\0', ''))
+        body_match = re.compile(r'(?:^|\b)(.{0,120})\0(.{0,120})(?:\b|$)') \
+                       .search(raw_body)
+        if body_match:
+            break
+    else:
+        return title, None
+
+
+    before, after = body_match.groups()
+    link_text = strip_tags(match.group(1))
+    if len(link_text) > 60:
+        link_text = link_text[:60] + u' …'
+
+    bits = before.split()
+    bits.append(link_text)
+    bits.extend(after.split())
+    return title, u'[…] %s […]' % u' '.join(bits)
+
+def pingback_post(response,source_uri, target_uri, slug):
+    """This is the pingback handler for posts."""
+    entry = Entry.all().filter("published =", True).filter('link =', slug).get()
+    #use allow_trackback as allow_pingback
+    if entry is None or not entry.allow_trackback:
+        raise Fault(33, 'no such post')
+    title, excerpt = get_excerpt(response, target_uri)
+    if not title:
+        raise Fault(17, 'no title provided')
+    elif not excerpt:
+        raise Fault(17, 'no useable link to target')
+
+    comment = Comment.all().filter("entry =", entry).filter("weburl =", source_uri).get()
+    if comment:
+        raise Fault(48, 'pingback has already been registered')
+        return
+
+    comment=Comment(author=urlparse(source_uri).hostname,
+            content="<strong>"+title[:250]+"...</strong><br/>" +
+                    excerpt[:250] + '...',
+            weburl=source_uri,
+            entry=entry)
+    comment.ctype=COMMENT_PINGBACK
+    comment.save()
+    g_blog.tigger_action("pingback_post",comment)
+    memcache.delete("/"+entry.link)
+    return True
+##------------------------------------------------------------------------------
 class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
 	def __init__(self, funcs):
 		SimpleXMLRPCDispatcher.__init__(self, True, 'utf-8')
@@ -328,6 +443,9 @@ dispatcher = PlogXMLRPCDispatcher({
 
     'mt.setPostCategories':mt_setPostCategories,
     'mt.getPostCategories':mt_getPostCategories,
+
+    ##pingback
+    'pingback.ping':pingback_ping,
 
 
 

@@ -1,6 +1,6 @@
 
 <!-- You can start editing here. -->
-
+{% if entry.allow_comment %}
 {% if entry.comments.count%}
 	<h3 id="comments">{{entry.comments.count}} Responses to &#8220;{{entry.title}}&#8221;</h3>
 
@@ -43,10 +43,11 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
 <label for="url"><small>Website</small></label></p>
 
-<p id="checkarea"><span style="color:#D50000" id="disp_check">{{checknum1}}+{{checknum2}}</span>
-<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}" />
-<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
-</p>
+<div id="checkarea">
+<img id='checkimg' src='/checkimg/' title='Click to change image' onclick="reloadCheckImage();"/>
+<p><label for="checkret"><small>Checkcode:</small></label>
+<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" /></p>
+</div>
 
 
 <p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
@@ -60,12 +61,18 @@
     commentuser=$.cookie('comment_user');
        if (commentuser)
        {
-         [user,email,url]=commentuser.split('#@#');
+         //[user,email,url]=commentuser.split('#@#');
+         var tuple=commentuser.split('#@#');
+        var user,email,url;
+        user=tuple[0];
+        email=tuple[1];
+        url=tuple[2];
          $('#author').val(user);
          $('#email').val(email);
          $('#url').val(url);
          $('#checkarea').hide();
        }
+	   /*
        else
        {
        	num1=Math.round(Math.random()*10);
@@ -73,7 +80,7 @@
        	$('#checkarea #checknum').val(num1+'+'+num2);
        	$('#checkarea #disp_check').text(num1+'+'+num2+'=');
        	$('#checkarea').show();
-       }
+       }*/
 
   $('#commentform').submit(function(){
          var form = this;
@@ -93,6 +100,7 @@
           		 	return false;
           		 }
 	       }
+		   /*
 	        if ($('#checkarea').css('display')!='none')
 								       {
 							             if(eval(form.checknum.value)!=form.checkret.value)
@@ -104,7 +112,7 @@
 							             }
 
 							           }
-
+*/
       		 if (!form.comment.value)
       		 {
       		 	alert('Please leave some reply message.');
@@ -116,4 +124,6 @@
   });
 </script>
 
-
+{% else %}
+<p class="nocomments">ÆÀÂÛÒÑ¹Ø±Õ</p>
+{% endif %}

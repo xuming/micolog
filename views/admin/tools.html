@@ -39,6 +39,15 @@
 
 	 		});
 	 }
+	function update_archives()
+	{
+	   $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh archives now...</h3>' });
+		$.getJSON("/admin/do/update_archives", function(json){
+			   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+			   $('.blockUI').css('cursor','');
+	
+			});
+	}
 	 function update_tags()
 	 {
 	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh tags now...</h3>' });
@@ -92,6 +101,7 @@
 
 </div>
 <div class="grid">
+
 <input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_link' onclick='update_link()'/>
 
 <b>{% trans "Rebuild URL"%}</b>
@@ -101,8 +111,13 @@
 <input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
 <br>{%trans "Available parameters:"%} %(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br>
 </p>
+</div>
+<div class="grid">
+<input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_archives' onclick="javascript:if (confirm('Do you really want to do this action?')) update_archives(); else return false;"/>
 
 
+<b>{% trans "Update archives"%}</b>
+<p>{%trans "It will update the monthyear of entries."%}</p>
 </div>
 
 </div>

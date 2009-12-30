@@ -76,3 +76,25 @@ plog_filter.make_clickable_urls = False # enable this will get a bug about a and
 @register.filter
 def do_filter(data):
     return plog_filter.go(data)
+
+'''
+tag like {%mf header%}xxx xxx{%endmf%}
+'''
+@register.tag("mf")
+def do_mf(parser, token):
+	nodelist = parser.parse(('endmf',))
+	parser.delete_first_token()
+	return MfNode(nodelist,token)
+
+class MfNode(template.Node):
+    def __init__(self, nodelist,token):
+        self.nodelist = nodelist
+        self.token=token
+
+    def render(self, context):
+		tokens= self.token.split_contents()
+		if len(tokens)<2:
+			raise TemplateSyntaxError, "'mf' tag takes one argument: the filter name is needed"
+		fname=tokens[1]
+		output = self.nodelist.render(context)
+		return g_blog.tigger_filter(fname,output)

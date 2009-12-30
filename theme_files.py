@@ -48,7 +48,6 @@ class GetFile(webapp.RequestHandler):
 
 
     	fmtime=datetime.fromtimestamp(fstat[stat.ST_MTIME])
-        logging.info(fstat)
     	if self.request.if_modified_since and self.request.if_modified_since.replace(tzinfo=None) >= fmtime:
     		self.response.headers['Date'] = format_date(datetime.utcnow())
     		self.response.headers['Last-Modified'] = format_date(fmtime)

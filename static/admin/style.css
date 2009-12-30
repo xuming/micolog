@@ -931,7 +931,7 @@ padding : 0 0 10px;
 background : #fff;
 border : 1px solid #d54e21;
 }
-#postarea .editor-toolbar .active, #nav .current a, #nav2 a.current {
+#postarea .editor-toolbar .active, #nav .current a, #nav2 a.current,#pnav a.current {
 color : #d54e21;
 }
 #postarea .editor-toolbar .active
@@ -1095,3 +1095,12 @@ background-color:#cee1ef;
 	border-color: #ccc;
 }
 
+#pnav a{display:block;color : #2583ad;
+text-decoration : none;
+padding : 5px 0px;}
+
+#pnav {border-right:1px solid #DADADA}
+
+#pcontent{padding:5px 10px}
+
+#pcontent h3{margin-top:0px;}

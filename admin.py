@@ -2,7 +2,7 @@ import cgi, os,sys,traceback
 import wsgiref.handlers
 import settings
 
-
+from micolog_plugin import *
 
 from google.appengine.ext.webapp import template, \
     WSGIApplication
@@ -11,13 +11,17 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext import zipserve
 from google.appengine.api import urlfetch
+from google.appengine.api import memcache
+from google.appengine.api.labs import taskqueue
 from base import *
 from datetime import datetime ,timedelta
 import base64,random,math
 from django.utils import simplejson
-
-
-
+import pickle
+from  model import *
+from app.trackback import TrackBack
+import xmlrpclib
+from xmlrpclib import Fault
 class Error404(BaseRequestHandler):
     #@printinfo
     def get(self,slug=None):
@@ -53,11 +57,7 @@ class setlanguage(BaseRequestHandler):
 ##            self.write(cookiestr)
 
             #self.response.headers.add_header('Set-Cookie', cookiestr)
-
-
-
-class admin_do_action(BaseRequestHandler):
-    @requires_admin
+class admin_do_import(BaseRequestHandler):
     def get(self,slug=None):
         try:
             func=getattr(self,'action_'+slug)
@@ -67,7 +67,20 @@ class admin_do_action(BaseRequestHandler):
                 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
         except:
              self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-    @requires_admin
+    def action_wordpress(self):
+        self.write("wordpress")
+
+class admin_do_action(BaseRequestHandler):
+    def get(self,slug=None):
+        try:
+            func=getattr(self,'action_'+slug)
+            if func and callable(func):
+                func()
+            else:
+                self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+        except:
+             self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+
     def post(self,slug=None):
         try:
             func=getattr(self,'action_'+slug)
@@ -150,89 +163,147 @@ class admin_do_action(BaseRequestHandler):
             entry.update_archive()
         self.write('"All entries have been updated."')
 
+    def action_stop_import(self):
+        memcache.delete("imt")
+        self.write('"ok"')
+
+    def action_trackback_ping(self):
+        tbUrl=self.param('tbUrl')
+        title=self.param('title')
+        excerpt=self.param('excerpt')
+        url=self.param('url')
+        blog_name=self.param('blog_name')
+        tb=TrackBack(tbUrl,title,excerpt,url,blog_name)
+        tb.ping()
+
+    def action_pingback_ping(self):
+        """Try to notify the server behind `target_uri` that `source_uri`
+        points to `target_uri`.  If that fails an `PingbackError` is raised.
+        """
+        source_uri=self.param('source')
+        target_uri=self.param('target')
+        try:
+            response =urlfetch.fetch(target_uri)
+        except:
+            raise PingbackError(32)
+
+        try:
+            pingback_uri = response.headers['X-Pingback']
+        except KeyError:
+            _pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
+            match = _pingback_re.search(response.data)
+            if match is None:
+                raise PingbackError(33)
+            pingback_uri =urldecode(match.group(1))
+
+        rpc = xmlrpclib.ServerProxy(pingback_uri)
+        try:
+            return rpc.pingback.ping(source_uri, target_uri)
+        except Fault, e:
+            raise PingbackError(e.faultCode)
+        except:
+            raise PingbackError(32)
+
 class admin_import_next(BaseRequestHandler):
-    @requires_admin
-    def get(self,slug=None):
-        if self.blog.import_wp:
-            categories_list,entries=self.blog.import_wp
-        if categories_list:
-            next=categories_list.pop(0)
-            if next:
-                nicename=next['nicename']
-                cat=Category.get_by_key_name('cat_'+nicename)
-                if not cat:
-                    cat=Category(key_name='cat_'+nicename)
-                cat.name=next['name']
-                cat.slug=nicename
-                cat.put()
-                self.write(simplejson.dumps(('category',next['name'],True)))
-                return
-
-        if entries:
-            next=entries.pop(0)
-            if next:
-                entry=Entry()
-                entry.title=next['title']
-                entry.author=self.login_user
-                entry.is_wp=True
-                #entry.date=datetime.strptime( next['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
-                try:
-                    entry.date=datetime.strptime( next['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
-                except:
+    def post(self):
+        try:
+                #global imt
+                imt=memcache.get("imt")
+                import_data=imt.pop()
+                memcache.set('imt',imt)
+                if import_data:
                     try:
-                        entry.date=datetime.strptime( next['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
-                    except:
-                        entry.date=datetime.now()
-                entry.entrytype=next['post_type']
-                entry.content=next['content']
+                        if import_data[0]=='cat':
 
-                entry.excerpt=next['excerpt']
-                entry.post_id=next['post_id']
-                entry.slug=next['post_name']
-                entry.entry_parent=next['post_parent']
-                entry.menu_order=next['menu_order']
+                            _cat=import_data[1]
+                            logging.info("\n1\n%s",_cat)
+                            nicename=_cat['slug']
+                            cat=Category.get_by_key_name('cat_'+nicename)
+                            if not cat:
+                                cat=Category(key_name='cat_'+nicename)
+                            cat.name=_cat['name']
+                            cat.slug=nicename
+                            cat.put()
+                        elif import_data[0]=='entry':
+                            _entry=import_data[1]
+                            logging.debug('importing:'+_entry['title'])
+                            hashkey=str(hash(_entry['title']))
+                            entry=Entry.get_by_key_name(hashkey)
+                            if not entry:
+                                entry=Entry(key_name=hashkey)
+
+                            entry.title=_entry['title']
+                            entry.author=self.login_user
+                            entry.is_wp=True
+                           #entry.date=datetime.strptime( _entry['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
+                            try:
+                                entry.date=datetime.strptime( _entry['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
+                            except:
+                                try:
+                                    entry.date=datetime.strptime( _entry['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
+                                except:
+                                    entry.date=datetime.now()
+                            entry.entrytype=_entry['post_type']
+                            entry.content=_entry['content']
+
+                            entry.excerpt=_entry['excerpt']
+                            entry.post_id=_entry['post_id']
+                            entry.slug=_entry['post_name']
+                            entry.entry_parent=_entry['post_parent']
+                            entry.menu_order=_entry['menu_order']
+
+                            for cat in _entry['categories']:
+                                c=Category.get_by_key_name('cat_'+cat['slug'])
+                                if c:
+                                    entry.categorie_keys.append(c.key())
+                            entry.settags(','.join(_entry['tags']))
+                ##                for tag in _entry['tags']:
+                ##                    entry.tags.append(tag)
+                            if _entry['published']:
+                                entry.publish(True)
+                            else:
+                                entry.save()
+                            for com in _entry['comments']:
+                                    try:
+                                        date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
+                                    except:
+                                        date=datetime.now()
+                                    comment=Comment(author=com['author'],
+                                                    content=com['content'],
+                                                    entry=entry,
+                                                    date=date
+                                                    )
+                                    try:
+                                        comment.email=com['email']
+                                        comment.weburl=com['weburl']
+                                    except:
+                                        pass
+                                    comment.save()
+                    finally:
+                        queue=taskqueue.Queue("import")
+                        queue.add(taskqueue.Task( url="/admin/import_next"))
+        except:
+            logging.info("import error")
 
 
-                for cat in next['categories']:
-                    nicename=cat
-                    c=Category.get_by_key_name('cat_'+nicename)
-                    if c:
-                        entry.categorie_keys.append(c.key())
-                entry.settags(','.join(next['tags']))
-##                for tag in next['tags']:
-##                    entry.tags.append(tag)
+    def get(self,slug=None):
+        imt=memcache.get('imt')
+        if imt and imt.cur_do:
+            process=100-math.ceil(imt.count()*100/imt.total)
+            if imt.cur_do[0]=='cat':
+                msg="importing category '%s'"%imt.cur_do[1]['name']
+            elif imt.cur_do[0]=='entry':
+                msg="importing entry '%s'"%imt.cur_do[1]['title']
+            else:
+                msg="start importing..."
+            self.write(simplejson.dumps((process,msg,not process==100)))
+        else:
+            self.write(simplejson.dumps((-1,"Have no data to import!",False)))
 
-
-                if next['published']:
-                    entry.publish(True)
-                else:
-                    entry.save()
-
-                for com in next['comments']:
-                        try:
-                            date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
-                        except:
-                            date=datetime.now()
-                        comment=Comment(author=com['author'],
-                                        content=com['content'],
-                                        entry=entry,
-                                        date=date
-                                        )
-                        try:
-                            comment.email=com['email']
-                            comment.weburl=com['weburl']
-                        except:
-                            pass
-                        comment.save()
-                self.write(simplejson.dumps(('entry',next['title'],True)))
-                return
-        self.blog.import_wp=None
-        self.write(simplejson.dumps(('Ok','Finished',False)))
 class admin_tools(BaseRequestHandler):
     def __init__(self):
         self.current="config"
 
-    @requires_admin
     def get(self,slug=None):
         self.render2('views/admin/tools.html')
 
@@ -241,12 +312,10 @@ class admin_sitemap(BaseRequestHandler):
     def __init__(self):
         self.current="config"
 
-    @requires_admin
     def get(self,slug=None):
         self.render2('views/admin/sitemap.html')
 
 
-    @requires_admin
     def post(self):
         str_options= self.param('str_options').split(',')
         for name in str_options:
@@ -281,232 +350,56 @@ class admin_import(BaseRequestHandler):
     def __init__(self):
         self.current='config'
 
-    @requires_admin
     def get(self,slug=None):
         gblog_init()
-        self.render2('views/admin/import.html')
+        self.render2('views/admin/import.html',{'importitems':
+            self.blog.plugins.filter('is_import_plugin',True)})
 
-    @requires_admin
-    def post(self):
-
-
-        import  xml.etree.ElementTree as et
-
-
-        link_format=self.param('link_format')
-
-        if link_format:
-            g_blog.link_format=link_format.strip()
-            g_blog.save()
-
-        try:
-
-            wpfile=self.param('wpfile')
-
-            doc=et.fromstring(wpfile)
-            #use namespace
-            wpns='{http://wordpress.org/export/1.0/}'
-
-            contentns="{http://purl.org/rss/1.0/modules/content/}"
-            excerptns="{http://wordpress.org/export/1.0/excerpt/}"
-            et._namespace_map[wpns]='wp'
-            et._namespace_map[contentns]='content'
-            et._namespace_map[excerptns]='excerpt'
-            channel=doc.find('channel')
-            #self.write('Blog:'+channel.findtext('title')+'<br>')
-            categories=channel.findall(wpns+'category')
-            categories_list=[]
-            for cate in categories:
-                #self.write('cate:'+cate.findtext(wpns+'cat_name')+'<br>')
-
-                nicename=cate.findtext(wpns+'category_nicename')
-                name=cate.findtext(wpns+'cat_name')
-                categories_list.append({'nicename':nicename,'name':name})
-            import time
-            items=channel.findall('item')
-            entries=[]
-            for item in items:
-                title=item.findtext('title')
-                try:
-                    #self.write(title+'<br>')
-
-                    entry={}
-                    entry['title']=item.findtext('title')
-                    logging.info(title)
-                    #entry['author']=self.login_user
-                    #entry.is_wp=True
-                    entry['pubDate']=item.findtext('pubDate')
-                    entry['post_type']=item.findtext(wpns+'post_type')
-                    entry['content']= item.findtext(contentns+'encoded')
-
-                    entry['excerpt']= item.findtext(excerptns+'encoded')
-                    entry['post_id']=int(item.findtext(wpns+'post_id'))
-                    entry['post_name']=item.findtext(wpns+'post_name')
-                    entry['post_parent']=int(item.findtext(wpns+'post_parent'))
-                    entry['menu_order']=int(item.findtext(wpns+'menu_order'))
-
-                    entry['tags']=[]
-                    entry['categories']=[]
-
-
-                    cats=item.findall('category')
-
-
-                    for cat in cats:
-                        if cat.attrib.has_key('nicename'):
-                            cat_type=cat.attrib['domain']
-                            if cat_type=='tag':
-                                entry['tags'].append(cat.text)
-                            else:
-                                nicename=cat.attrib['nicename']
-                                entry['categories'].append(nicename)
-
-                    pub_status=item.findtext(wpns+'status')
-                    if pub_status=='publish':
-                        entry['published']=True
-                    else:
-                        entry['published']=False
-
-                    entry['comments']=[]
-
-                    comments=item.findall(wpns+'comment')
-
-                    for com in comments:
-                        try:
-                            comment_approved=int(com.findtext(wpns+'comment_approved'))
-                        except:
-                            comment_approved=0
-                        if comment_approved:
-
-
-                            comment=dict(author=com.findtext(wpns+'comment_author'),
-                                            content=com.findtext(wpns+'comment_content'),
-                                            email=com.findtext(wpns+'comment_author_email'),
-                                            weburl=com.findtext(wpns+'comment_author_url'),
-                                            date=com.findtext(wpns+'comment_date')
-                                            )
-
-                            entry['comments'].append(comment)
-                    entries.append(entry)
-                except :
-                    import traceback
-
-                    logging.error('Import ''%s'' error.'%traceback.format_exc(10))
-            self.blog.import_wp=(categories_list,entries)
-            self.render2('views/admin/import.html',
-                        {'postback':True})
-        except:
-            self.render2('views/admin/import.html',{'error':'import faiure.'})
-
-
-
-    @requires_admin
-    def post_old(self):
-        import  xml.etree.ElementTree as et
-        wpfile=self.param('wpfile')
-        doc=et.fromstring(wpfile)
-        #use namespace
-        wpns='{http://wordpress.org/export/1.0/}'
-
-        contentns="{http://purl.org/rss/1.0/modules/content/}"
-        et._namespace_map[wpns]='wp'
-        et._namespace_map[contentns]='content'
-
-        channel=doc.find('channel')
-        self.write('Blog:'+channel.findtext('title')+'<br>')
-        categories=channel.findall(wpns+'category')
-        for cate in categories:
-            self.write('cate:'+cate.findtext(wpns+'cat_name')+'<br>')
-
-            nicename=cate.findtext(wpns+'category_nicename')
-            cat=Category.get_by_key_name('cat_'+nicename)
-            if not cat:
-                cat=Category(key_name='cat_'+nicename)
-            cat.name=cate.findtext(wpns+'cat_name')
-            cat.slug=nicename
-            cat.put()
-
-##        tags=channel.findall(wpns+'tag')
-##        for tag in tags:
-##            self.write('tag:'+tag.findtext(wpns+'tag_name')+'<br>')
-##            ntag=Tag()
-##            ntag.tag=tag.findtext(wpns+'tag_name')
-##            ntag.put()
-        import time
-        items=channel.findall('item')
-        for item in items:
-            title=item.findtext('title')
-            try:
-                self.write(title+'<br>')
-
-                entry=Entry()
-                entry.title=item.findtext('title')
-                logging.info(title)
-                entry.author=self.login_user
-                entry.is_wp=True
-                entry.date=datetime.strptime( item.findtext('pubDate'),"%a, %d %b %Y %H:%M:%S +0000")
-                entry.entrytype=item.findtext(wpns+'post_type')
-                entry.content=item.findtext(contentns+'encoded')
-                entry.post_id=int(item.findtext(wpns+'post_id'))
-                entry.slug=item.findtext(wpns+'post_name')
-                entry.entry_parent=int(item.findtext(wpns+'post_parent'))
-                entry.menu_order=int(item.findtext(wpns+'menu_order'))
-
-
-                cats=item.findall('category')
-
-                for cat in cats:
-                    if cat.attrib.has_key('nicename'):
-                        cat_type=cat.attrib['domain']
-                        if cat_type=='tag':
-                            entry.tags.append(cat.text)
-                        else:
-                            nicename=cat.attrib['nicename']
-                            c=Category.get_by_key_name('cat_'+nicename)
-                            if c:
-                                entry.categorie_keys.append(c.key())
-
-                pub_status=item.findtext(wpns+'status')
-                if pub_status=='publish':
-                    entry.publish(True)
-                else:
-                    entry.save()
-
-                comments=item.findall(wpns+'comment')
-
-                for com in comments:
-                    try:
-                        comment_approved=int(com.findtext(wpns+'comment_approved'))
-                    except:
-                        comment_approved=0
-                    if comment_approved:
-
-                        comment=Comment(author=com.findtext(wpns+'comment_author'),
-                                        content=com.findtext(wpns+'comment_content'),
-                                        entry=entry,
-                                        )
-                        try:
-                            comment.email=com.findtext(wpns+'comment_author_email')
-                            comment.weburl=com.findtext(wpns+'comment_author_url')
-                        except:
-                            pass
-                        comment.put()
-            except :
-                import traceback
-
-                self.write('Import ''%s'' error.<br>'%title)
-                logging.error('Import ''%s'' error.'%traceback.format_exc(10))
+##    def post(self):
+##        try:
+##            queue=taskqueue.Queue("import")
+##            wpfile=self.param('wpfile')
+##            #global imt
+##            imt=import_wordpress(wpfile)
+##            imt.parse()
+##            memcache.set("imt",imt)
+##
+####            import_data=OptionSet.get_or_insert(key_name="import_data")
+####            import_data.name="import_data"
+####            import_data.bigvalue=pickle.dumps(imt)
+####            import_data.put()
+##
+##            queue.add(taskqueue.Task( url="/admin/import_next"))
+##            self.render2('views/admin/import.html',
+##                        {'postback':True})
+##            return
+##            memcache.set("import_info",{'count':len(imt.entries),'msg':'Begin import...','index':1})
+##            #self.blog.import_info={'count':len(imt.entries),'msg':'Begin import...','index':1}
+##            if imt.categories:
+##                queue.add(taskqueue.Task( url="/admin/import_next",params={'cats': pickle.dumps(imt.categories),'index':1}))
+##
+##            return
+##            index=0
+##            if imt.entries:
+##                for entry in imt.entries :
+##                    try:
+##                        index=index+1
+##                        queue.add(taskqueue.Task(url="/admin/import_next",params={'entry':pickle.dumps(entry),'index':index}))
+##                    except:
+##                        pass
+##
+##        except:
+##            self.render2('views/admin/import.html',{'error':'import faiure.'})
 
 class admin_setup(BaseRequestHandler):
     def __init__(self):
         self.current='config'
 
-    @requires_admin
+    #@requires_admin
     def get(self,slug=None):
         vals={'themes':ThemeIterator()}
         self.render2('views/admin/setup.html',vals)
 
-    @requires_admin
     def post(self):
         old_theme=g_blog.theme_name
         str_options= self.param('str_options').split(',')
@@ -550,7 +443,6 @@ class admin_entry(BaseRequestHandler):
         self.current='write'
 
 
-    @requires_admin
     def get(self,slug='post'):
         action=self.param("action")
         entry=None
@@ -571,7 +463,6 @@ class admin_entry(BaseRequestHandler):
         vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats)}
         self.render2('views/admin/entry.html',vals)
 
-    @requires_admin
     def post(self,slug='post'):
         action=self.param("action")
         title=self.param("post_title")
@@ -580,7 +471,8 @@ class admin_entry(BaseRequestHandler):
         cats=self.request.get_all('cats')
         key=self.param('key')
         published=self.param('publish')
-        allow_comment=self.param('allow_comment')
+        allow_comment=self.parambool('allow_comment')
+        allow_trackback=self.parambool('allow_trackback')
         entry_slug=self.param('slug')
         entry_parent=self.paramint('entry_parent')
         menu_order=self.paramint('menu_order')
@@ -595,7 +487,9 @@ class admin_entry(BaseRequestHandler):
 
         vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
               'cats':map(mapit,Category.all()),
-              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,'allow_comment':allow_comment,
+              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
+                         'allow_comment':allow_comment,
+                         'allow_trackback':allow_trackback,
                         'slug':entry_slug,
                         'entry_parent':entry_parent,
                         'excerpt':entry_excerpt,
@@ -620,10 +514,8 @@ class admin_entry(BaseRequestHandler):
                 entry.target=target
                 entry.external_page_address=external_page_address
                 newcates=[]
-                if allow_comment:
-                    entry.allow_comment= True
-                else:
-                    entry.allow_comment = False
+                entry.allow_comment=allow_comment
+                entry.allow_trackback=allow_trackback
 
                 if cats:
 
@@ -661,10 +553,8 @@ class admin_entry(BaseRequestHandler):
                             if c:
                                 newcates.append(c[0].key())
                     entry.categorie_keys=newcates;
-                    if allow_comment:
-                        entry.allow_comment= True
-                    else:
-                        entry.allow_comment = False
+                    entry.allow_comment=allow_comment
+                    entry.allow_trackback=allow_trackback
 
                     if published:
                         entry.publish()
@@ -680,7 +570,6 @@ class admin_entry(BaseRequestHandler):
 
 
 class admin_entries(BaseRequestHandler):
-    @requires_admin
     def get(self,slug='post'):
         try:
             page_index=int(self.param('page'))
@@ -701,7 +590,6 @@ class admin_entries(BaseRequestHandler):
           }
         )
 
-    @requires_admin
     def post(self,slug='post'):
         try:
             linkcheck= self.request.get_all('checks')
@@ -721,7 +609,6 @@ class admin_entries(BaseRequestHandler):
 
 
 class admin_categories(BaseRequestHandler):
-    @requires_admin
     def get(self,slug=None):
         try:
             page_index=int(self.param('page'))
@@ -742,7 +629,6 @@ class admin_categories(BaseRequestHandler):
           }
         )
 
-    @requires_admin
     def post(self,slug=None):
         try:
             linkcheck= self.request.get_all('checks')
@@ -754,7 +640,6 @@ class admin_categories(BaseRequestHandler):
             self.redirect('/admin/categories')
 
 class admin_comments(BaseRequestHandler):
-    @requires_admin
     def get(self,slug=None):
         try:
             page_index=int(self.param('page'))
@@ -775,7 +660,6 @@ class admin_comments(BaseRequestHandler):
           }
         )
 
-    @requires_admin
     def post(self,slug=None):
         try:
             linkcheck= self.request.get_all('checks')
@@ -787,7 +671,6 @@ class admin_comments(BaseRequestHandler):
             self.redirect('/admin/comments')
 
 class admin_links(BaseRequestHandler):
-    @requires_admin
     def get(self,slug=None):
         self.render2('views/admin/links.html',
          {
@@ -804,7 +687,6 @@ class admin_links(BaseRequestHandler):
         self.redirect('/admin/links')
 
 class admin_link(BaseRequestHandler):
-    @requires_admin
     def get(self,slug=None):
         action=self.param("action")
         vals={'current':'links'}
@@ -855,7 +737,7 @@ class admin_link(BaseRequestHandler):
 class admin_category(BaseRequestHandler):
     def __init__(self):
         self.current='categories'
-    @requires_admin
+
     def get(self,slug=None):
         action=self.param("action")
         category=None
@@ -871,7 +753,6 @@ class admin_category(BaseRequestHandler):
         vals={'action':action,'category':category}
         self.render2('views/admin/category.html',vals)
 
-    @requires_admin
     def post(self):
         action=self.param("action")
         name=self.param("name")
@@ -901,11 +782,9 @@ class admin_category(BaseRequestHandler):
                     self.render2('views/admin/category.html',vals)
 
 class admin_status(BaseRequestHandler):
-    @requires_admin
     def get(self):
         self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
 class admin_authors(BaseRequestHandler):
-    @requires_admin
     def get(self):
         try:
             page_index=int(self.param('page'))
@@ -927,7 +806,6 @@ class admin_authors(BaseRequestHandler):
         )
 
 
-    @requires_admin
     def post(self,slug=None):
         try:
             linkcheck= self.request.get_all('checks')
@@ -941,7 +819,6 @@ class admin_author(BaseRequestHandler):
     def __init__(self):
         self.current='authors'
 
-    @requires_admin
     def get(self,slug=None):
         action=self.param("action")
         author=None
@@ -957,7 +834,6 @@ class admin_author(BaseRequestHandler):
         vals={'action':action,'author':author}
         self.render2('views/admin/author.html',vals)
 
-    @requires_admin
     def post(self):
         action=self.param("action")
         name=self.param("name")
@@ -985,10 +861,71 @@ class admin_author(BaseRequestHandler):
                 except:
                     vals.update({'result':False,'msg':'Error:Author can''t been saved.'})
                     self.render2('views/admin/author.html',vals)
+class admin_plugins(BaseRequestHandler):
+    def __init__(self):
+        self.current='plugins'
+
+    def get(self,slug=None):
+        vals={'plugins':self.blog.plugins}
+        self.render2('views/admin/plugins.html',vals)
+
+    def post(self):
+        action=self.param("action")
+        name=self.param("plugin")
+        ret=self.param("return")
+        self.blog.plugins.activate(name,action=="activate")
+        if ret:
+            self.redirect(ret)
+        else:
+            vals={'plugins':self.blog.plugins}
+            self.render2('views/admin/plugins.html',vals)
+
+class admin_plugins_action(BaseRequestHandler):
+    def __init__(self):
+        self.current='plugins'
+
+    def get(self,slug=None):
+        plugin=self.blog.plugins.getPluginByName(slug)
+        if not plugin :
+            self.error(404)
+            return
+        plugins=self.blog.plugins.filter('active',True)
+        if not plugin.active:
+            pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+<input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
+            plugins.insert(0,plugin)
+        else:
+            pcontent=plugin.get(self)
+
+
+        vals={'plugins':plugins,
+              'plugin':plugin,
+              'pcontent':pcontent}
+
+        self.render2('views/admin/plugin_action.html',vals)
+
+    def post(self,slug=None):
+
+        plugin=self.blog.plugins.getPluginByName(slug)
+        if not plugin :
+            self.error(404)
+            return
+        plugins=self.blog.plugins.filter('active',True)
+        if not plugin.active:
+            pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+<input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
+            plugins.insert(0,plugin)
+        else:
+            pcontent=plugin.post(self)
+
+
+        vals={'plugins':plugins,
+              'plugin':plugin,
+              'pcontent':pcontent}
+
+        self.render2('views/admin/plugin_action.html',vals)
 
 class WpHandler(BaseRequestHandler):
-
-    @requires_admin
     def get(self,tags=None):
         try:
             all=self.param('all')
@@ -1034,10 +971,11 @@ def main():
                      ('/admin/status',admin_status),
                      ('/admin/authors',admin_authors),
                      ('/admin/author',admin_author),
-
                      ('/admin/import',admin_import),
+                     ('/admin/import/(\w+)',admin_do_import),
                      ('/admin/tools',admin_tools),
-
+                     ('/admin/plugins',admin_plugins),
+                     ('/admin/plugins/(\w+)',admin_plugins_action),
                      ('/admin/sitemap',admin_sitemap),
                      ('/admin/export/micolog.xml',WpHandler),
                      ('/admin/import_next',admin_import_next),

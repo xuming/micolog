@@ -43,7 +43,8 @@
      <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">{% trans "Categories" %}</a></li>
     <li class='page_item page-item-2 {{current|check_current:"comments"}}' ><a href="/admin/comments" title="Comments">{% trans "Comments" %}</a></li>
 
-   <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="About">{% trans "Configuration" %}</a></li>
+   <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="setup">{% trans "Configuration" %}</a></li>
+   <li class='page_item page-item-2 {{current|check_current:"plugins"}}'><a href="/admin/plugins" title="plugins">{% trans "Plugins" %}</a></li>
 
     <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">{% trans "Cache" %}</a></li>
     <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
@@ -82,7 +83,7 @@
         <div id="credits">
             <!-- Credit link can be removed by giving a $5 donation, it'll help us all build good karma! -->
             <div class="flogo">
-                <a href="http://xuming.net"> Micolog 0.6</a> for <br><a href="http://code.google.com/appengine/" > google app engine</a>
+                <a href="http://micolog.xuming.net"> Micolog {{blog.version}}</a> for <br><a href="http://code.google.com/appengine/" > google app engine</a>
             </div>
             <span>Theme from: <a href="http://www.freshpressthemes.com" title="See more fresh themes" target="_blank">FreshPress Themes</a> {% now "Y" %}</span>
             <!-- Do Not Remove -->

@@ -121,8 +121,17 @@
                 <td><input type="checkbox" size="45" {% if blog.enable_memcache %} checked="checked" {%endif%}  id="enable_memcache" name="enable_memcache" />
                </td>
                 </tr>
+  <tr valign="top">
+                <th scope="row">{% trans "Allow Trackback:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.allow_trackback %} checked="checked" {%endif%}  id="allow_trackback" name="allow_trackback" />
+               </td>
+                </tr>
 
-
+  <tr valign="top">
+                <th scope="row">{% trans "Allow Pingback:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.allow_pingback %} checked="checked" {%endif%}  id="allow_pingback" name="allow_pingback" />
+               </td>
+                </tr>
             </table>
             <h3>{% trans "Xmlrpc  setting"%}</h3>
             <p>{% trans "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "%}</p>
@@ -144,7 +153,7 @@
 <p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice" name="str_options"/>
-<input type="hidden" value="enable_memcache,comment_notify_mail" name="bool_options"/>
+<input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback" name="bool_options"/>
 <input type="hidden" value="posts_per_page,comments_order,comments_per_page" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>
 

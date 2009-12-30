@@ -1,4 +1,4 @@
-application: mlog
+application: micolog
 version: 1
 runtime: python
 api_version: 1
@@ -9,7 +9,7 @@ handlers:
   static_files: static/images/favicon.ico
   upload: static/images/favicon.ico
   mime_type: image/x-icon
-  
+
 - url: /robots\.txt
   static_files: static/robots.txt
   upload: static/robots.txt
@@ -32,9 +32,12 @@ handlers:
 
 - url: /admin/.*
   script: admin.py
+  login: admin
+
 
 - url: /admin
   script: admin.py
+  login: admin
 
 - url: /.*
   script: blog.py

@@ -9,7 +9,7 @@ from google.appengine.api import urlfetch
 
 from datetime import datetime
 import urllib, hashlib,urlparse
-import zipfile
+import zipfile,re,pickle
 logging.info('module base reloaded')
 
 rootpath=os.path.dirname(__file__)
@@ -136,7 +136,7 @@ class Blog(db.Model):
 
 	domain=db.StringProperty()
 	show_excerpt=db.BooleanProperty(default=True)
-	version=0.32
+	version=0.7
 	timedelta=db.FloatProperty(default=8.0)# hours
 	language=db.StringProperty(default="en-us")
 
@@ -146,10 +146,18 @@ class Blog(db.Model):
 	sitemap_ping=db.BooleanProperty(default=False)
 	default_link_format=db.StringProperty(multiline=False,default='?p=%(post_id)s')
 	default_theme=Theme("default")
+
+	allow_pingback=db.BooleanProperty(default=False)
+	allow_trackback=db.BooleanProperty(default=False)
+
 	theme=None
 
-	#postcount=db.IntegerProperty(default=0)
-	#pagecount=db.IntegerProperty(default=0)
+	def tigger_filter(self,name,content,*arg1,**arg2):
+		return self.plugins.tigger_filter(name,content,arg1,arg2)
+
+	def tigger_action(self,name,*arg1,**arg2):
+		return self.plugins.tigger_action(name,arg1,arg2)
+
 
 	def save(self):
 		self.put()
@@ -161,6 +169,8 @@ class Blog(db.Model):
 	def get_theme(self):
 		self.theme= Theme(self.theme_name);
 		return self.theme
+
+
 	@vcache("blog.hotposts")
 	def hotposts(self):
 		return Entry.all().filter('entrytype =','post').filter("published =", True).order('-readtimes').fetch(8)
@@ -257,7 +267,11 @@ class Entry(BaseModel):
 	entry_parent=db.IntegerProperty(default=0)#When level=0 show on main menu.
 	menu_order=db.IntegerProperty(default=0)
 	commentcount = db.IntegerProperty(default=0)
+
 	allow_comment = db.BooleanProperty(default=True) #allow comment
+	#allow_pingback=db.BooleanProperty(default=False)
+	allow_trackback=db.BooleanProperty(default=True)
+	password=db.StringProperty()
 
 	#compatible with wordpress
 	is_wp=db.BooleanProperty(default=False)
@@ -348,16 +362,6 @@ class Entry(BaseModel):
 	def get_comments_by_page(self,index,psize):
 		return self.comments().fetch(psize,offset = (index-1) * psize)
 
-
-##	def get_categories(self):
-##		return ','.join([cate for cate in self.categories])
-##
-##	def set_categories(self, cates):
-##		if cates:
-##			catestemp = [db.Category(cate.strip()) for cate in cates.split(',')]
-##			self.catesnew = [cate for cate in catestemp if not cate in self.categories]
-##			self.categorie = tagstemp
-##	scates = property(get_categories,set_categories)
 	@property
 	def strtags(self):
 		return ','.join(self.tags)
@@ -400,16 +404,16 @@ class Entry(BaseModel):
 		"""
 		Use this instead of self.put(), as we do some other work here
 		"""
-
+		g_blog.tigger_action("before_entry_save",self)
 
 		my = self.date.strftime('%B %Y') # September 2008
 		self.monthyear = my
 
-
-
-		return self.put()
-
+		self.put()
+		g_blog.tigger_action("after_entry_save",self)
+		return
 	def publish(self,newval=True):
+		g_blog.tigger_action("before_entry_publish",self)
 		if newval:
 			if not self.is_saved():
 				self.save()
@@ -458,6 +462,7 @@ class Entry(BaseModel):
 		self.removecache()
 		if g_blog.sitemap_ping:
 			Sitemap_NotifySearch()
+		g_blog.tigger_action("after_entry_publish",self)
 
 	def removecache(self):
 		memcache.delete('/')
@@ -485,6 +490,16 @@ class Entry(BaseModel):
 				self._relatepost= []
 			return self._relatepost
 
+	@property
+	def trackbackurl(self):
+		if self.link.find("?")>-1:
+			return g_blog.baseurl+ self.link+"&code="+str(self.key())
+		else:
+			return g_blog.baseurl+"/"+self.link+"?code="+str(self.key())
+
+	def getbylink(self):
+	    pass
+
 class User(db.Model):
 	user = db.UserProperty(required = False)
 	dispname = db.StringProperty()
@@ -503,6 +518,9 @@ class User(db.Model):
 	def __str__(self):
 		return self.__unicode__().encode('utf-8')
 
+COMMENT_NORMAL=0
+COMMENT_TRACKBACK=1
+COMMENT_PINGBACK=2
 class Comment(db.Model):
 	entry = db.ReferenceProperty(Entry)
 	date = db.DateTimeProperty(auto_now_add=True)
@@ -511,11 +529,18 @@ class Comment(db.Model):
 	email=db.EmailProperty()
 	weburl=db.URLProperty()
 	status=db.IntegerProperty(default=0)
+	reply_notify_mail=db.BooleanProperty(default=False)
+	ip=db.StringProperty()
+	ctype=db.IntegerProperty(default=COMMENT_NORMAL)
 
 	@property
 	def shortcontent(self,len=20):
-		scontent=self.content[:len].replace('<','&lt;').replace('>','&gt;')
-		return scontent
+		scontent=self.content
+		scontent=re.sub(r'<br\s*/>',' ',scontent)
+		scontent=re.sub(r'<[^>]+>','',scontent)
+		scontent=re.sub(r'(@[\S]+)-\d+[:]',r'\1:',scontent)
+		return scontent[:len].replace('<','&lt;').replace('>','&gt;')
+
 
 	def gravatar_url(self):
 
@@ -542,6 +567,8 @@ class Comment(db.Model):
 		self.entry.commentcount+=1
 		self.entry.put()
 		memcache.delete("/"+self.entry.link)
+
+	def notify(self):
 		sbody=_('''New comment on your post "%s"
 Author : %s
 E-mail : %s
@@ -554,12 +581,37 @@ You can see all comments on this post here:
 		sbody=sbody.decode('utf-8')
 		logging.info(type( sbody))
 		logging.info(sbody)
+		bbody=_('''Hi~ New reference on your comment for post "%s"
+Author : %s
+URL    : %s
+Comment:
+%s
+You can see all comments on this post here:
+%s
+''')
+		bbody=bbody.decode('utf-8')
 
 		if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
 			sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
 			g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
 			mail.send_mail_to_admins(g_blog.owner.email(),'Comments:'+self.entry.title, sbody,reply_to=self.email)
 			logging.info('send %s . entry: %s'%(g_blog.owner.email(),self.entry.title))
+		#reply comment mail notify
+		refers = re.findall(r'@[\S]+-(\d+)[:]', self.content)
+		if len(refers)!=0:
+		    replyIDs=[int(a) for a in refers]
+		    commentlist=self.entry.comments()
+		    emaillist=[c.email for c in commentlist if c.reply_notify_mail and c.key().id() in replyIDs]
+		    emaillist = {}.fromkeys(emaillist).keys()
+		    for refer in emaillist:
+		        if g_blog.owner and mail.is_email_valid(refer):
+		                emailbody = bbody%(self.entry.title,self.author,self.weburl,self.content,
+                                            g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
+                        message = mail.EmailMessage(sender = g_blog.owner.email(),subject = 'Comments:'+self.entry.title)
+                        message.to = refer
+                        message.body = emailbody
+                        message.send()
+
 
 	def delit(self):
 
@@ -573,6 +625,26 @@ class Media(db.Model):
    bits=db.BlobProperty()
    date=db.DateTimeProperty(auto_now_add=True)
 
+class OptionSet(db.Model):
+    name=db.StringProperty()
+    value=db.TextProperty()
+    #blobValue=db.BlobProperty()
+    #isBlob=db.BooleanProperty()
+
+    @classmethod
+    def getValue(cls,name,default=None):
+        try:
+            opt=OptionSet.get_by_key_name(name)
+            return pickle.loads(opt.value)
+        except:
+            return default
+
+    @classmethod
+    def setValue(cls,name,value):
+        opt=OptionSet.get_or_insert(name)
+        opt.name=name
+        opt.value=pickle.dumps(value)
+        opt.put()
 
 NOTIFICATION_SITES = [
   ('http', 'www.google.com', 'webmasters/sitemaps/ping', {}, '', 'sitemap')
@@ -630,8 +702,6 @@ def gblog_init():
 	if not g_blog:
 		g_blog=InitBlogData()
 
-
-
 	g_blog.get_theme()
 
 	g_blog.rootdir=os.path.dirname(__file__)
@@ -642,7 +712,7 @@ gblog_init()
 
 if __name__=='__main__':
 	lk = Link()
-	lk.href = 'http://www.kgblog.net'
+	lk.href = 'http://micolog.xuming.net'
 	print lk.get_icon_url()
 
 

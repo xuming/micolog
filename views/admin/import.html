@@ -21,29 +21,10 @@ $(document).ready(function() {
    $("#date_begin").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
     $("#date_end").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
    });
-{%if postback%}
-$(document).ready(function() {
-  $.getJSON("/admin/import_next", next_result);
-  function next_result(json)
-  {
-  	$('#list').prepend('<li>'+json[0]+':'+json[1]+'</li>')
-  	if (json[2])
-  	{
-  		 $.getJSON("/admin/import_next", next_result);
-  	}
-
-  }
-
-});
-{%else%}
-
-	$(document).ajaxError(function(request, settings){
-       $('#bmsg').html('Error<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
-	   $('.blockUI').css('cursor','');
-   });
 
 
-{%endif%}
+
+
 </script>
 
 {% endblock %}
@@ -58,13 +39,7 @@ $(document).ready(function() {
 {% endblock %}
 
  {% block content %}
-	{%if postback%}
-	Importing．．．：<br>
-	<ul id="list"></ul>
 
-
-
-	{%else%}
     <div class="wrap">
             <h2>{%trans "Export/Import for wordpress"%}</h2>
             <h3>{%trans "Export"%}</h3>
@@ -85,29 +60,16 @@ $(document).ready(function() {
                 <input type="submit" value={%trans "Export"%} />
             </form>
 <h3>{%trans "Import"%}</h3>
-<p>{%trans "Please select a file which exported from wordpress to import!"%}</p>
-	<form action="" method='post' enctype="multipart/form-data">
-	<table class="form-table">
-	 <tr valign="top">
-                <th scope="row">{%trans "Permalink Structure:"%}</th>
-                <td><input type="text" name="link_format"  size="65" value="{{ blog.link_format }}" >
-                <br>{%trans "Available parameters:"%}%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
-               </td>
-                </tr>
-	  <tr valign="top">
-                <th scope="row">{%trans "Wordpress export file (WXR file):"%}</th>
-                <td><input type="file" name="wpfile">
-               </td>
-                </tr>
+<p>If you have posts or comments in another system, Micolog can import those into this blog. To get started, choose a system to import from below:</p>
+<table class="widefat" cellspacing="0">
+{%for item in importitems%}
+<tr>
+  <td><a href="/admin/plugins/{{item.iname}}">{{item.import_name}}</a></td><td>{{item.import_description}}</td>
+<tr>
+{%endfor%}
+</table>
 
-
-	</table>
-    <p>
-	<input type="submit" value="{% trans "Import"%}"/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
-    </p>
-
-</form>
 
 </div>
-{%endif%}
+
 {% endblock %}

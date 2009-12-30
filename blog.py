@@ -28,13 +28,20 @@ from django.template.loader import *
 ##settings.configure(LANGUAGE_CODE = 'zh-cn')
 # Must set this env var before importing any part of Django
 
+from app.safecode import Image
+from app.gmemsess import Session
+from micolog_plugin import *
+
+
 def doRequestHandle(old_handler,new_handler,**args):
         new_handler.initialize(old_handler.request,old_handler.response)
         return  new_handler.get(**args)
 
+def doRequestPostHandle(old_handler,new_handler,**args):
+        new_handler.initialize(old_handler.request,old_handler.response)
+        return  new_handler.post(**args)
 
 class MainPage(BasePublicPage):
-
     def get(self,page=1):
         postid=self.param('p')
         if postid:
@@ -44,6 +51,16 @@ class MainPage(BasePublicPage):
             except:
                 return self.error(404)
         self.doget(page)
+
+    def post(self):
+        postid=self.param('p')
+        if postid:
+            try:
+                postid=int(postid)
+                return doRequestPostHandle(self,SinglePost(),postid=postid)  #singlepost.get(postid=postid)
+            except:
+                return self.error(404)
+
 
     @cache()
     def doget(self,page):
@@ -148,7 +165,9 @@ class SinglePost(BasePublicPage):
 
         entry=entries[0]
         if entry.is_external_page:
-            self.redirect(entry.external_page_address,True)
+            return self.redirect(entry.external_page_address,True)
+        if g_blog.allow_pingback and entry.allow_trackback:
+			self.response.headers['X-Pingback']="%s/rpc"%str(g_blog.baseurl)
         entry.readtimes += 1
         entry.put()
         self.entry=entry
@@ -192,6 +211,84 @@ class SinglePost(BasePublicPage):
                         'checknum2':random.randint(1,10),
                         'comments_nav':comments_nav,
                         })
+
+    def post(self,slug=None,postid=None):
+    	'''handle trackback'''
+    	error = '''
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+<error>1</error>
+<message>%s</message>
+</response>
+'''
+    	success = '''
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+<error>0</error>
+</response>
+'''
+        if not g_blog.allow_trackback:
+        	self.response.out.write(self.error % "Trackback denied.")
+        	return
+        self.response.headers['Content-Type'] = "text/xml"
+        if postid:
+            entries = Entry.all().filter("published =", True).filter('post_id =', postid).fetch(1)
+        else:
+            slug=urldecode(slug)
+            entries = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
+
+        if not entries or len(entries) == 0 :#or  (postid and not entries[0].link.endswith(g_blog.default_link_format%{'post_id':postid})):
+            self.response.out.write(error % "empty slug/postid")
+            return
+        #check code ,rejest spam
+        entry=entries[0]
+        #key=self.param("code")
+        if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
+        	self.response.out.write(error % "Invalid trackback url.")
+        	return
+        coming_url = self.param('url')
+        blog_name = myfilter.do_filter(self.param('blog_name'))
+        excerpt = myfilter.do_filter(self.param('excerpt'))
+        title = myfilter.do_filter(self.param('title'))
+
+        if not coming_url or not blog_name or not excerpt or not title:
+            self.response.out.write(error % "not enough post info")
+            return
+
+        import time
+        #wait for half second in case otherside hasn't been published
+        time.sleep(0.5)
+
+##        #also checking the coming url is valid and contains our link
+##        #this is not standard trackback behavior
+##        try:
+##
+##            result = urlfetch.fetch(coming_url)
+##            if result.status_code != 200 :
+##            	#or ((g_blog.baseurl + '/' + slug) not in result.content.decode('ascii','ignore')):
+##                self.response.out.write(error % "probably spam")
+##                return
+##        except Exception, e:
+##            logging.info("urlfetch error")
+##            self.response.out.write(error % "urlfetch error")
+##            return
+
+        comment = Comment.all().filter("entry =", entry).filter("weburl =", coming_url).get()
+        if comment:
+            self.response.out.write(error % "has pinged before")
+            return
+
+        comment=Comment(author=blog_name,
+                content="<strong>"+title[:250]+"...</strong><br/>" +
+                        excerpt[:250] + '...',
+                weburl=coming_url,
+                entry=entry)
+        comment.ip=self.request.remote_addr
+        comment.ctype=COMMENT_TRACKBACK
+        comment.save()
+
+        memcache.delete("/"+entry.link)
+        self.write(success)
 
     def get_comments_nav(self,pindex,count):
 
@@ -293,11 +390,10 @@ class SitemapHandler(BaseRequestHandler):
         self.render2('views/sitemap.xml',{'urlset':urls})
 
 
-
 class Error404(BaseRequestHandler):
     @cache(time=36000)
     def get(self,slug=None):
-         self.error(404)
+        self.error(404)
 
 class Post_comment(BaseRequestHandler):
     #@printinfo
@@ -316,8 +412,10 @@ class Post_comment(BaseRequestHandler):
         content=self.param('comment')
         checknum=self.param('checknum')
         checkret=self.param('checkret')
+        reply_notify_mail=self.parambool('reply_notify_mail')
 ##        if useajax:
 ##            name=urldecode(name)
+
 ##            email=urldecode(email)
 ##            url=urldecode(url)
 ##            key=urldecode(key)
@@ -325,26 +423,29 @@ class Post_comment(BaseRequestHandler):
 ##            checknum=urldecode(checknum)
 ##            checkret=urldecode(checkret)
 
+        sess=Session(self,timeout=180)
         if not self.is_login:
             if not (self.request.cookies.get('comment_user', '')):
 
                 try:
-                    import app.gbtools as gb
-                    if eval(checknum)<>int(gb.stringQ2B( checkret)):
+                    #import app.gbtools as gb
+                    #if eval(checknum)<>int(gb.stringQ2B( checkret)):
+                    if sess.is_new() or (int(checkret) != sess['code']):
+                        sess.invalidate()
                         if useajax:
                             self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
                         else:
                             self.error(-102,_('Your check code is invalid .'))
                         return
                 except:
+                    sess.invalidate()
                     if useajax:
                         self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
                     else:
                         self.error(-102,_('Your check code is invalid .'))
                     return
 
-
-
+        sess.invalidate()
         content=content.replace('\n','<br>')
         content=myfilter.do_filter(content)
         name=cgi.escape(name)[:20]
@@ -359,6 +460,7 @@ class Post_comment(BaseRequestHandler):
             comment=Comment(author=name,
                             content=content,
                             email=email,
+                            reply_notify_mail=reply_notify_mail,
                             entry=Entry.get(key))
             if url:
                try:
@@ -377,6 +479,7 @@ class Post_comment(BaseRequestHandler):
                        (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
                        ''
                        )
+            comment.ip=self.request.remote_addr
             comment.save()
             memcache.delete("/"+comment.entry.link)
 
@@ -386,6 +489,11 @@ class Post_comment(BaseRequestHandler):
                 self.write(simplejson.dumps((True,comment_c.decode('utf8'))))
             else:
                 self.redirect(self.referer+"#comment-"+str(comment.key().id()))
+
+            comment.notify()
+            comment.entry.removecache()
+            memcache.delete("/feed/comments")
+            logging.info("cookie:"+str(self.request.cookies))
 
 class ChangeTheme(BaseRequestHandler):
     @requires_admin
@@ -555,11 +663,24 @@ class TrackBackHandler(webapp.RequestHandler):
         memcache.delete("/"+entry.link)
         self.response.out.write(self.success)
 
+class CheckImg(BaseRequestHandler):
+    def get(self):
+        img = Image()
+        imgdata = img.create()
+        sess=Session(self,timeout=180)
+        if not sess.is_new():
+            sess.invalidate()
+            sess=Session(self,timeout=180)
+        sess['code']=img.text
+        sess.save()
+        self.response.headers['Content-Type'] = "image/png"
+        self.response.out.write(imgdata)
 
 def main():
     webapp.template.register_template_library('filter')
     application = webapp.WSGIApplication(
                     [('/media/(.*)',getMedia),
+                    ('/checkimg/', CheckImg),
                     ('/skin',ChangeTheme),
                     ('/feed', FeedHandler),
                     ('/feed/comments',CommentsFeedHandler),
@@ -569,11 +690,10 @@ def main():
                     ('/category/(.*)',entriesByCategory),
                     ('/(\d{4})/(\d{2})',archive_by_month),
                     ('/tag/(.*)',entriesByTag),
-##                    ('/\?p=(?P<postid>\d+)',SinglePost),
+                    #('/\?p=(?P<postid>\d+)',SinglePost),
                     ('/', MainPage),
                     ('/do/(\w+)', do_action),
-
-                    ('/([\\w\\-\\./]+)', SinglePost),
+                    ('/([\\w\\-\\./%]+)', SinglePost),
                     ('.*',Error404),
                     ],debug=True)
     wsgiref.handlers.CGIHandler().run(application)
