@@ -2,7 +2,6 @@ import cgi, os,sys,traceback
 import wsgiref.handlers
 import settings
 
-from micolog_plugin import *
 
 from google.appengine.ext.webapp import template, \
     WSGIApplication
@@ -13,12 +12,12 @@ from google.appengine.ext import zipserve
 from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 from google.appengine.api.labs import taskqueue
-from base import *
 from datetime import datetime ,timedelta
 import base64,random,math
 from django.utils import simplejson
 import pickle
-from  model import *
+from model import *
+from base import *
 from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault

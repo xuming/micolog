@@ -18,7 +18,7 @@ from google.appengine.ext import db
 
 ##from django.conf import settings
 ##settings._target = None
-from base import *
+
 ##activate(g_blog.language)
 from datetime import datetime ,timedelta
 import base64,random
@@ -30,8 +30,9 @@ from django.template.loader import *
 
 from app.safecode import Image
 from app.gmemsess import Session
-from micolog_plugin import *
 
+from model import *
+from base import *
 
 def doRequestHandle(old_handler,new_handler,**args):
         new_handler.initialize(old_handler.request,old_handler.response)
@@ -40,6 +41,46 @@ def doRequestHandle(old_handler,new_handler,**args):
 def doRequestPostHandle(old_handler,new_handler,**args):
         new_handler.initialize(old_handler.request,old_handler.response)
         return  new_handler.post(**args)
+
+class BasePublicPage(BaseRequestHandler):
+    def initialize(self, request, response):
+        BaseRequestHandler.initialize(self,request, response)
+        m_pages=Entry.all().filter('entrytype =','page')\
+            .filter('published =',True)\
+            .filter('entry_parent =',0)\
+            .order('menu_order')
+        blogroll=Link.all().filter('linktype =','blogroll')
+        archives=Archive.all().order('-date')
+        alltags=Tag.all()
+        self.template_vals.update({
+                        'menu_pages':m_pages,
+                        'categories':Category.all(),
+                        'blogroll':blogroll,
+                        'archives':archives,
+                        'alltags':alltags,
+                        'recent_comments':Comment.all().order('-date').fetch(5)
+        })
+
+    def m_list_pages(self):
+        menu_pages=None
+        entry=None
+        if self.template_vals.has_key('menu_pages'):
+            menu_pages= self.template_vals['menu_pages']
+        if self.template_vals.has_key('entry'):
+            entry=self.template_vals['entry']
+        ret=''
+        current=''
+        for page in menu_pages:
+            if entry and entry.entrytype=='page' and entry.key()==page.key():
+                current= 'current_page_item'
+            else:
+                current= 'page_item'
+            #page is external page ,and page.slug is none.
+            if page.is_external_page and not page.slug:
+                ret+='<li class="%s"><a href="%s" target="%s" >%s</a></li>'%( current,page.link,page.target, page.title)
+            else:
+                ret+='<li class="%s"><a href="/%s" target="%s">%s</a></li>'%( current,page.link, page.target,page.title)
+        return ret
 
 class MainPage(BasePublicPage):
     def get(self,page=1):

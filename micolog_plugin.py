@@ -1,5 +1,5 @@
-import os
-from model import OptionSet,g_blog
+import os,logging
+from model import OptionSet
 from google.appengine.ext.webapp import template
 class PluginIterator:
 	def __init__(self, plugins_path='plugins'):
@@ -48,7 +48,6 @@ class Plugins:
 				plugin.active=v in self.active_list
 				self.list[v]=plugin
 			except:
-				raise
 				pass
 
 	def reload(self):
@@ -194,6 +193,3 @@ class Plugin_importbase(Plugin):
 	def post(self):
 		pass
 
-
-
-g_blog.plugins=Plugins()

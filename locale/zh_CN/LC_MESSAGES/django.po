@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-19 13:26+0800\n"
-"PO-Revision-Date: 2009-10-19 13:26+0800\n"
-"Last-Translator: 徐明 <coolchyni@gmail.com>\n"
+"POT-Creation-Date: 2009-12-31 23:14+0800\n"
+"PO-Revision-Date: 2009-12-31 23:49+0800\n"
+"Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -18,32 +18,36 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: .\blog.py:333
-#: .\blog.py:335
-#: .\blog.py:339
-#: .\blog.py:341
-msgid "Your check code is invalid ."
-msgstr "验证码错误"
-
-#: .\blog.py:353
-#: .\blog.py:355
-msgid "Please input name, email and comment ."
-msgstr "请输入姓名，Email地址和评论内容"
-
-#: .\blog.py:454
-msgid "this is a test"
-msgstr "这是一个测试"
-
-#: .\model.py:268
+#: .\model.py:299
 msgid "..more"
 msgstr "(..更多内容)"
 
-#: .\model.py:533
-#, python-format
+#: .\model.py:580
+#, fuzzy, python-format
 msgid ""
 "New comment on your post \"%s\"\n"
 "Author : %s\n"
 "E-mail : %s\n"
+"URL\t: %s\n"
+"Comment:\n"
+"%s\n"
+"You can see all comments on this post here:\n"
+"%s\n"
+msgstr ""
+"关于\"%s\"的新评论\n"
+"作者 : %s\n"
+"E-mail : %s\n"
+"网址    : %s\n"
+"内容:\n"
+"%s\n"
+"查看所有评论:\n"
+"%s\n"
+
+#: .\model.py:592
+#, fuzzy, python-format
+msgid ""
+"Hi~ New reference on your comment for post \"%s\"\n"
+"Author : %s\n"
 "URL    : %s\n"
 "Comment:\n"
 "%s\n"
@@ -59,141 +63,187 @@ msgstr ""
 "查看所有评论:\n"
 "%s\n"
 
-#: .\model.py:603
+#: .\model.py:698
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: .\model.py:604
+#: .\model.py:699
 msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
 msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
-#: .\views\admin\import.html.py:35
-#: .\views\admin\tools.html.py:59
+#: .\base.py:130
+#: .\tools\pingback.py:55
+msgid "source URL does not exist"
+msgstr ""
+
+#: .\base.py:131
+#: .\tools\pingback.py:56
+msgid "The source URL does not contain a link to the target URL"
+msgstr ""
+
+#: .\base.py:132
+#: .\tools\pingback.py:57
+msgid "The specified target URL does not exist"
+msgstr ""
+
+#: .\base.py:133
+#: .\tools\pingback.py:58
+msgid "The specified target URL cannot be used as a target"
+msgstr ""
+
+#: .\base.py:134
+#: .\tools\pingback.py:59
+msgid "The pingback has already been registered"
+msgstr ""
+
+#: .\base.py:135
+#: .\tools\pingback.py:60
+msgid "Access Denied"
+msgstr ""
+
+#: .\base.py:172
+#: .\tools\pingback.py:97
+msgid "An unknown server error (%s) occurred"
+msgstr "未知的服务器错误：(%s)"
+
+#: .\blog.py:477
+#: .\blog.py:479
+#: .\blog.py:484
+#: .\blog.py:486
+msgid "Your check code is invalid ."
+msgstr "验证码错误"
+
+#: .\blog.py:497
+#: .\blog.py:499
+msgid "Please input name, email and comment ."
+msgstr "请输入姓名，Email地址和评论内容"
+
+#: .\blog.py:617
+msgid "this is a test"
+msgstr "这是一个测试"
+
+#: .\views\admin\import.html.py:34
+#: .\views\admin\tools.html.py:68
 #: .\views\admin\sitemap.html.py:6
 #: .\views\admin\setup.html.py:11
 msgid "Basic"
 msgstr "基本配置"
 
-#: .\views\admin\import.html.py:36
-#: .\views\admin\tools.html.py:60
+#: .\views\admin\import.html.py:35
+#: .\views\admin\tools.html.py:69
 #: .\views\admin\sitemap.html.py:7
 #: .\views\admin\setup.html.py:12
 msgid "Import/Export"
 msgstr "导入/导出"
 
-#: .\views\admin\import.html.py:37
-#: .\views\admin\tools.html.py:61
+#: .\views\admin\import.html.py:36
+#: .\views\admin\tools.html.py:70
 #: .\views\admin\sitemap.html.py:8
 #: .\views\admin\setup.html.py:13
 msgid "Sitemap"
 msgstr "网站地图"
 
-#: .\views\admin\import.html.py:38
-#: .\views\admin\tools.html.py:62
-#: .\views\admin\tools.html.py:70
+#: .\views\admin\import.html.py:37
+#: .\views\admin\tools.html.py:71
+#: .\views\admin\tools.html.py:79
 #: .\views\admin\sitemap.html.py:9
 #: .\views\admin\setup.html.py:14
 msgid "Tools"
 msgstr "工具"
 
-#: .\views\admin\import.html.py:52
+#: .\views\admin\import.html.py:44
 msgid "Export/Import for wordpress"
 msgstr "导入/导出"
 
-#: .\views\admin\import.html.py:53
-#: .\views\admin\import.html.py:67
+#: .\views\admin\import.html.py:45
+#: .\views\admin\import.html.py:60
 msgid "Export"
 msgstr "导出"
 
-#: .\views\admin\import.html.py:54
+#: .\views\admin\import.html.py:46
 msgid "Export as  WordPress eXtended RSS file"
 msgstr "导出为 wordpress 文件格式"
 
-#: .\views\admin\import.html.py:56
+#: .\views\admin\import.html.py:48
 msgid "Export from Date:"
 msgstr "导出日期: 从"
 
-#: .\views\admin\import.html.py:57
+#: .\views\admin\import.html.py:49
 msgid "to Date:"
 msgstr "到"
 
-#: .\views\admin\import.html.py:57
+#: .\views\admin\import.html.py:49
 msgid "'s posts"
 msgstr "的文章"
 
-#: .\views\admin\import.html.py:66
+#: .\views\admin\import.html.py:59
 msgid "Export all posts"
 msgstr "导出所有文章"
 
-#: .\views\admin\import.html.py:69
-#: .\views\admin\import.html.py:88
+#: .\views\admin\import.html.py:62
+#: .\plugins\wordpress\wpimport.html.py:66
 msgid "Import"
 msgstr "导入"
 
-#: .\views\admin\import.html.py:70
-msgid "Please select a file which exported from wordpress to import!"
-msgstr "请选择一个从wordpress导出的格式化文件进行导入！"
-
-#: .\views\admin\import.html.py:74
-#: .\views\admin\setup.html.py:54
-msgid "Permalink Structure:"
-msgstr "结构化链接(Permalink) "
-
-#: .\views\admin\import.html.py:76
-#: .\views\admin\tools.html.py:102
-msgid "Available parameters:"
-msgstr "可用的参数:"
-
-#: .\views\admin\import.html.py:80
-msgid "Wordpress export file (WXR file):"
-msgstr "Wordpress 格式文件(WXR格式):"
-
-#: .\views\admin\tools.html.py:72
+#: .\views\admin\tools.html.py:81
 msgid "Careless use of it will be dangerous!"
 msgstr "该页面提供的工具请谨慎使用!"
 
-#: .\views\admin\tools.html.py:75
-#: .\views\admin\tools.html.py:81
-#: .\views\admin\tools.html.py:88
-#: .\views\admin\tools.html.py:95
+#: .\views\admin\tools.html.py:84
+#: .\views\admin\tools.html.py:90
+#: .\views\admin\tools.html.py:97
+#: .\views\admin\tools.html.py:105
+#: .\views\admin\tools.html.py:116
 msgid "Run"
 msgstr "执行"
 
-#: .\views\admin\tools.html.py:76
+#: .\views\admin\tools.html.py:85
 msgid "Update tags"
 msgstr "更新标签"
 
-#: .\views\admin\tools.html.py:77
+#: .\views\admin\tools.html.py:86
 msgid "It will refresh all tags for each entry."
 msgstr "该操作将会更新所有文章和页面的标签"
 
-#: .\views\admin\tools.html.py:83
+#: .\views\admin\tools.html.py:92
 msgid "Init datas"
 msgstr "初始化数据"
 
-#: .\views\admin\tools.html.py:84
+#: .\views\admin\tools.html.py:93
 msgid "It will delete  all posts, pages and comments."
 msgstr "该操作将会删除所有文章，页面和评论"
 
-#: .\views\admin\tools.html.py:90
+#: .\views\admin\tools.html.py:99
 msgid "Update comments"
 msgstr "更新评论数"
 
-#: .\views\admin\tools.html.py:91
+#: .\views\admin\tools.html.py:100
 msgid "It will refresh the number of comments for each entry."
 msgstr "该操作将会更新所有文章的评论数"
 
-#: .\views\admin\tools.html.py:97
+#: .\views\admin\tools.html.py:107
 msgid "Rebuild URL"
 msgstr "重建文章链接"
 
-#: .\views\admin\tools.html.py:98
+#: .\views\admin\tools.html.py:108
 msgid "The URL of all entries (post or page) will be rebuild."
 msgstr "该操作将会按照指定的Permalink重置所有文章的URL链接"
 
-#: .\views\admin\tools.html.py:100
+#: .\views\admin\tools.html.py:110
 msgid "Permalink"
 msgstr "结构化链接(Permalink) "
+
+#: .\views\admin\tools.html.py:112
+msgid "Available parameters:"
+msgstr "可用的参数:"
+
+#: .\views\admin\tools.html.py:119
+msgid "Update archives"
+msgstr "更新归档"
+
+#: .\views\admin\tools.html.py:120
+msgid "It will update the monthyear of entries."
+msgstr "该操作将更新归档"
 
 #: .\views\admin\sitemap.html.py:19
 msgid "Sitemap Setup"
@@ -216,7 +266,7 @@ msgid "Pinging Search Engine (Google):"
 msgstr "Ping搜索引擎(Google)"
 
 #: .\views\admin\sitemap.html.py:52
-#: .\views\admin\setup.html.py:144
+#: .\views\admin\setup.html.py:153
 msgid "Save Changes"
 msgstr "保 存"
 
@@ -272,7 +322,7 @@ msgstr "日期"
 
 #: .\views\admin\posts.html.py:37
 #: .\views\admin\pages.html.py:34
-#: .\views\admin\entry.html.py:93
+#: .\views\admin\entry.html.py:118
 msgid "Title"
 msgstr "标题"
 
@@ -282,13 +332,13 @@ msgid "Status"
 msgstr "状态"
 
 #: .\views\admin\posts.html.py:37
-#: .\views\admin\entry.html.py:77
+#: .\views\admin\entry.html.py:94
 msgid "allow comment"
 msgstr "允许评论"
 
 #: .\views\admin\posts.html.py:45
 #: .\views\admin\pages.html.py:42
-#: .\views\admin\entry.html.py:77
+#: .\views\admin\entry.html.py:90
 msgid "Published"
 msgstr "发布"
 
@@ -313,69 +363,85 @@ msgstr "新建文章"
 msgid "New Page"
 msgstr "新建页面"
 
-#: .\views\admin\entry.html.py:50
+#: .\views\admin\entry.html.py:63
 msgid "Write Post"
 msgstr "写文章"
 
-#: .\views\admin\entry.html.py:52
+#: .\views\admin\entry.html.py:65
 msgid "Write Page"
 msgstr "写页面"
 
-#: .\views\admin\entry.html.py:62
+#: .\views\admin\entry.html.py:75
 msgid "Category"
 msgstr "目录"
 
-#: .\views\admin\entry.html.py:76
+#: .\views\admin\entry.html.py:89
 #: .\views\admin\link.html.py:24
 #: .\views\admin\category.html.py:24
 msgid "Save"
 msgstr "保存"
 
-#: .\views\admin\entry.html.py:81
+#: .\views\admin\entry.html.py:96
+msgid "allow trackback"
+msgstr "允许 Trackback"
+
+#: .\views\admin\entry.html.py:99
 #: .\views\admin\link.html.py:28
 #: .\views\admin\category.html.py:28
 msgid "Related"
 msgstr "相关操作"
 
-#: .\views\admin\entry.html.py:84
+#: .\views\admin\entry.html.py:102
 msgid "Manage All Posts"
 msgstr "管理所有文章"
 
-#: .\views\admin\entry.html.py:85
+#: .\views\admin\entry.html.py:103
 msgid "Manage All Pages"
 msgstr "管理所有页面"
 
-#: .\views\admin\entry.html.py:107
+#: .\views\admin\entry.html.py:114
+msgid "Use as  external page"
+msgstr "用作外链接"
+
+#: .\views\admin\entry.html.py:131
+msgid "External page address"
+msgstr "外链接地址"
+
+#: .\views\admin\entry.html.py:135
+msgid "Target"
+msgstr "目标"
+
+#: .\views\admin\entry.html.py:148
 msgid "Post"
 msgstr "文章"
 
-#: .\views\admin\entry.html.py:109
+#: .\views\admin\entry.html.py:150
 msgid "Page"
 msgstr "页面"
 
-#: .\views\admin\entry.html.py:154
+#: .\views\admin\entry.html.py:195
 #: .\views\admin\categories.html.py:35
 #: .\views\admin\category.html.py:47
 msgid "Slug"
 msgstr "名称(slug)"
 
-#: .\views\admin\entry.html.py:162
+#: .\views\admin\entry.html.py:203
 msgid "Tag"
 msgstr "标签"
 
-#: .\views\admin\entry.html.py:170
+#: .\views\admin\entry.html.py:211
 msgid "Options"
 msgstr "选项"
 
-#: .\views\admin\entry.html.py:173
+#: .\views\admin\entry.html.py:214
 msgid "Page level:"
 msgstr "页面级别:"
 
-#: .\views\admin\entry.html.py:175
+#: .\views\admin\entry.html.py:216
 msgid "Page order:"
 msgstr "页面顺序:"
 
-#: .\views\admin\entry.html.py:185
+#: .\views\admin\entry.html.py:226
 msgid "Excerpt"
 msgstr "摘要"
 
@@ -411,11 +477,15 @@ msgstr "评论"
 msgid "Configuration"
 msgstr "设置"
 
-#: .\views\admin\base.html.py:48
+#: .\views\admin\base.html.py:47
+msgid "Plugins"
+msgstr "插件"
+
+#: .\views\admin\base.html.py:49
 msgid "Cache"
 msgstr "缓存"
 
-#: .\views\admin\base.html.py:49
+#: .\views\admin\base.html.py:50
 msgid "help"
 msgstr "帮助"
 
@@ -496,6 +566,10 @@ msgstr "默认结构化链接 "
 msgid "Allowed variants: "
 msgstr "允许使用的变量:"
 
+#: .\views\admin\setup.html.py:54
+msgid "Permalink Structure:"
+msgstr "结构化链接(Permalink) "
+
 #: .\views\admin\setup.html.py:61
 msgid "Domain:"
 msgstr "域名:"
@@ -536,19 +610,27 @@ msgstr "允许将评论发送到你的邮箱:"
 msgid "Enable memcache:"
 msgstr "启用缓存:"
 
-#: .\views\admin\setup.html.py:127
+#: .\views\admin\setup.html.py:125
+msgid "Allow Trackback:"
+msgstr "允许 Trackback"
+
+#: .\views\admin\setup.html.py:131
+msgid "Allow Pingback:"
+msgstr "允许 Pingback"
+
+#: .\views\admin\setup.html.py:136
 msgid "Xmlrpc  setting"
 msgstr "客户端（Xmlrpc）调用设置："
 
-#: .\views\admin\setup.html.py:128
+#: .\views\admin\setup.html.py:137
 msgid "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "
 msgstr "为了您可以通过客户端工具（如Windows live writer）进行写作，请在这里设置的用户名和密码"
 
-#: .\views\admin\setup.html.py:131
+#: .\views\admin\setup.html.py:140
 msgid "User name:"
 msgstr "用户名:"
 
-#: .\views\admin\setup.html.py:137
+#: .\views\admin\setup.html.py:146
 msgid "Password:"
 msgstr "密码:"
 
@@ -615,11 +697,19 @@ msgstr "内容"
 
 #: .\views\admin\comments.html.py:34
 msgid "Email"
-msgstr ""
+msgstr "邮件"
 
 #: .\views\admin\comments.html.py:34
 msgid "Entry"
 msgstr "文章/页面"
+
+#: .\plugins\wordpress\wpimport.html.py:52
+msgid "Please select a file which exported from wordpress to import!"
+msgstr "请选择一个从wordpress导出的格式化文件进行导入！"
+
+#: .\plugins\wordpress\wpimport.html.py:58
+msgid "Wordpress export file (WXR file):"
+msgstr "Wordpress 格式文件(WXR格式):"
 
 #, fuzzy
 #~ msgid "Web Comment"

@@ -14,18 +14,15 @@ from django.utils.translation import  activate
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 settings._target = None
-from  model import *
-from google.appengine.api.labs import taskqueue
+from model import g_blog
 activate(g_blog.language)
-
-
+from google.appengine.api.labs import taskqueue
 import wsgiref.handlers
 from mimetypes import types_map
 from datetime import datetime, timedelta
 import urllib
 import traceback
 import micolog_template
-
 
 logging.info('module base reloaded')
 def urldecode(value):
@@ -374,42 +371,4 @@ class BaseRequestHandler(webapp.RequestHandler):
 			self.redirect(redirect_url)
 			return False
 
-class BasePublicPage(BaseRequestHandler):
-    def initialize(self, request, response):
-        BaseRequestHandler.initialize(self,request, response)
-        m_pages=Entry.all().filter('entrytype =','page')\
-            .filter('published =',True)\
-            .filter('entry_parent =',0)\
-            .order('menu_order')
-        blogroll=Link.all().filter('linktype =','blogroll')
-        archives=Archive.all().order('-date')
-        alltags=Tag.all()
-        self.template_vals.update({
-                        'menu_pages':m_pages,
-                        'categories':Category.all(),
-                        'blogroll':blogroll,
-                        'archives':archives,
-                        'alltags':alltags,
-                        'recent_comments':Comment.all().order('-date').fetch(5)
-        })
 
-    def m_list_pages(self):
-        menu_pages=None
-        entry=None
-        if self.template_vals.has_key('menu_pages'):
-            menu_pages= self.template_vals['menu_pages']
-        if self.template_vals.has_key('entry'):
-            entry=self.template_vals['entry']
-        ret=''
-        current=''
-        for page in menu_pages:
-            if entry and entry.entrytype=='page' and entry.key()==page.key():
-                current= 'current_page_item'
-            else:
-                current= 'page_item'
-            #page is external page ,and page.slug is none.
-            if page.is_external_page and not page.slug:
-                ret+='<li class="%s"><a href="%s" target="%s" >%s</a></li>'%( current,page.link,page.target, page.title)
-            else:
-                ret+='<li class="%s"><a href="/%s" target="%s">%s</a></li>'%( current,page.link, page.target,page.title)
-        return ret

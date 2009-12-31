@@ -6,7 +6,6 @@ from google.appengine.ext.db import Model as DBModel
 from google.appengine.api import memcache
 from google.appengine.api import mail
 from google.appengine.api import urlfetch
-
 from datetime import datetime
 import urllib, hashlib,urlparse
 import zipfile,re,pickle
@@ -151,6 +150,15 @@ class Blog(db.Model):
 	allow_trackback=db.BooleanProperty(default=False)
 
 	theme=None
+	def __init__(self,
+               parent=None,
+               key_name=None,
+               _app=None,
+               _from_entity=False,
+               **kwds):
+	    from micolog_plugin import Plugins
+	    self.plugins=Plugins()
+	    db.Model.__init__(self,parent,key_name,_app,_from_entity,**kwds)
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
 		return self.plugins.tigger_filter(name,content,arg1,arg2)
@@ -579,8 +587,7 @@ You can see all comments on this post here:
 %s
 ''')
 		sbody=sbody.decode('utf-8')
-		logging.info(type( sbody))
-		logging.info(sbody)
+
 		bbody=_('''Hi~ New reference on your comment for post "%s"
 Author : %s
 URL    : %s
@@ -678,7 +685,6 @@ def Sitemap_NotifySearch():
 	  except :
 		logging.error('Cannot contact: %s' % ping[1])
 
-g_blog=None
 def InitBlogData():
 	import settings
 	global g_blog
@@ -695,20 +701,22 @@ def InitBlogData():
 	return g_blog
 
 def gblog_init():
-	logging.info('module setting reloaded')
 	global g_blog
-
+	try:
+	   if g_blog :
+	       return g_blog
+	except:
+	    pass
 	g_blog = Blog.get_by_key_name('default')
 	if not g_blog:
 		g_blog=InitBlogData()
 
+
 	g_blog.get_theme()
-
 	g_blog.rootdir=os.path.dirname(__file__)
+	return g_blog
 
-	logging.info(g_blog.rootdir)
-
-gblog_init()
+g_blog=gblog_init()
 
 if __name__=='__main__':
 	lk = Link()
