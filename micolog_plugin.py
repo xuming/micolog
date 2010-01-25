@@ -1,6 +1,7 @@
 import os,logging
 from model import OptionSet
 from google.appengine.ext.webapp import template
+
 class PluginIterator:
 	def __init__(self, plugins_path='plugins'):
 		self.iterating = False
@@ -108,7 +109,7 @@ class Plugins:
 		return rlist
 
 	def get_filter_plugins(self,name):
-		if not self._filter_plugins :
+		if not self._filter_plugins.has_key(name) :
 			for item in self:
 				if item.active and hasattr(item,"_filter") :
 					if item._filter.has_key(name):
@@ -117,13 +118,15 @@ class Plugins:
 						else:
 							self._filter_plugins[name]=[item._filter[name]]
 
+
+
 		if self._filter_plugins.has_key(name):
 			return tuple(self._filter_plugins[name])
 		else:
 			return ()
 
 	def get_action_plugins(self,name):
-		if not self._action_plugins :
+		if not self._action_plugins.has_key(name) :
 			for item in self:
 				if item.active and hasattr(item,"_action") :
 					if item._action.has_key(name):
@@ -138,13 +141,14 @@ class Plugins:
 			return ()
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
+		logging.info(name)
 		for func in self.get_filter_plugins(name):
-			content=func(content,arg1,arg2)
+		    content=func(content,*arg1,**arg2)
 		return content
 
 	def tigger_action(self,name,*arg1,**arg2):
 		for func in self.get_action_plugins(name):
-			func(arg1,arg2)
+			func(*arg1,**arg2)
 
 
 

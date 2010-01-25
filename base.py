@@ -188,7 +188,6 @@ class util:
 
 ##cache variable
 
-
 class Pager(object):
 
     def __init__(self, model=None,query=None, items_per_page=10):

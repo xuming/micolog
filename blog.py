@@ -50,7 +50,7 @@ class BasePublicPage(BaseRequestHandler):
             .filter('entry_parent =',0)\
             .order('menu_order')
         blogroll=Link.all().filter('linktype =','blogroll')
-        archives=Archive.all().order('-date')
+        archives=Archive.all().order('-year').order('-month').fetch(12)
         alltags=Tag.all()
         self.template_vals.update({
                         'menu_pages':m_pages,

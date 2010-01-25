@@ -161,10 +161,10 @@ class Blog(db.Model):
 	    db.Model.__init__(self,parent,key_name,_app,_from_entity,**kwds)
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
-		return self.plugins.tigger_filter(name,content,arg1,arg2)
+		return self.plugins.tigger_filter(name,content,blog=self,*arg1,**arg2)
 
 	def tigger_action(self,name,*arg1,**arg2):
-		return self.plugins.tigger_action(name,arg1,arg2)
+	 	return self.plugins.tigger_action(name,blog=self,*arg1,**arg2)
 
 
 	def save(self):
