@@ -4,7 +4,7 @@ import settings
 
 
 from google.appengine.ext.webapp import template, \
-    WSGIApplication
+	WSGIApplication
 from google.appengine.api import users
 #import app.webapp as webapp2
 from google.appengine.ext import db
@@ -22,968 +22,968 @@ from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault
 class Error404(BaseRequestHandler):
-    #@printinfo
-    def get(self,slug=None):
-        self.render2('views/admin/404.html')
+	#@printinfo
+	def get(self,slug=None):
+		self.render2('views/admin/404.html')
 
 class setlanguage(BaseRequestHandler):
-    def get(self):
-        lang_code = self.param('language')
-        next = self.param('next')
-        if (not next) and os.environ.has_key('HTTP_REFERER'):
-            next = os.environ['HTTP_REFERER']
-        if not next:
-            next = '/'
-        from django.utils.translation import check_for_language, activate, to_locale, get_language
+	def get(self):
+		lang_code = self.param('language')
+		next = self.param('next')
+		if (not next) and os.environ.has_key('HTTP_REFERER'):
+			next = os.environ['HTTP_REFERER']
+		if not next:
+			next = '/'
+		from django.utils.translation import check_for_language, activate, to_locale, get_language
 
-        if lang_code and check_for_language(lang_code):
-            g_blog.language=lang_code
+		if lang_code and check_for_language(lang_code):
+			g_blog.language=lang_code
 
-            activate(lang_code)
-            g_blog.save()
-        self.redirect(next)
+			activate(lang_code)
+			g_blog.save()
+		self.redirect(next)
 
 
 
-##            if hasattr(request, 'session'):
-##                request.session['django_language'] = lang_code
-##            else:
+##			if hasattr(request, 'session'):
+##				request.session['django_language'] = lang_code
+##			else:
 
-##            cookiestr='django_language=%s;expires=%s;domain=%s;path=/'%( lang_code,
-##                       (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
-##                       ''
-##                       )
-##            self.write(cookiestr)
+##			cookiestr='django_language=%s;expires=%s;domain=%s;path=/'%( lang_code,
+##					   (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
+##					   ''
+##					   )
+##			self.write(cookiestr)
 
-            #self.response.headers.add_header('Set-Cookie', cookiestr)
+			#self.response.headers.add_header('Set-Cookie', cookiestr)
 class admin_do_import(BaseRequestHandler):
-    def get(self,slug=None):
-        try:
-            func=getattr(self,'action_'+slug)
-            if func and callable(func):
-                func()
-            else:
-                self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-        except:
-             self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-    def action_wordpress(self):
-        self.write("wordpress")
+	def get(self,slug=None):
+		try:
+			func=getattr(self,'action_'+slug)
+			if func and callable(func):
+				func()
+			else:
+				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+		except:
+			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+	def action_wordpress(self):
+		self.write("wordpress")
 
 class admin_do_action(BaseRequestHandler):
-    def get(self,slug=None):
-        try:
-            func=getattr(self,'action_'+slug)
-            if func and callable(func):
-                func()
-            else:
-                self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-        except:
-             self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+	def get(self,slug=None):
+		try:
+			func=getattr(self,'action_'+slug)
+			if func and callable(func):
+				func()
+			else:
+				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+		except:
+			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
 
-    def post(self,slug=None):
-        try:
-            func=getattr(self,'action_'+slug)
-            if func and callable(func):
-                func()
-            else:
-                self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-        except:
-             self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+	def post(self,slug=None):
+		try:
+			func=getattr(self,'action_'+slug)
+			if func and callable(func):
+				func()
+			else:
+				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+		except:
+			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
 
-    def action_test(self):
-        self.write(os.environ)
+	def action_test(self):
+		self.write(os.environ)
 
-    def action_cacheclear(self):
-        memcache.flush_all()
-        self.write('"Cache cleared successful"')
+	def action_cacheclear(self):
+		memcache.flush_all()
+		self.write('"Cache cleared successful"')
 
-    def action_updatecomments(self):
-        for entry in Entry.all():
-            cnt=entry.comments().count()
-            if cnt<>entry.commentcount:
-                entry.commentcount=cnt
-                entry.put()
-        self.write('"ok"')
+	def action_updatecomments(self):
+		for entry in Entry.all():
+			cnt=entry.comments().count()
+			if cnt<>entry.commentcount:
+				entry.commentcount=cnt
+				entry.put()
+		self.write('"ok"')
 
-    def action_updatelink(self):
-        link_format=self.param('linkfmt')
+	def action_updatelink(self):
+		link_format=self.param('linkfmt')
 
-        if link_format:
-            link_format=link_format.strip()
-            g_blog.link_format=link_format
-            g_blog.save()
-            for entry in Entry.all():
-                vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
-                'postname':entry.slug,'post_id':entry.post_id}
+		if link_format:
+			link_format=link_format.strip()
+			g_blog.link_format=link_format
+			g_blog.save()
+			for entry in Entry.all():
+				vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
+				'postname':entry.slug,'post_id':entry.post_id}
 
-                if entry.slug:
-                    newlink=link_format%vals
-                else:
-                    newlink=g_blog.default_link_format%vals
+				if entry.slug:
+					newlink=link_format%vals
+				else:
+					newlink=g_blog.default_link_format%vals
 
-                if entry.link<>newlink:
-                    entry.link=newlink
-                    entry.put()
-            self.write('"ok"')
-        else:
-            self.write('"Please input url format."')
+				if entry.link<>newlink:
+					entry.link=newlink
+					entry.put()
+			self.write('"ok"')
+		else:
+			self.write('"Please input url format."')
 
-    def action_init_blog(self,slug=None):
+	def action_init_blog(self,slug=None):
 
-        for com in Comment.all():
-            com.delete()
+		for com in Comment.all():
+			com.delete()
 
-        for entry in Entry.all():
-            entry.delete()
+		for entry in Entry.all():
+			entry.delete()
 
-        g_blog.entrycount=0
-        self.write('"Init has succeed."')
+		g_blog.entrycount=0
+		self.write('"Init has succeed."')
 
-    def action_update_tags(self,slug=None):
-        for tag in Tag.all():
-            tag.delete()
-        for entry in Entry.all().filter('entrytype =','post'):
-            if entry.tags:
-                for t in entry.tags:
-                    try:
-                        logging.info('sss:'+t)
-                        Tag.add(t)
-                    except:
-                        traceback.print_exc()
+	def action_update_tags(self,slug=None):
+		for tag in Tag.all():
+			tag.delete()
+		for entry in Entry.all().filter('entrytype =','post'):
+			if entry.tags:
+				for t in entry.tags:
+					try:
+						logging.info('sss:'+t)
+						Tag.add(t)
+					except:
+						traceback.print_exc()
 
-        self.write('"All tags for entry have been updated."')
+		self.write('"All tags for entry have been updated."')
 
 
-    def action_update_archives(self,slug=None):
-        for archive in Archive.all():
-            archive.delete()
-        entries=Entry.all()
-        for entry in entries:
-            entry.update_archive()
-        self.write('"All entries have been updated."')
+	def action_update_archives(self,slug=None):
+		for archive in Archive.all():
+			archive.delete()
+		entries=Entry.all()
+		for entry in entries:
+			entry.update_archive()
+		self.write('"All entries have been updated."')
 
-    def action_stop_import(self):
-        memcache.delete("imt")
-        self.write('"ok"')
+	def action_stop_import(self):
+		memcache.delete("imt")
+		self.write('"ok"')
 
-    def action_trackback_ping(self):
-        tbUrl=self.param('tbUrl')
-        title=self.param('title')
-        excerpt=self.param('excerpt')
-        url=self.param('url')
-        blog_name=self.param('blog_name')
-        tb=TrackBack(tbUrl,title,excerpt,url,blog_name)
-        tb.ping()
+	def action_trackback_ping(self):
+		tbUrl=self.param('tbUrl')
+		title=self.param('title')
+		excerpt=self.param('excerpt')
+		url=self.param('url')
+		blog_name=self.param('blog_name')
+		tb=TrackBack(tbUrl,title,excerpt,url,blog_name)
+		tb.ping()
 
-    def action_pingback_ping(self):
-        """Try to notify the server behind `target_uri` that `source_uri`
-        points to `target_uri`.  If that fails an `PingbackError` is raised.
-        """
-        source_uri=self.param('source')
-        target_uri=self.param('target')
-        try:
-            response =urlfetch.fetch(target_uri)
-        except:
-            raise PingbackError(32)
+	def action_pingback_ping(self):
+		"""Try to notify the server behind `target_uri` that `source_uri`
+		points to `target_uri`.  If that fails an `PingbackError` is raised.
+		"""
+		source_uri=self.param('source')
+		target_uri=self.param('target')
+		try:
+			response =urlfetch.fetch(target_uri)
+		except:
+			raise PingbackError(32)
 
-        try:
-            pingback_uri = response.headers['X-Pingback']
-        except KeyError:
-            _pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
-            match = _pingback_re.search(response.data)
-            if match is None:
-                raise PingbackError(33)
-            pingback_uri =urldecode(match.group(1))
+		try:
+			pingback_uri = response.headers['X-Pingback']
+		except KeyError:
+			_pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
+			match = _pingback_re.search(response.data)
+			if match is None:
+				raise PingbackError(33)
+			pingback_uri =urldecode(match.group(1))
 
-        rpc = xmlrpclib.ServerProxy(pingback_uri)
-        try:
-            return rpc.pingback.ping(source_uri, target_uri)
-        except Fault, e:
-            raise PingbackError(e.faultCode)
-        except:
-            raise PingbackError(32)
+		rpc = xmlrpclib.ServerProxy(pingback_uri)
+		try:
+			return rpc.pingback.ping(source_uri, target_uri)
+		except Fault, e:
+			raise PingbackError(e.faultCode)
+		except:
+			raise PingbackError(32)
 
 class admin_import_next(BaseRequestHandler):
-    def post(self):
-        try:
-                #global imt
-                imt=memcache.get("imt")
-                import_data=imt.pop()
-                memcache.set('imt',imt)
-                if import_data:
-                    try:
-                        if import_data[0]=='cat':
+	def post(self):
+		try:
+				#global imt
+				imt=memcache.get("imt")
+				import_data=imt.pop()
+				memcache.set('imt',imt)
+				if import_data:
+					try:
+						if import_data[0]=='cat':
 
-                            _cat=import_data[1]
-                            logging.info("\n1\n%s",_cat)
-                            nicename=_cat['slug']
-                            cat=Category.get_by_key_name('cat_'+nicename)
-                            if not cat:
-                                cat=Category(key_name='cat_'+nicename)
-                            cat.name=_cat['name']
-                            cat.slug=nicename
-                            cat.put()
-                        elif import_data[0]=='entry':
-                            _entry=import_data[1]
-                            logging.debug('importing:'+_entry['title'])
-                            hashkey=str(hash(_entry['title']))
-                            entry=Entry.get_by_key_name(hashkey)
-                            if not entry:
-                                entry=Entry(key_name=hashkey)
+							_cat=import_data[1]
+							logging.info("\n1\n%s",_cat)
+							nicename=_cat['slug']
+							cat=Category.get_by_key_name('cat_'+nicename)
+							if not cat:
+								cat=Category(key_name='cat_'+nicename)
+							cat.name=_cat['name']
+							cat.slug=nicename
+							cat.put()
+						elif import_data[0]=='entry':
+							_entry=import_data[1]
+							logging.debug('importing:'+_entry['title'])
+							hashkey=str(hash(_entry['title']))
+							entry=Entry.get_by_key_name(hashkey)
+							if not entry:
+								entry=Entry(key_name=hashkey)
 
-                            entry.title=_entry['title']
-                            entry.author=self.login_user
-                            entry.is_wp=True
-                           #entry.date=datetime.strptime( _entry['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
-                            try:
-                                entry.date=datetime.strptime( _entry['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
-                            except:
-                                try:
-                                    entry.date=datetime.strptime( _entry['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
-                                except:
-                                    entry.date=datetime.now()
-                            entry.entrytype=_entry['post_type']
-                            entry.content=_entry['content']
+							entry.title=_entry['title']
+							entry.author=self.login_user
+							entry.is_wp=True
+						   #entry.date=datetime.strptime( _entry['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
+							try:
+								entry.date=datetime.strptime( _entry['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
+							except:
+								try:
+									entry.date=datetime.strptime( _entry['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
+								except:
+									entry.date=datetime.now()
+							entry.entrytype=_entry['post_type']
+							entry.content=_entry['content']
 
-                            entry.excerpt=_entry['excerpt']
-                            entry.post_id=_entry['post_id']
-                            entry.slug=_entry['post_name']
-                            entry.entry_parent=_entry['post_parent']
-                            entry.menu_order=_entry['menu_order']
+							entry.excerpt=_entry['excerpt']
+							entry.post_id=_entry['post_id']
+							entry.slug=_entry['post_name']
+							entry.entry_parent=_entry['post_parent']
+							entry.menu_order=_entry['menu_order']
 
-                            for cat in _entry['categories']:
-                                c=Category.get_by_key_name('cat_'+cat['slug'])
-                                if c:
-                                    entry.categorie_keys.append(c.key())
-                            entry.settags(','.join(_entry['tags']))
-                ##                for tag in _entry['tags']:
-                ##                    entry.tags.append(tag)
-                            if _entry['published']:
-                                entry.publish(True)
-                            else:
-                                entry.save()
-                            for com in _entry['comments']:
-                                    try:
-                                        date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
-                                    except:
-                                        date=datetime.now()
-                                    comment=Comment(author=com['author'],
-                                                    content=com['content'],
-                                                    entry=entry,
-                                                    date=date
-                                                    )
-                                    try:
-                                        comment.email=com['email']
-                                        comment.weburl=com['weburl']
-                                    except:
-                                        pass
-                                    comment.save()
-                    finally:
-                        queue=taskqueue.Queue("import")
-                        queue.add(taskqueue.Task( url="/admin/import_next"))
-        except:
-            logging.info("import error")
+							for cat in _entry['categories']:
+								c=Category.get_by_key_name('cat_'+cat['slug'])
+								if c:
+									entry.categorie_keys.append(c.key())
+							entry.settags(','.join(_entry['tags']))
+				##				for tag in _entry['tags']:
+				##					entry.tags.append(tag)
+							if _entry['published']:
+								entry.publish(True)
+							else:
+								entry.save()
+							for com in _entry['comments']:
+									try:
+										date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
+									except:
+										date=datetime.now()
+									comment=Comment(author=com['author'],
+													content=com['content'],
+													entry=entry,
+													date=date
+													)
+									try:
+										comment.email=com['email']
+										comment.weburl=com['weburl']
+									except:
+										pass
+									comment.save()
+					finally:
+						queue=taskqueue.Queue("import")
+						queue.add(taskqueue.Task( url="/admin/import_next"))
+		except:
+			logging.info("import error")
 
 
-    def get(self,slug=None):
-        imt=memcache.get('imt')
-        if imt and imt.cur_do:
-            process=100-math.ceil(imt.count()*100/imt.total)
-            if imt.cur_do[0]=='cat':
-                msg="importing category '%s'"%imt.cur_do[1]['name']
-            elif imt.cur_do[0]=='entry':
-                msg="importing entry '%s'"%imt.cur_do[1]['title']
-            else:
-                msg="start importing..."
-            self.write(simplejson.dumps((process,msg,not process==100)))
-        else:
-            self.write(simplejson.dumps((-1,"Have no data to import!",False)))
+	def get(self,slug=None):
+		imt=memcache.get('imt')
+		if imt and imt.cur_do:
+			process=100-math.ceil(imt.count()*100/imt.total)
+			if imt.cur_do[0]=='cat':
+				msg="importing category '%s'"%imt.cur_do[1]['name']
+			elif imt.cur_do[0]=='entry':
+				msg="importing entry '%s'"%imt.cur_do[1]['title']
+			else:
+				msg="start importing..."
+			self.write(simplejson.dumps((process,msg,not process==100)))
+		else:
+			self.write(simplejson.dumps((-1,"Have no data to import!",False)))
 
 class admin_tools(BaseRequestHandler):
-    def __init__(self):
-        self.current="config"
+	def __init__(self):
+		self.current="config"
 
-    def get(self,slug=None):
-        self.render2('views/admin/tools.html')
+	def get(self,slug=None):
+		self.render2('views/admin/tools.html')
 
 
 class admin_sitemap(BaseRequestHandler):
-    def __init__(self):
-        self.current="config"
+	def __init__(self):
+		self.current="config"
 
-    def get(self,slug=None):
-        self.render2('views/admin/sitemap.html')
-
-
-    def post(self):
-        str_options= self.param('str_options').split(',')
-        for name in str_options:
-            value=self.param(name)
-            setattr(g_blog,name,value)
-
-        bool_options= self.param('bool_options').split(',')
-        for name in bool_options:
-            value=self.param(name)=='on'
-            setattr(g_blog,name,value)
-
-        int_options= self.param('int_options').split(',')
-        for name in int_options:
-            try:
-                value=int( self.param(name))
-                setattr(g_blog,name,value)
-            except:
-                pass
-        float_options= self.param('float_options').split(',')
-        for name in float_options:
-            try:
-                value=float( self.param(name))
-                setattr(g_blog,name,value)
-            except:
-                pass
+	def get(self,slug=None):
+		self.render2('views/admin/sitemap.html')
 
 
-        g_blog.save()
-        self.render2('views/admin/sitemap.html',{})
+	def post(self):
+		str_options= self.param('str_options').split(',')
+		for name in str_options:
+			value=self.param(name)
+			setattr(g_blog,name,value)
+
+		bool_options= self.param('bool_options').split(',')
+		for name in bool_options:
+			value=self.param(name)=='on'
+			setattr(g_blog,name,value)
+
+		int_options= self.param('int_options').split(',')
+		for name in int_options:
+			try:
+				value=int( self.param(name))
+				setattr(g_blog,name,value)
+			except:
+				pass
+		float_options= self.param('float_options').split(',')
+		for name in float_options:
+			try:
+				value=float( self.param(name))
+				setattr(g_blog,name,value)
+			except:
+				pass
+
+
+		g_blog.save()
+		self.render2('views/admin/sitemap.html',{})
 
 class admin_import(BaseRequestHandler):
-    def __init__(self):
-        self.current='config'
+	def __init__(self):
+		self.current='config'
 
-    def get(self,slug=None):
-        gblog_init()
-        self.render2('views/admin/import.html',{'importitems':
-            self.blog.plugins.filter('is_import_plugin',True)})
+	def get(self,slug=None):
+		gblog_init()
+		self.render2('views/admin/import.html',{'importitems':
+			self.blog.plugins.filter('is_import_plugin',True)})
 
-##    def post(self):
-##        try:
-##            queue=taskqueue.Queue("import")
-##            wpfile=self.param('wpfile')
-##            #global imt
-##            imt=import_wordpress(wpfile)
-##            imt.parse()
-##            memcache.set("imt",imt)
+##	def post(self):
+##		try:
+##			queue=taskqueue.Queue("import")
+##			wpfile=self.param('wpfile')
+##			#global imt
+##			imt=import_wordpress(wpfile)
+##			imt.parse()
+##			memcache.set("imt",imt)
 ##
-####            import_data=OptionSet.get_or_insert(key_name="import_data")
-####            import_data.name="import_data"
-####            import_data.bigvalue=pickle.dumps(imt)
-####            import_data.put()
+####			import_data=OptionSet.get_or_insert(key_name="import_data")
+####			import_data.name="import_data"
+####			import_data.bigvalue=pickle.dumps(imt)
+####			import_data.put()
 ##
-##            queue.add(taskqueue.Task( url="/admin/import_next"))
-##            self.render2('views/admin/import.html',
-##                        {'postback':True})
-##            return
-##            memcache.set("import_info",{'count':len(imt.entries),'msg':'Begin import...','index':1})
-##            #self.blog.import_info={'count':len(imt.entries),'msg':'Begin import...','index':1}
-##            if imt.categories:
-##                queue.add(taskqueue.Task( url="/admin/import_next",params={'cats': pickle.dumps(imt.categories),'index':1}))
+##			queue.add(taskqueue.Task( url="/admin/import_next"))
+##			self.render2('views/admin/import.html',
+##						{'postback':True})
+##			return
+##			memcache.set("import_info",{'count':len(imt.entries),'msg':'Begin import...','index':1})
+##			#self.blog.import_info={'count':len(imt.entries),'msg':'Begin import...','index':1}
+##			if imt.categories:
+##				queue.add(taskqueue.Task( url="/admin/import_next",params={'cats': pickle.dumps(imt.categories),'index':1}))
 ##
-##            return
-##            index=0
-##            if imt.entries:
-##                for entry in imt.entries :
-##                    try:
-##                        index=index+1
-##                        queue.add(taskqueue.Task(url="/admin/import_next",params={'entry':pickle.dumps(entry),'index':index}))
-##                    except:
-##                        pass
+##			return
+##			index=0
+##			if imt.entries:
+##				for entry in imt.entries :
+##					try:
+##						index=index+1
+##						queue.add(taskqueue.Task(url="/admin/import_next",params={'entry':pickle.dumps(entry),'index':index}))
+##					except:
+##						pass
 ##
-##        except:
-##            self.render2('views/admin/import.html',{'error':'import faiure.'})
+##		except:
+##			self.render2('views/admin/import.html',{'error':'import faiure.'})
 
 class admin_setup(BaseRequestHandler):
-    def __init__(self):
-        self.current='config'
+	def __init__(self):
+		self.current='config'
 
-    #@requires_admin
-    def get(self,slug=None):
-        vals={'themes':ThemeIterator()}
-        self.render2('views/admin/setup.html',vals)
+	#@requires_admin
+	def get(self,slug=None):
+		vals={'themes':ThemeIterator()}
+		self.render2('views/admin/setup.html',vals)
 
-    def post(self):
-        old_theme=g_blog.theme_name
-        str_options= self.param('str_options').split(',')
-        for name in str_options:
-            value=self.param(name)
-            setattr(g_blog,name,value)
+	def post(self):
+		old_theme=g_blog.theme_name
+		str_options= self.param('str_options').split(',')
+		for name in str_options:
+			value=self.param(name)
+			setattr(g_blog,name,value)
 
-        bool_options= self.param('bool_options').split(',')
-        for name in bool_options:
-            value=self.param(name)=='on'
-            setattr(g_blog,name,value)
+		bool_options= self.param('bool_options').split(',')
+		for name in bool_options:
+			value=self.param(name)=='on'
+			setattr(g_blog,name,value)
 
-        int_options= self.param('int_options').split(',')
-        for name in int_options:
-            try:
-                value=int( self.param(name))
-                setattr(g_blog,name,value)
-            except:
-                pass
-        float_options= self.param('float_options').split(',')
-        for name in float_options:
-            try:
-                value=float( self.param(name))
-                setattr(g_blog,name,value)
-            except:
-                pass
-
-
-        if old_theme !=g_blog.theme_name:
-            g_blog.get_theme()
+		int_options= self.param('int_options').split(',')
+		for name in int_options:
+			try:
+				value=int( self.param(name))
+				setattr(g_blog,name,value)
+			except:
+				pass
+		float_options= self.param('float_options').split(',')
+		for name in float_options:
+			try:
+				value=float( self.param(name))
+				setattr(g_blog,name,value)
+			except:
+				pass
 
 
-        g_blog.owner=self.login_user
-        g_blog.save()
-        gblog_init()
-        vals={'themes':ThemeIterator()}
-        self.render2('views/admin/setup.html',vals)
+		if old_theme !=g_blog.theme_name:
+			g_blog.get_theme()
+
+
+		g_blog.owner=self.login_user
+		g_blog.save()
+		gblog_init()
+		vals={'themes':ThemeIterator()}
+		self.render2('views/admin/setup.html',vals)
 
 class admin_entry(BaseRequestHandler):
-    def __init__(self):
-        self.current='write'
+	def __init__(self):
+		self.current='write'
 
 
-    def get(self,slug='post'):
-        action=self.param("action")
-        entry=None
-        cats=Category.all()
-        if action and  action=='edit':
-                try:
-                    key=self.param('key')
-                    entry=Entry.get(key)
+	def get(self,slug='post'):
+		action=self.param("action")
+		entry=None
+		cats=Category.all()
+		if action and  action=='edit':
+				try:
+					key=self.param('key')
+					entry=Entry.get(key)
 
-                except:
-                    pass
-        else:
-            action='add'
+				except:
+					pass
+		else:
+			action='add'
 
-        def mapit(cat):
-            return {'name':cat.name,'slug':cat.slug,'select':entry and cat.key() in entry.categorie_keys}
+		def mapit(cat):
+			return {'name':cat.name,'slug':cat.slug,'select':entry and cat.key() in entry.categorie_keys}
 
-        vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats)}
-        self.render2('views/admin/entry.html',vals)
+		vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats)}
+		self.render2('views/admin/entry.html',vals)
 
-    def post(self,slug='post'):
-        action=self.param("action")
-        title=self.param("post_title")
-        content=self.param('content')
-        tags=self.param("tags")
-        cats=self.request.get_all('cats')
-        key=self.param('key')
-        published=self.param('publish')
-        allow_comment=self.parambool('allow_comment')
-        allow_trackback=self.parambool('allow_trackback')
-        entry_slug=self.param('slug')
-        entry_parent=self.paramint('entry_parent')
-        menu_order=self.paramint('menu_order')
-        entry_excerpt=self.param('excerpt')
+	def post(self,slug='post'):
+		action=self.param("action")
+		title=self.param("post_title")
+		content=self.param('content')
+		tags=self.param("tags")
+		cats=self.request.get_all('cats')
+		key=self.param('key')
+		published=self.param('publish')
+		allow_comment=self.parambool('allow_comment')
+		allow_trackback=self.parambool('allow_trackback')
+		entry_slug=self.param('slug')
+		entry_parent=self.paramint('entry_parent')
+		menu_order=self.paramint('menu_order')
+		entry_excerpt=self.param('excerpt')
 
-        is_external_page=self.parambool('is_external_page')
-        target=self.param('target')
-        external_page_address=self.param('external_page_address')
+		is_external_page=self.parambool('is_external_page')
+		target=self.param('target')
+		external_page_address=self.param('external_page_address')
 
-        def mapit(cat):
-            return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
+		def mapit(cat):
+			return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
-        vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
-              'cats':map(mapit,Category.all()),
-              'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
-                         'allow_comment':allow_comment,
-                         'allow_trackback':allow_trackback,
-                        'slug':entry_slug,
-                        'entry_parent':entry_parent,
-                        'excerpt':entry_excerpt,
-                        'menu_order':menu_order,
-                        'is_external_page':is_external_page,
-                        'target':target,
-                        'external_page_address':external_page_address}
-              }
-        if not (title and (content or (is_external_page and external_page_address))):
-            vals.update({'result':False, 'msg':'Please input title and content or external_page_address.'})
-            self.render2('views/admin/entry.html',vals)
-        else:
-            if action=='add':
-                entry= Entry(title=title,content=content)
-                entry.settags(tags)
-                entry.entrytype=slug
-                entry.slug=entry_slug.replace(" ","-")
-                entry.entry_parent=entry_parent
-                entry.menu_order=menu_order
-                entry.excerpt=entry_excerpt
-                entry.is_external_page=is_external_page
-                entry.target=target
-                entry.external_page_address=external_page_address
-                newcates=[]
-                entry.allow_comment=allow_comment
-                entry.allow_trackback=allow_trackback
+		vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
+			  'cats':map(mapit,Category.all()),
+			  'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
+						 'allow_comment':allow_comment,
+						 'allow_trackback':allow_trackback,
+						'slug':entry_slug,
+						'entry_parent':entry_parent,
+						'excerpt':entry_excerpt,
+						'menu_order':menu_order,
+						'is_external_page':is_external_page,
+						'target':target,
+						'external_page_address':external_page_address}
+			  }
+		if not (title and (content or (is_external_page and external_page_address))):
+			vals.update({'result':False, 'msg':'Please input title and content or external_page_address.'})
+			self.render2('views/admin/entry.html',vals)
+		else:
+			if action=='add':
+				entry= Entry(title=title,content=content)
+				entry.settags(tags)
+				entry.entrytype=slug
+				entry.slug=entry_slug.replace(" ","-")
+				entry.entry_parent=entry_parent
+				entry.menu_order=menu_order
+				entry.excerpt=entry_excerpt
+				entry.is_external_page=is_external_page
+				entry.target=target
+				entry.external_page_address=external_page_address
+				newcates=[]
+				entry.allow_comment=allow_comment
+				entry.allow_trackback=allow_trackback
 
-                if cats:
+				if cats:
 
-                   for cate in cats:
-                        c=Category.all().filter('slug =',cate)
-                        if c:
-                            newcates.append(c[0].key())
-                entry.categorie_keys=newcates;
-                if published:
-                    entry.publish()
-                    entry.update_archive()
-                else:
-                    entry.published=False
-                    entry.save()
-                vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
-                self.render2('views/admin/entry.html',vals)
-            elif action=='edit':
-                try:
-                    entry=Entry.get(key)
-                    entry.title=title
-                    entry.content=content
-                    entry.slug=entry_slug.replace(' ','-')
-                    entry.entry_parent=entry_parent
-                    entry.menu_order=menu_order
-                    entry.excerpt=entry_excerpt
-                    entry.is_external_page=is_external_page
-                    entry.target=target
-                    entry.external_page_address=external_page_address
-                    entry.settags(tags)
-                    newcates=[]
-                    if cats:
+				   for cate in cats:
+						c=Category.all().filter('slug =',cate)
+						if c:
+							newcates.append(c[0].key())
+				entry.categorie_keys=newcates;
+				if published:
+					entry.publish()
+					entry.update_archive()
+				else:
+					entry.published=False
+					entry.save()
+				vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
+				self.render2('views/admin/entry.html',vals)
+			elif action=='edit':
+				try:
+					entry=Entry.get(key)
+					entry.title=title
+					entry.content=content
+					entry.slug=entry_slug.replace(' ','-')
+					entry.entry_parent=entry_parent
+					entry.menu_order=menu_order
+					entry.excerpt=entry_excerpt
+					entry.is_external_page=is_external_page
+					entry.target=target
+					entry.external_page_address=external_page_address
+					entry.settags(tags)
+					newcates=[]
+					if cats:
 
-                        for cate in cats:
-                            c=Category.all().filter('slug =',cate)
-                            if c:
-                                newcates.append(c[0].key())
-                    entry.categorie_keys=newcates;
-                    entry.allow_comment=allow_comment
-                    entry.allow_trackback=allow_trackback
+						for cate in cats:
+							c=Category.all().filter('slug =',cate)
+							if c:
+								newcates.append(c[0].key())
+					entry.categorie_keys=newcates;
+					entry.allow_comment=allow_comment
+					entry.allow_trackback=allow_trackback
 
-                    if published:
-                        entry.publish()
-                    else:
-                        entry.published=False
-                        entry.save()
-                    vals.update({'result':True,'msg':'Saved ok','entry':entry})
-                    self.render2('views/admin/entry.html',vals)
+					if published:
+						entry.publish()
+					else:
+						entry.published=False
+						entry.save()
+					vals.update({'result':True,'msg':'Saved ok','entry':entry})
+					self.render2('views/admin/entry.html',vals)
 
-                except:
-                    vals.update({'result':False,'msg':'Error:Entry can''t been saved.'})
-                    self.render2('views/admin/entry.html',vals)
+				except:
+					vals.update({'result':False,'msg':'Error:Entry can''t been saved.'})
+					self.render2('views/admin/entry.html',vals)
 
 
 class admin_entries(BaseRequestHandler):
-    def get(self,slug='post'):
-        try:
-            page_index=int(self.param('page'))
-        except:
-            page_index=1
+	def get(self,slug='post'):
+		try:
+			page_index=int(self.param('page'))
+		except:
+			page_index=1
 
 
 
 
-        entries=Entry.all().filter('entrytype =',slug).order('-date')
-        entries,links=Pager(query=entries,items_per_page=15).fetch(page_index)
+		entries=Entry.all().filter('entrytype =',slug).order('-date')
+		entries,links=Pager(query=entries,items_per_page=15).fetch(page_index)
 
-        self.render2('views/admin/'+slug+'s.html',
-         {
-           'current':slug+'s',
-           'entries':entries,
-           'pager':links
-          }
-        )
+		self.render2('views/admin/'+slug+'s.html',
+		 {
+		   'current':slug+'s',
+		   'entries':entries,
+		   'pager':links
+		  }
+		)
 
-    def post(self,slug='post'):
-        try:
-            linkcheck= self.request.get_all('checks')
-            for id in linkcheck:
-                kid=int(id)
+	def post(self,slug='post'):
+		try:
+			linkcheck= self.request.get_all('checks')
+			for id in linkcheck:
+				kid=int(id)
 
-                entry=Entry.get_by_id(kid)
+				entry=Entry.get_by_id(kid)
 
-                #delete it's comments
-                entry.delete_comments()
+				#delete it's comments
+				entry.delete_comments()
 
-                entry.delete()
-                g_blog.entrycount-=1
-        finally:
+				entry.delete()
+				g_blog.entrycount-=1
+		finally:
 
-            self.redirect('/admin/entries/'+slug)
+			self.redirect('/admin/entries/'+slug)
 
 
 class admin_categories(BaseRequestHandler):
-    def get(self,slug=None):
-        try:
-            page_index=int(self.param('page'))
-        except:
-            page_index=1
+	def get(self,slug=None):
+		try:
+			page_index=int(self.param('page'))
+		except:
+			page_index=1
 
 
 
 
-        cats=Category.all()
-        entries,pager=Pager(query=cats,items_per_page=15).fetch(page_index)
+		cats=Category.all()
+		entries,pager=Pager(query=cats,items_per_page=15).fetch(page_index)
 
-        self.render2('views/admin/categories.html',
-         {
-           'current':'categories',
-           'cats':cats,
-           'pager':pager
-          }
-        )
+		self.render2('views/admin/categories.html',
+		 {
+		   'current':'categories',
+		   'cats':cats,
+		   'pager':pager
+		  }
+		)
 
-    def post(self,slug=None):
-        try:
-            linkcheck= self.request.get_all('checks')
-            for key in linkcheck:
+	def post(self,slug=None):
+		try:
+			linkcheck= self.request.get_all('checks')
+			for key in linkcheck:
 
-                cat=Category.get(key)
-                cat.delete()
-        finally:
-            self.redirect('/admin/categories')
+				cat=Category.get(key)
+				cat.delete()
+		finally:
+			self.redirect('/admin/categories')
 
 class admin_comments(BaseRequestHandler):
-    def get(self,slug=None):
-        try:
-            page_index=int(self.param('page'))
-        except:
-            page_index=1
+	def get(self,slug=None):
+		try:
+			page_index=int(self.param('page'))
+		except:
+			page_index=1
 
 
 
 
-        query=Comment.all().order('-date')
-        comments,pager=Pager(query=query,items_per_page=15).fetch(page_index)
+		query=Comment.all().order('-date')
+		comments,pager=Pager(query=query,items_per_page=15).fetch(page_index)
 
-        self.render2('views/admin/comments.html',
-         {
-           'current':'comments',
-           'comments':comments,
-           'pager':pager
-          }
-        )
+		self.render2('views/admin/comments.html',
+		 {
+		   'current':'comments',
+		   'comments':comments,
+		   'pager':pager
+		  }
+		)
 
-    def post(self,slug=None):
-        try:
-            linkcheck= self.request.get_all('checks')
-            for key in linkcheck:
+	def post(self,slug=None):
+		try:
+			linkcheck= self.request.get_all('checks')
+			for key in linkcheck:
 
-                comment=Comment.get(key)
-                comment.delit()
-        finally:
-            self.redirect('/admin/comments')
+				comment=Comment.get(key)
+				comment.delit()
+		finally:
+			self.redirect('/admin/comments')
 
 class admin_links(BaseRequestHandler):
-    def get(self,slug=None):
-        self.render2('views/admin/links.html',
-         {
-          'current':'links',
-          'links':Link.all().filter('linktype =','blogroll')#.order('-createdate')
-          }
-        )
-    def post(self):
-        linkcheck= self.request.get_all('linkcheck')
-        for link_id in linkcheck:
-            kid=int(link_id)
-            link=Link.get_by_id(kid)
-            link.delete()
-        self.redirect('/admin/links')
+	def get(self,slug=None):
+		self.render2('views/admin/links.html',
+		 {
+		  'current':'links',
+		  'links':Link.all().filter('linktype =','blogroll')#.order('-createdate')
+		  }
+		)
+	def post(self):
+		linkcheck= self.request.get_all('linkcheck')
+		for link_id in linkcheck:
+			kid=int(link_id)
+			link=Link.get_by_id(kid)
+			link.delete()
+		self.redirect('/admin/links')
 
 class admin_link(BaseRequestHandler):
-    def get(self,slug=None):
-        action=self.param("action")
-        vals={'current':'links'}
-        if action and  action=='edit':
-                try:
-                    action_id=int(self.param('id'))
-                    link=Link.get_by_id(action_id)
-                    vals.update({'link':link})
-                except:
-                    pass
-        else:
-            action='add'
-        vals.update({'action':action})
+	def get(self,slug=None):
+		action=self.param("action")
+		vals={'current':'links'}
+		if action and  action=='edit':
+				try:
+					action_id=int(self.param('id'))
+					link=Link.get_by_id(action_id)
+					vals.update({'link':link})
+				except:
+					pass
+		else:
+			action='add'
+		vals.update({'action':action})
 
-        self.render2('views/admin/link.html',vals)
+		self.render2('views/admin/link.html',vals)
 
-    def post(self):
-        action=self.param("action")
-        name=self.param("link_name")
-        url=self.param("link_url")
-        comment = self.param("link_comment")
+	def post(self):
+		action=self.param("action")
+		name=self.param("link_name")
+		url=self.param("link_url")
+		comment = self.param("link_comment")
 
-        vals={'action':action,'postback':True,'current':'links'}
-        if not (name and url):
-            vals.update({'result':False,'msg':'Please input name and url.'})
-            self.render2('views/admin/link.html',vals)
-        else:
-            if action=='add':
-               link= Link(linktext=name,href=url,linkcomment=comment)
-               link.put()
-               vals.update({'result':True,'msg':'Saved ok'})
-               self.render2('views/admin/link.html',vals)
-            elif action=='edit':
-                try:
-                    action_id=int(self.param('id'))
-                    link=Link.get_by_id(action_id)
-                    link.linktext=name
-                    link.href=url
-                    link.linkcomment = comment
-                    link.put()
-                    #goto link manage page
-                    self.redirect('/admin/links')
+		vals={'action':action,'postback':True,'current':'links'}
+		if not (name and url):
+			vals.update({'result':False,'msg':'Please input name and url.'})
+			self.render2('views/admin/link.html',vals)
+		else:
+			if action=='add':
+			   link= Link(linktext=name,href=url,linkcomment=comment)
+			   link.put()
+			   vals.update({'result':True,'msg':'Saved ok'})
+			   self.render2('views/admin/link.html',vals)
+			elif action=='edit':
+				try:
+					action_id=int(self.param('id'))
+					link=Link.get_by_id(action_id)
+					link.linktext=name
+					link.href=url
+					link.linkcomment = comment
+					link.put()
+					#goto link manage page
+					self.redirect('/admin/links')
 
-                except:
-                    vals.update({'result':False,'msg':'Error:Link can''t been saved.'})
-                    self.render2('views/admin/link.html',vals)
+				except:
+					vals.update({'result':False,'msg':'Error:Link can''t been saved.'})
+					self.render2('views/admin/link.html',vals)
 
 class admin_category(BaseRequestHandler):
-    def __init__(self):
-        self.current='categories'
+	def __init__(self):
+		self.current='categories'
 
-    def get(self,slug=None):
-        action=self.param("action")
-        category=None
-        if action and  action=='edit':
-                try:
-                    key=self.param('key')
-                    category=Category.get(key)
+	def get(self,slug=None):
+		action=self.param("action")
+		category=None
+		if action and  action=='edit':
+				try:
+					key=self.param('key')
+					category=Category.get(key)
 
-                except:
-                    pass
-        else:
-            action='add'
-        vals={'action':action,'category':category}
-        self.render2('views/admin/category.html',vals)
+				except:
+					pass
+		else:
+			action='add'
+		vals={'action':action,'category':category}
+		self.render2('views/admin/category.html',vals)
 
-    def post(self):
-        action=self.param("action")
-        name=self.param("name")
-        slug=self.param("slug")
+	def post(self):
+		action=self.param("action")
+		name=self.param("name")
+		slug=self.param("slug")
 
-        vals={'action':action,'postback':True}
-        if not (name and slug):
-            vals.update({'result':False,'msg':'Please input name and slug.'})
-            self.render2('views/admin/category.html',vals)
-        else:
-            if action=='add':
-               cat= Category(name=name,slug=slug    )
-               cat.put()
-               vals.update({'result':True,'msg':'Saved ok'})
-               self.render2('views/admin/category.html',vals)
-            elif action=='edit':
-                try:
-                    key=self.param('key')
-                    cat=Category.get(key)
-                    cat.name=name
-                    cat.slug=slug
-                    cat.put()
-                    self.redirect('/admin/categories')
+		vals={'action':action,'postback':True}
+		if not (name and slug):
+			vals.update({'result':False,'msg':'Please input name and slug.'})
+			self.render2('views/admin/category.html',vals)
+		else:
+			if action=='add':
+			   cat= Category(name=name,slug=slug	)
+			   cat.put()
+			   vals.update({'result':True,'msg':'Saved ok'})
+			   self.render2('views/admin/category.html',vals)
+			elif action=='edit':
+				try:
+					key=self.param('key')
+					cat=Category.get(key)
+					cat.name=name
+					cat.slug=slug
+					cat.put()
+					self.redirect('/admin/categories')
 
-                except:
-                    vals.update({'result':False,'msg':'Error:Category can''t been saved.'})
-                    self.render2('views/admin/category.html',vals)
+				except:
+					vals.update({'result':False,'msg':'Error:Category can''t been saved.'})
+					self.render2('views/admin/category.html',vals)
 
 class admin_status(BaseRequestHandler):
-    def get(self):
-        self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
+	def get(self):
+		self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
 class admin_authors(BaseRequestHandler):
-    def get(self):
-        try:
-            page_index=int(self.param('page'))
-        except:
-            page_index=1
+	def get(self):
+		try:
+			page_index=int(self.param('page'))
+		except:
+			page_index=1
 
 
 
 
-        authors=User.all().filter('isAuthor =',True)
-        entries,pager=Pager(query=authors,items_per_page=15).fetch(page_index)
+		authors=User.all().filter('isAuthor =',True)
+		entries,pager=Pager(query=authors,items_per_page=15).fetch(page_index)
 
-        self.render2('views/admin/authors.html',
-         {
-           'current':'authors',
-           'authors':authors,
-           'pager':pager
-          }
-        )
+		self.render2('views/admin/authors.html',
+		 {
+		   'current':'authors',
+		   'authors':authors,
+		   'pager':pager
+		  }
+		)
 
 
-    def post(self,slug=None):
-        try:
-            linkcheck= self.request.get_all('checks')
-            for key in linkcheck:
+	def post(self,slug=None):
+		try:
+			linkcheck= self.request.get_all('checks')
+			for key in linkcheck:
 
-                author=User.get(key)
-                author.delete()
-        finally:
-            self.redirect('/admin/authors')
+				author=User.get(key)
+				author.delete()
+		finally:
+			self.redirect('/admin/authors')
 class admin_author(BaseRequestHandler):
-    def __init__(self):
-        self.current='authors'
+	def __init__(self):
+		self.current='authors'
 
-    def get(self,slug=None):
-        action=self.param("action")
-        author=None
-        if action and  action=='edit':
-                try:
-                    key=self.param('key')
-                    author=User.get(key)
+	def get(self,slug=None):
+		action=self.param("action")
+		author=None
+		if action and  action=='edit':
+				try:
+					key=self.param('key')
+					author=User.get(key)
 
-                except:
-                    pass
-        else:
-            action='add'
-        vals={'action':action,'author':author}
-        self.render2('views/admin/author.html',vals)
+				except:
+					pass
+		else:
+			action='add'
+		vals={'action':action,'author':author}
+		self.render2('views/admin/author.html',vals)
 
-    def post(self):
-        action=self.param("action")
-        name=self.param("name")
-        slug=self.param("email")
+	def post(self):
+		action=self.param("action")
+		name=self.param("name")
+		slug=self.param("email")
 
-        vals={'action':action,'postback':True}
-        if not (name and slug):
-            vals.update({'result':False,'msg':'Please input dispname and email.'})
-            self.render2('views/admin/author.html',vals)
-        else:
-            if action=='add':
-               author= User(dispname=name,email=slug    )
-               author.put()
-               vals.update({'result':True,'msg':'Saved ok'})
-               self.render2('views/admin/author.html',vals)
-            elif action=='edit':
-                try:
-                    key=self.param('key')
-                    author=User.get(key)
-                    author.dispname=name
-                    author.email=slug
-                    author.put()
-                    self.redirect('/admin/authors')
+		vals={'action':action,'postback':True}
+		if not (name and slug):
+			vals.update({'result':False,'msg':'Please input dispname and email.'})
+			self.render2('views/admin/author.html',vals)
+		else:
+			if action=='add':
+			   author= User(dispname=name,email=slug	)
+			   author.put()
+			   vals.update({'result':True,'msg':'Saved ok'})
+			   self.render2('views/admin/author.html',vals)
+			elif action=='edit':
+				try:
+					key=self.param('key')
+					author=User.get(key)
+					author.dispname=name
+					author.email=slug
+					author.put()
+					self.redirect('/admin/authors')
 
-                except:
-                    vals.update({'result':False,'msg':'Error:Author can''t been saved.'})
-                    self.render2('views/admin/author.html',vals)
+				except:
+					vals.update({'result':False,'msg':'Error:Author can''t been saved.'})
+					self.render2('views/admin/author.html',vals)
 class admin_plugins(BaseRequestHandler):
-    def __init__(self):
-        self.current='plugins'
+	def __init__(self):
+		self.current='plugins'
 
-    def get(self,slug=None):
-        vals={'plugins':self.blog.plugins}
-        self.render2('views/admin/plugins.html',vals)
+	def get(self,slug=None):
+		vals={'plugins':self.blog.plugins}
+		self.render2('views/admin/plugins.html',vals)
 
-    def post(self):
-        action=self.param("action")
-        name=self.param("plugin")
-        ret=self.param("return")
-        self.blog.plugins.activate(name,action=="activate")
-        if ret:
-            self.redirect(ret)
-        else:
-            vals={'plugins':self.blog.plugins}
-            self.render2('views/admin/plugins.html',vals)
+	def post(self):
+		action=self.param("action")
+		name=self.param("plugin")
+		ret=self.param("return")
+		self.blog.plugins.activate(name,action=="activate")
+		if ret:
+			self.redirect(ret)
+		else:
+			vals={'plugins':self.blog.plugins}
+			self.render2('views/admin/plugins.html',vals)
 
 class admin_plugins_action(BaseRequestHandler):
-    def __init__(self):
-        self.current='plugins'
+	def __init__(self):
+		self.current='plugins'
 
-    def get(self,slug=None):
-        plugin=self.blog.plugins.getPluginByName(slug)
-        if not plugin :
-            self.error(404)
-            return
-        plugins=self.blog.plugins.filter('active',True)
-        if not plugin.active:
-            pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+	def get(self,slug=None):
+		plugin=self.blog.plugins.getPluginByName(slug)
+		if not plugin :
+			self.error(404)
+			return
+		plugins=self.blog.plugins.filter('active',True)
+		if not plugin.active:
+			pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
 <input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
-            plugins.insert(0,plugin)
-        else:
-            pcontent=plugin.get(self)
+			plugins.insert(0,plugin)
+		else:
+			pcontent=plugin.get(self)
 
 
-        vals={'plugins':plugins,
-              'plugin':plugin,
-              'pcontent':pcontent}
+		vals={'plugins':plugins,
+			  'plugin':plugin,
+			  'pcontent':pcontent}
 
-        self.render2('views/admin/plugin_action.html',vals)
+		self.render2('views/admin/plugin_action.html',vals)
 
-    def post(self,slug=None):
+	def post(self,slug=None):
 
-        plugin=self.blog.plugins.getPluginByName(slug)
-        if not plugin :
-            self.error(404)
-            return
-        plugins=self.blog.plugins.filter('active',True)
-        if not plugin.active:
-            pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+		plugin=self.blog.plugins.getPluginByName(slug)
+		if not plugin :
+			self.error(404)
+			return
+		plugins=self.blog.plugins.filter('active',True)
+		if not plugin.active:
+			pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
 <input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
-            plugins.insert(0,plugin)
-        else:
-            pcontent=plugin.post(self)
+			plugins.insert(0,plugin)
+		else:
+			pcontent=plugin.post(self)
 
 
-        vals={'plugins':plugins,
-              'plugin':plugin,
-              'pcontent':pcontent}
+		vals={'plugins':plugins,
+			  'plugin':plugin,
+			  'pcontent':pcontent}
 
-        self.render2('views/admin/plugin_action.html',vals)
+		self.render2('views/admin/plugin_action.html',vals)
 
 class WpHandler(BaseRequestHandler):
-    def get(self,tags=None):
-        try:
-            all=self.param('all')
-        except:
-            all=False
+	def get(self,tags=None):
+		try:
+			all=self.param('all')
+		except:
+			all=False
 
-        if(all):
-            entries = Entry.all().order('-date')
-        else:
-            str_date_begin=self.param('date_begin')
-            str_date_end=self.param('date_end')
-            try:
-                date_begin=datetime.strptime(str_date_begin,"%Y-%m-%d")
-                date_end=datetime.strptime(str_date_end,"%Y-%m-%d")
-                entries = Entry.all().filter('date >=',date_begin).filter('date <',date_end).order('-date')
-            except:
-                self.render2('views/admin/404.html')
-                return
+		if(all):
+			entries = Entry.all().order('-date')
+		else:
+			str_date_begin=self.param('date_begin')
+			str_date_end=self.param('date_end')
+			try:
+				date_begin=datetime.strptime(str_date_begin,"%Y-%m-%d")
+				date_end=datetime.strptime(str_date_end,"%Y-%m-%d")
+				entries = Entry.all().filter('date >=',date_begin).filter('date <',date_end).order('-date')
+			except:
+				self.render2('views/admin/404.html')
+				return
 
-        cates=Category.all()
-        tags=Tag.all()
+		cates=Category.all()
+		tags=Tag.all()
 
-        self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
-        self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
+		self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
+		self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
 
 
 
 
 def main():
-    webapp.template.register_template_library('filter')
-    application = webapp.WSGIApplication(
-                    [
-                    ('/admin/{0,1}',admin_setup),
-                    ('/admin/setup',admin_setup),
-                    ('/admin/entries/(post|page)',admin_entries),
-                    ('/admin/links',admin_links),
-                    ('/admin/categories',admin_categories),
-                    ('/admin/comments',admin_comments),
-                    ('/admin/link',admin_link),
-                    ('/admin/category',admin_category),
-                     ('/admin/(post|page)',admin_entry),
-                     ('/admin/status',admin_status),
-                     ('/admin/authors',admin_authors),
-                     ('/admin/author',admin_author),
-                     ('/admin/import',admin_import),
-                     ('/admin/import/(\w+)',admin_do_import),
-                     ('/admin/tools',admin_tools),
-                     ('/admin/plugins',admin_plugins),
-                     ('/admin/plugins/(\w+)',admin_plugins_action),
-                     ('/admin/sitemap',admin_sitemap),
-                     ('/admin/export/micolog.xml',WpHandler),
-                     ('/admin/import_next',admin_import_next),
-                     ('/admin/do/(\w+)',admin_do_action),
-                     ('/admin/lang',setlanguage),
+	webapp.template.register_template_library('filter')
+	application = webapp.WSGIApplication(
+					[
+					('/admin/{0,1}',admin_setup),
+					('/admin/setup',admin_setup),
+					('/admin/entries/(post|page)',admin_entries),
+					('/admin/links',admin_links),
+					('/admin/categories',admin_categories),
+					('/admin/comments',admin_comments),
+					('/admin/link',admin_link),
+					('/admin/category',admin_category),
+					 ('/admin/(post|page)',admin_entry),
+					 ('/admin/status',admin_status),
+					 ('/admin/authors',admin_authors),
+					 ('/admin/author',admin_author),
+					 ('/admin/import',admin_import),
+					 ('/admin/import/(\w+)',admin_do_import),
+					 ('/admin/tools',admin_tools),
+					 ('/admin/plugins',admin_plugins),
+					 ('/admin/plugins/(\w+)',admin_plugins_action),
+					 ('/admin/sitemap',admin_sitemap),
+					 ('/admin/export/micolog.xml',WpHandler),
+					 ('/admin/import_next',admin_import_next),
+					 ('/admin/do/(\w+)',admin_do_action),
+					 ('/admin/lang',setlanguage),
 
-                     ('.*',Error404),
-                     ],debug=True)
-    wsgiref.handlers.CGIHandler().run(application)
+					 ('.*',Error404),
+					 ],debug=True)
+	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
-    main()
+	main()

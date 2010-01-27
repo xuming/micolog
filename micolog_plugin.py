@@ -37,6 +37,7 @@ class Plugins:
 		self.list={}
 		self._filter_plugins={}
 		self._action_plugins={}
+		self._urlmap={}
 		pi=PluginIterator()
 		self.active_list=OptionSet.getValue("PluginActive",[])
 		for v,m in pi:
@@ -99,6 +100,7 @@ class Plugins:
 					if self._action_plugins.has_key(k):
 						if v in self._action_plugins[k]:
 							self._action_plugins[k].remove(v)
+		self._urlmap={}
 
 
 	def filter(self,attr,value):
@@ -140,17 +142,36 @@ class Plugins:
 		else:
 			return ()
 
+	def get_urlmap_func(self,url):
+		if not self._urlmap:
+			for item in self:
+				if item.active:
+					self._urlmap.update(item._urlmap)
+		if self._urlmap.has_key(url):
+			return self._urlmap[url]
+		else:
+			return None
+
+
+
+
 	def tigger_filter(self,name,content,*arg1,**arg2):
 		logging.info(name)
 		for func in self.get_filter_plugins(name):
-		    content=func(content,*arg1,**arg2)
+			content=func(content,*arg1,**arg2)
 		return content
 
 	def tigger_action(self,name,*arg1,**arg2):
 		for func in self.get_action_plugins(name):
 			func(*arg1,**arg2)
 
-
+	def tigger_urlmap(self,url,*arg1,**arg2):
+		func=self.get_urlmap_func(url)
+		if func:
+			func(*arg1,**arg2)
+			return True
+		else:
+			return None
 
 class Plugin:
 	def __init__(self,pfile=__file__):
@@ -164,6 +185,7 @@ class Plugin:
 		self.dir=os.path.dirname(pfile)
 		self._filter={}
 		self._action={}
+		self._urlmap={}
 
 	def get(self,page):
 		return "<h3>%s</h3><p>%s</p>"%(self.name,self.description)
@@ -185,6 +207,9 @@ class Plugin:
 
 	def register_action(self,name,func):
 		self._action[name]=func
+
+	def register_urlmap(self,url,func):
+		self._urlmap[url]=func
 
 
 class Plugin_importbase(Plugin):

@@ -26,163 +26,163 @@ import micolog_template
 
 logging.info('module base reloaded')
 def urldecode(value):
-    return  urllib.unquote(urllib.unquote(value)).decode('utf8')
+	return  urllib.unquote(urllib.unquote(value)).decode('utf8')
 
 def urlencode(value):
-    return urllib.quote(value.encode('utf8'))
+	return urllib.quote(value.encode('utf8'))
 
 def sid():
-    now=datetime.datetime.now()
-    return now.strftime('%y%m%d%H%M%S')+str(now.microsecond)
+	now=datetime.datetime.now()
+	return now.strftime('%y%m%d%H%M%S')+str(now.microsecond)
 
 
 def requires_admin(method):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if not self.is_login:
-            self.redirect(users.create_login_url(self.request.uri))
-            return
-        elif not self.is_admin:
-            return self.error(403)
-        else:
-            return method(self, *args, **kwargs)
-    return wrapper
+	@wraps(method)
+	def wrapper(self, *args, **kwargs):
+		if not self.is_login:
+			self.redirect(users.create_login_url(self.request.uri))
+			return
+		elif not self.is_admin:
+			return self.error(403)
+		else:
+			return method(self, *args, **kwargs)
+	return wrapper
 
 def printinfo(method):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        print self #.__name__
-        print dir(self)
-        for x in self.__dict__:
-            print x
-        return method(self, *args, **kwargs)
-    return wrapper
+	@wraps(method)
+	def wrapper(self, *args, **kwargs):
+		print self #.__name__
+		print dir(self)
+		for x in self.__dict__:
+			print x
+		return method(self, *args, **kwargs)
+	return wrapper
 #only ajax methed allowed
 def ajaxonly(method):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if not self.request.headers["X-Requested-With"]=="XMLHttpRequest":
-             self.error(404)
-        else:
-            return method(self, *args, **kwargs)
-    return wrapper
+	@wraps(method)
+	def wrapper(self, *args, **kwargs):
+		if not self.request.headers["X-Requested-With"]=="XMLHttpRequest":
+			 self.error(404)
+		else:
+			return method(self, *args, **kwargs)
+	return wrapper
 
 #only request from same host can passed
 def hostonly(method):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if  self.request.headers['Referer'].startswith(os.environ['HTTP_HOST'],7):
-            return method(self, *args, **kwargs)
-        else:
-            self.error(404)
-    return wrapper
+	@wraps(method)
+	def wrapper(self, *args, **kwargs):
+		if  self.request.headers['Referer'].startswith(os.environ['HTTP_HOST'],7):
+			return method(self, *args, **kwargs)
+		else:
+			self.error(404)
+	return wrapper
 
 def format_date(dt):
 	return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 def cache(key="",time=3600):
-    def _decorate(method):
-        def _wrapper(*args, **kwargs):
-            if not g_blog.enable_memcache:
-                method(*args, **kwargs)
-                return
+	def _decorate(method):
+		def _wrapper(*args, **kwargs):
+			if not g_blog.enable_memcache:
+				method(*args, **kwargs)
+				return
 
-            request=args[0].request
-            response=args[0].response
-            skey=key+ request.path_qs
-            #logging.info('skey:'+skey)
-            html= memcache.get(skey)
-            #arg[0] is BaseRequestHandler object
+			request=args[0].request
+			response=args[0].response
+			skey=key+ request.path_qs
+			#logging.info('skey:'+skey)
+			html= memcache.get(skey)
+			#arg[0] is BaseRequestHandler object
 
-            if html:
-                 logging.info('cache:'+skey)
-                 logging.debug(html[2])
-                 logging.debug(html[3])
-                 response.last_modified =html[1]
-                 ilen=len(html)
-                 if ilen>=3:
-                    response.set_status(html[2])
-                 if ilen>=4:
-                    for skey,value in html[3].items():
-                        response.headers[skey]=value
-                 response.out.write(html[0])
-            else:
-                if 'last-modified' not in response.headers:
-                    response.last_modified = format_date(datetime.utcnow())
+			if html:
+				 logging.info('cache:'+skey)
+				 logging.debug(html[2])
+				 logging.debug(html[3])
+				 response.last_modified =html[1]
+				 ilen=len(html)
+				 if ilen>=3:
+					response.set_status(html[2])
+				 if ilen>=4:
+					for skey,value in html[3].items():
+						response.headers[skey]=value
+				 response.out.write(html[0])
+			else:
+				if 'last-modified' not in response.headers:
+					response.last_modified = format_date(datetime.utcnow())
 
-                method(*args, **kwargs)
-                result=response.out.getvalue()
-                status_code = response._Response__status[0]
-                logging.debug("Cache:%s"%status_code)
-                memcache.set(skey,(result,response.last_modified,status_code,response.headers),time)
+				method(*args, **kwargs)
+				result=response.out.getvalue()
+				status_code = response._Response__status[0]
+				logging.debug("Cache:%s"%status_code)
+				memcache.set(skey,(result,response.last_modified,status_code,response.headers),time)
 
-        return _wrapper
-    return _decorate
+		return _wrapper
+	return _decorate
 
 #-------------------------------------------------------------------------------
 class PingbackError(Exception):
-    """Raised if the remote server caused an exception while pingbacking.
-    This is not raised if the pingback function is unable to locate a
-    remote server.
-    """
+	"""Raised if the remote server caused an exception while pingbacking.
+	This is not raised if the pingback function is unable to locate a
+	remote server.
+	"""
 
-    _ = lambda x: x
-    default_messages = {
-        16: _(u'source URL does not exist'),
-        17: _(u'The source URL does not contain a link to the target URL'),
-        32: _(u'The specified target URL does not exist'),
-        33: _(u'The specified target URL cannot be used as a target'),
-        48: _(u'The pingback has already been registered'),
-        49: _(u'Access Denied')
-    }
-    del _
+	_ = lambda x: x
+	default_messages = {
+		16: _(u'source URL does not exist'),
+		17: _(u'The source URL does not contain a link to the target URL'),
+		32: _(u'The specified target URL does not exist'),
+		33: _(u'The specified target URL cannot be used as a target'),
+		48: _(u'The pingback has already been registered'),
+		49: _(u'Access Denied')
+	}
+	del _
 
-    def __init__(self, fault_code, internal_message=None):
-        Exception.__init__(self)
-        self.fault_code = fault_code
-        self._internal_message = internal_message
+	def __init__(self, fault_code, internal_message=None):
+		Exception.__init__(self)
+		self.fault_code = fault_code
+		self._internal_message = internal_message
 
-    def as_fault(self):
-        """Return the pingback errors XMLRPC fault."""
-        return Fault(self.fault_code, self.internal_message or
-                     'unknown server error')
+	def as_fault(self):
+		"""Return the pingback errors XMLRPC fault."""
+		return Fault(self.fault_code, self.internal_message or
+					 'unknown server error')
 
-    @property
-    def ignore_silently(self):
-        """If the error can be ignored silently."""
-        return self.fault_code in (17, 33, 48, 49)
+	@property
+	def ignore_silently(self):
+		"""If the error can be ignored silently."""
+		return self.fault_code in (17, 33, 48, 49)
 
-    @property
-    def means_missing(self):
-        """If the error means that the resource is missing or not
-        accepting pingbacks.
-        """
-        return self.fault_code in (32, 33)
+	@property
+	def means_missing(self):
+		"""If the error means that the resource is missing or not
+		accepting pingbacks.
+		"""
+		return self.fault_code in (32, 33)
 
-    @property
-    def internal_message(self):
-        if self._internal_message is not None:
-            return self._internal_message
-        return self.default_messages.get(self.fault_code) or 'server error'
+	@property
+	def internal_message(self):
+		if self._internal_message is not None:
+			return self._internal_message
+		return self.default_messages.get(self.fault_code) or 'server error'
 
-    @property
-    def message(self):
-        msg = self.default_messages.get(self.fault_code)
-        if msg is not None:
-            return _(msg)
-        return _(u'An unknown server error (%s) occurred') % self.fault_code
+	@property
+	def message(self):
+		msg = self.default_messages.get(self.fault_code)
+		if msg is not None:
+			return _(msg)
+		return _(u'An unknown server error (%s) occurred') % self.fault_code
 
 class util:
-    @classmethod
-    def do_trackback(cls, tbUrl=None, title=None, excerpt=None, url=None, blog_name=None):
-        taskqueue.add(url='/admin/do/trackback_ping',
-            params={'tbUrl': tbUrl,'title':title,'excerpt':excerpt,'url':url,'blog_name':blog_name})
+	@classmethod
+	def do_trackback(cls, tbUrl=None, title=None, excerpt=None, url=None, blog_name=None):
+		taskqueue.add(url='/admin/do/trackback_ping',
+			params={'tbUrl': tbUrl,'title':title,'excerpt':excerpt,'url':url,'blog_name':blog_name})
 
-    #pingback ping
-    @classmethod
-    def do_pingback(cls,source_uri, target_uri):
-        taskqueue.add(url='/admin/do/pingback_ping',
-            params={'source': source_uri,'target':target_uri})
+	#pingback ping
+	@classmethod
+	def do_pingback(cls,source_uri, target_uri):
+		taskqueue.add(url='/admin/do/pingback_ping',
+			params={'source': source_uri,'target':target_uri})
 
 
 
@@ -190,40 +190,40 @@ class util:
 
 class Pager(object):
 
-    def __init__(self, model=None,query=None, items_per_page=10):
-        if model:
-            self.query = model.all()
-        elif query:
-            self.query=query
+	def __init__(self, model=None,query=None, items_per_page=10):
+		if model:
+			self.query = model.all()
+		elif query:
+			self.query=query
 
-        self.items_per_page = items_per_page
+		self.items_per_page = items_per_page
 
-    def fetch(self, p):
-        max_offset = self.query.count()
-        n = max_offset / self.items_per_page
-        if max_offset % self.items_per_page != 0:
-            n += 1
+	def fetch(self, p):
+		max_offset = self.query.count()
+		n = max_offset / self.items_per_page
+		if max_offset % self.items_per_page != 0:
+			n += 1
 
-        if p < 0 or p > n:
-            p = 1
-        offset = (p - 1) * self.items_per_page
-        results = self.query.fetch(self.items_per_page, offset)
+		if p < 0 or p > n:
+			p = 1
+		offset = (p - 1) * self.items_per_page
+		results = self.query.fetch(self.items_per_page, offset)
 
 
 
-        links = {'count':max_offset,'page_index':p,'prev': p - 1, 'next': p + 1, 'last': n}
-        if links['next'] > n:
-            links['next'] = 0
+		links = {'count':max_offset,'page_index':p,'prev': p - 1, 'next': p + 1, 'last': n}
+		if links['next'] > n:
+			links['next'] = 0
 
-        return (results, links)
+		return (results, links)
 
 
 class BaseRequestHandler(webapp.RequestHandler):
-    def __init__(self):
-        self.current='home'
-        pass
+	def __init__(self):
+		self.current='home'
+		pass
 
-    def initialize(self, request, response):
+	def initialize(self, request, response):
 		webapp.RequestHandler.initialize(self, request, response)
 		self.blog = g_blog
 		self.login_user = users.get_current_user()
@@ -231,11 +231,11 @@ class BaseRequestHandler(webapp.RequestHandler):
 		self.loginurl=users.create_login_url(self.request.uri)
 		self.logouturl=users.create_logout_url(self.request.uri)
 ##		if self.is_login:
-##		    self.loginurl=users.create_logout_url(self.request.uri)
-##		    #self.user = User.all().filter('user = ', self.login_user).get() or User(user = self.login_user)
+##			self.loginurl=users.create_logout_url(self.request.uri)
+##			#self.user = User.all().filter('user = ', self.login_user).get() or User(user = self.login_user)
 ##		else:
-##		    self.loginurl=users.create_login_url(self.request.uri)
-##		    #self.user = None
+##			self.loginurl=users.create_login_url(self.request.uri)
+##			#self.user = None
 
 		self.is_admin = users.is_current_user_admin()
 		if self.is_admin:
@@ -254,116 +254,114 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 		self.template_vals = {'self':self,'blog':self.blog,'current':self.current}
 
-    def __before__(self,*args):
-        pass
+	def __before__(self,*args):
+		pass
 
-    def __after__(self,*args):
-        pass
+	def __after__(self,*args):
+		pass
 
-    def error(self,errorcode,message='an error occured'):
-        if errorcode == 404:
-            message = 'Sorry, we were not able to find the requested page.  We have logged this error and will look into it.'
-        elif errorcode == 403:
-            message = 'Sorry, that page is reserved for administrators.  '
-        elif errorcode == 500:
-            message = "Sorry, the server encountered an error.  We have logged this error and will look into it."
+	def error(self,errorcode,message='an error occured'):
+		if errorcode == 404:
+			message = 'Sorry, we were not able to find the requested page.  We have logged this error and will look into it.'
+		elif errorcode == 403:
+			message = 'Sorry, that page is reserved for administrators.  '
+		elif errorcode == 500:
+			message = "Sorry, the server encountered an error.  We have logged this error and will look into it."
 
-        message+="<p><pre>"+traceback.format_exc()+"</pre><br></p>"
-        self.template_vals.update( {'errorcode':errorcode,'message':message})
-
-
-
-
-
-
-        if errorcode>0:
-            self.response.set_status(errorcode)
-
-
-        #errorfile=getattr(self.blog.theme,'error'+str(errorcode))
-        #logging.debug(errorfile)
-##        if not errorfile:
-##            errorfile=self.blog.theme.error
-        errorfile='error'+str(errorcode)+".html"
-        try:
-            content=micolog_template.render(self.blog.theme,errorfile, self.template_vals)
-        except TemplateDoesNotExist:
-            try:
-                content=micolog_template.render(self.blog.theme,"error.html", self.template_vals)
-            except TemplateDoesNotExist:
-                content=micolog_template.render(self.blog.default_theme,"error.html", self.template_vals)
-            except:
-                content=message
-        except:
-            content=message
-        self.response.out.write(content)
-
-    def get_render(self,template_file,values):
-        template_file=template_file+".html"
-        self.template_vals.update(values)
-
-        try:
-            #sfile=getattr(self.blog.theme, template_file)
-            logging.debug("get_render:"+template_file)
-            html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
-        except TemplateDoesNotExist:
-            #sfile=getattr(self.blog.default_theme, template_file)
-            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
-
-        return html
-
-    def render(self,template_file,values):
-        """
-        Helper method to render the appropriate template
-        """
-
-        html=self.get_render(template_file,values)
-    	self.response.out.write(html)
+		message+="<p><pre>"+traceback.format_exc()+"</pre><br></p>"
+		self.template_vals.update( {'errorcode':errorcode,'message':message})
 
 
 
 
 
-    def render2(self,template_file,template_vals={}):
-        """
-        Helper method to render the appropriate template
-        """
 
-        self.template_vals.update(template_vals)
-        path = os.path.join(self.blog.rootdir, template_file)
-        self.response.out.write(template.render(path, self.template_vals))
+		if errorcode>0:
+			self.response.set_status(errorcode)
 
 
+		#errorfile=getattr(self.blog.theme,'error'+str(errorcode))
+		#logging.debug(errorfile)
+##		if not errorfile:
+##			errorfile=self.blog.theme.error
+		errorfile='error'+str(errorcode)+".html"
+		try:
+			content=micolog_template.render(self.blog.theme,errorfile, self.template_vals)
+		except TemplateDoesNotExist:
+			try:
+				content=micolog_template.render(self.blog.theme,"error.html", self.template_vals)
+			except TemplateDoesNotExist:
+				content=micolog_template.render(self.blog.default_theme,"error.html", self.template_vals)
+			except:
+				content=message
+		except:
+			content=message
+		self.response.out.write(content)
 
-    def param(self, name, **kw):
+	def get_render(self,template_file,values):
+		template_file=template_file+".html"
+		self.template_vals.update(values)
+
+		try:
+			#sfile=getattr(self.blog.theme, template_file)
+			logging.debug("get_render:"+template_file)
+			html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
+		except TemplateDoesNotExist:
+			#sfile=getattr(self.blog.default_theme, template_file)
+			html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
+
+		return html
+
+	def render(self,template_file,values):
+		"""
+		Helper method to render the appropriate template
+		"""
+
+		html=self.get_render(template_file,values)
+		self.response.out.write(html)
+
+	def message(self,msg,returl=None,title='Infomation'):
+		self.render('msg',{'message':msg,'title':title,'returl':returl})
+
+	def render2(self,template_file,template_vals={}):
+		"""
+		Helper method to render the appropriate template
+		"""
+
+		self.template_vals.update(template_vals)
+		path = os.path.join(self.blog.rootdir, template_file)
+		self.response.out.write(template.render(path, self.template_vals))
+
+
+	def param(self, name, **kw):
 		return self.request.get(name, **kw)
 
-    def paramint(self, name, default=0):
-        try:
-	       return int(self.request.get(name))
-        except:
-           return default
+	def paramint(self, name, default=0):
+		try:
+		   return int(self.request.get(name))
+		except:
+		   return default
 
-    def parambool(self, name, default=False):
-        try:
-	       return self.request.get(name)=='on'
-        except:
-           return default
+	def parambool(self, name, default=False):
+		try:
+		   return self.request.get(name)=='on'
+		except:
+		   return default
 
 
-    def write(self, s):
+	def write(self, s):
 		self.response.out.write(s)
 
 
 
-    def chk_login(self, redirect_url='/'):
+	def chk_login(self, redirect_url='/'):
 		if self.is_login:
 			return True
 		else:
 			self.redirect(redirect_url)
 			return False
 
-    def chk_admin(self, redirect_url='/'):
+	def chk_admin(self, redirect_url='/'):
 		if self.is_admin:
 			return True
 		else:

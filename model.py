@@ -27,19 +27,19 @@ def vcache(key="",time=3600):
 	return _decorate
 
 class Theme:
-    def __init__(self, name='default'):
-        self.name = name
-        self.mapping_cache = {}
-        self.dir = '/themes/%s' % name
-        self.viewdir=os.path.join(rootpath, 'view')
-        self.server_dir = os.path.join(rootpath, 'themes',self.name)
-        if os.path.exists(self.server_dir):
-        	self.isZip=False
-        else:
-        	self.isZip=True
-        	self.server_dir =self.server_dir+".zip"
-        #self.server_dir=os.path.join(self.server_dir,"templates")
-        logging.debug('server_dir:%s'%self.server_dir)
+	def __init__(self, name='default'):
+		self.name = name
+		self.mapping_cache = {}
+		self.dir = '/themes/%s' % name
+		self.viewdir=os.path.join(rootpath, 'view')
+		self.server_dir = os.path.join(rootpath, 'themes',self.name)
+		if os.path.exists(self.server_dir):
+			self.isZip=False
+		else:
+			self.isZip=True
+			self.server_dir =self.server_dir+".zip"
+		#self.server_dir=os.path.join(self.server_dir,"templates")
+		logging.debug('server_dir:%s'%self.server_dir)
 
 	def __getattr__(self, name):
 		if self.mapping_cache.has_key(name):
@@ -51,7 +51,7 @@ class Theme:
 ##			if not os.path.exists(path):
 ##				path = os.path.join(rootpath, 'themes', 'default', 'templates', name + '.html')
 ##				if not os.path.exists(path):
-##				    path = None
+##					path = None
 			self.mapping_cache[name]=path
 			return path
 
@@ -151,14 +151,14 @@ class Blog(db.Model):
 
 	theme=None
 	def __init__(self,
-               parent=None,
-               key_name=None,
-               _app=None,
-               _from_entity=False,
-               **kwds):
-	    from micolog_plugin import Plugins
-	    self.plugins=Plugins()
-	    db.Model.__init__(self,parent,key_name,_app,_from_entity,**kwds)
+			   parent=None,
+			   key_name=None,
+			   _app=None,
+			   _from_entity=False,
+			   **kwds):
+		from micolog_plugin import Plugins
+		self.plugins=Plugins()
+		db.Model.__init__(self,parent,key_name,_app,_from_entity,**kwds)
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
 		return self.plugins.tigger_filter(name,content,blog=self,*arg1,**arg2)
@@ -166,6 +166,8 @@ class Blog(db.Model):
 	def tigger_action(self,name,*arg1,**arg2):
 	 	return self.plugins.tigger_action(name,blog=self,*arg1,**arg2)
 
+	def tigger_urlmap(self,url,*arg1,**arg2):
+		return self.plugins.tigger_urlmap(url,blog=self,*arg1,**arg2)
 
 	def save(self):
 		self.put()
@@ -202,6 +204,15 @@ class Category(db.Model):
 	@property
 	def count(self):
 		return self.posts.count()
+
+	def put(self):
+		db.Model.put(self)
+		g_blog.tigger_action("save_category",self)
+
+	def delete(self):
+		db.Model.delete(self)
+		g_blog.tigger_action("delete_category",self)
+
 
 
 class Archive(db.Model):
@@ -258,6 +269,15 @@ class Link(db.Model):
 		ix = self.href.find('/',len('http://') )
 		return (ix>0 and self.href[:ix] or self.href ) + ico_path
 
+	def put(self):
+		db.Model.put(self)
+		g_blog.tigger_action("save_link",self)
+
+
+	def delete(self):
+		db.Model.delete(self)
+		g_blog.tigger_action("delete_link",self)
+
 class Entry(BaseModel):
 	author = db.UserProperty()
 	published = db.BooleanProperty(default=False)
@@ -286,7 +306,7 @@ class Entry(BaseModel):
 	post_id= db.IntegerProperty()
 	excerpt=db.StringProperty(multiline=True)
 
-    #external page
+	#external page
 	is_external_page=db.BooleanProperty(default=False)
 	target=db.StringProperty(default="_self")
 	external_page_address=db.StringProperty()
@@ -412,16 +432,17 @@ class Entry(BaseModel):
 		"""
 		Use this instead of self.put(), as we do some other work here
 		"""
-		g_blog.tigger_action("before_entry_save",self)
+		g_blog.tigger_action("pre_save_post",self)
 
 		my = self.date.strftime('%B %Y') # September 2008
 		self.monthyear = my
 
 		self.put()
-		g_blog.tigger_action("after_entry_save",self)
+		g_blog.tigger_action("save_post",self)
 		return
+
 	def publish(self,newval=True):
-		g_blog.tigger_action("before_entry_publish",self)
+		g_blog.tigger_action("pre_publish_post",self)
 		if newval:
 			if not self.is_saved():
 				self.save()
@@ -442,10 +463,10 @@ class Entry(BaseModel):
 				if self.slug:
 					self.link=self.postname
 				else:
-				    #use external page address as link
-				    if self.is_external_page:
+					#use external page address as link
+					if self.is_external_page:
 					   self.link=self.external_page_address
-				    else:
+					else:
 					   self.link=g_blog.default_link_format%vals
 			else:
 				if g_blog.link_format and self.postname:
@@ -470,13 +491,14 @@ class Entry(BaseModel):
 		self.removecache()
 		if g_blog.sitemap_ping:
 			Sitemap_NotifySearch()
-		g_blog.tigger_action("after_entry_publish",self)
+		g_blog.tigger_action("publish_post",self)
 
 	def removecache(self):
 		memcache.delete('/')
 		memcache.delete('/'+self.link)
 		memcache.delete('/sitemap')
 		memcache.delete('blog.postcount')
+		g_blog.tigger_action("clean_post_cache",self)
 
 	@property
 	def next(self):
@@ -501,12 +523,18 @@ class Entry(BaseModel):
 	@property
 	def trackbackurl(self):
 		if self.link.find("?")>-1:
-			return g_blog.baseurl+ self.link+"&code="+str(self.key())
+			return g_blog.baseurl+"/"+self.link+"&code="+str(self.key())
 		else:
 			return g_blog.baseurl+"/"+self.link+"?code="+str(self.key())
 
 	def getbylink(self):
-	    pass
+		pass
+
+	def delete(self):
+	   g_blog.tigger_action("pre_delete_post",self)
+	   db.Model.delete(self)
+	   g_blog.tigger_action("delete_post",self)
+
 
 class User(db.Model):
 	user = db.UserProperty(required = False)
@@ -590,7 +618,7 @@ You can see all comments on this post here:
 
 		bbody=_('''Hi~ New reference on your comment for post "%s"
 Author : %s
-URL    : %s
+URL	: %s
 Comment:
 %s
 You can see all comments on this post here:
@@ -606,25 +634,33 @@ You can see all comments on this post here:
 		#reply comment mail notify
 		refers = re.findall(r'@[\S]+-(\d+)[:]', self.content)
 		if len(refers)!=0:
-		    replyIDs=[int(a) for a in refers]
-		    commentlist=self.entry.comments()
-		    emaillist=[c.email for c in commentlist if c.reply_notify_mail and c.key().id() in replyIDs]
-		    emaillist = {}.fromkeys(emaillist).keys()
-		    for refer in emaillist:
-		        if g_blog.owner and mail.is_email_valid(refer):
-		                emailbody = bbody%(self.entry.title,self.author,self.weburl,self.content,
-                                            g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
-                        message = mail.EmailMessage(sender = g_blog.owner.email(),subject = 'Comments:'+self.entry.title)
-                        message.to = refer
-                        message.body = emailbody
-                        message.send()
+			replyIDs=[int(a) for a in refers]
+			commentlist=self.entry.comments()
+			emaillist=[c.email for c in commentlist if c.reply_notify_mail and c.key().id() in replyIDs]
+			emaillist = {}.fromkeys(emaillist).keys()
+			for refer in emaillist:
+				if g_blog.owner and mail.is_email_valid(refer):
+						emailbody = bbody%(self.entry.title,self.author,self.weburl,self.content,
+											g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
+						message = mail.EmailMessage(sender = g_blog.owner.email(),subject = 'Comments:'+self.entry.title)
+						message.to = refer
+						message.body = emailbody
+						message.send()
 
 
 	def delit(self):
-
 		self.entry.commentcount-=1
 		self.entry.put()
 		self.delete()
+
+	def put(self):
+		g_blog.tigger_action("pre_comment",self)
+		db.Model.put(self)
+		g_blog.tigger_action("save_comment",self)
+
+	def delete(self):
+		db.Model.delete(self)
+		g_blog.tigger_action("delete_comment",self)
 
 class Media(db.Model):
    name =db.StringProperty()
@@ -633,25 +669,25 @@ class Media(db.Model):
    date=db.DateTimeProperty(auto_now_add=True)
 
 class OptionSet(db.Model):
-    name=db.StringProperty()
-    value=db.TextProperty()
-    #blobValue=db.BlobProperty()
-    #isBlob=db.BooleanProperty()
+	name=db.StringProperty()
+	value=db.TextProperty()
+	#blobValue=db.BlobProperty()
+	#isBlob=db.BooleanProperty()
 
-    @classmethod
-    def getValue(cls,name,default=None):
-        try:
-            opt=OptionSet.get_by_key_name(name)
-            return pickle.loads(opt.value)
-        except:
-            return default
+	@classmethod
+	def getValue(cls,name,default=None):
+		try:
+			opt=OptionSet.get_by_key_name(name)
+			return pickle.loads(opt.value)
+		except:
+			return default
 
-    @classmethod
-    def setValue(cls,name,value):
-        opt=OptionSet.get_or_insert(name)
-        opt.name=name
-        opt.value=pickle.dumps(value)
-        opt.put()
+	@classmethod
+	def setValue(cls,name,value):
+		opt=OptionSet.get_or_insert(name)
+		opt.name=name
+		opt.value=pickle.dumps(value)
+		opt.put()
 
 NOTIFICATION_SITES = [
   ('http', 'www.google.com', 'webmasters/sitemaps/ping', {}, '', 'sitemap')
@@ -704,9 +740,9 @@ def gblog_init():
 	global g_blog
 	try:
 	   if g_blog :
-	       return g_blog
+		   return g_blog
 	except:
-	    pass
+		pass
 	g_blog = Blog.get_by_key_name('default')
 	if not g_blog:
 		g_blog=InitBlogData()
