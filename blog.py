@@ -27,11 +27,11 @@ from app.gmemsess import Session
 from model import *
 from base import *
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from django.utils.translation import  activate
-from django.conf import settings
-settings._target = None
-activate(g_blog.language)
+##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+##from django.utils.translation import  activate
+##from django.conf import settings
+##settings._target = None
+##activate(g_blog.language)
 
 
 def doRequestHandle(old_handler,new_handler,**args):

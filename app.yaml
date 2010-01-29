@@ -4,6 +4,9 @@ runtime: python
 api_version: 1
 
 handlers:
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
 
 - url: /favicon\.ico
   static_files: static/images/favicon.ico

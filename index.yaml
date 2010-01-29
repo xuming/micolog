@@ -19,12 +19,30 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: author
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: email
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
   - name: entry
   - name: date
 
 - kind: Comment
   properties:
   - name: entry
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: ip
   - name: date
     direction: desc
 

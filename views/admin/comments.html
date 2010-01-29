@@ -1,12 +1,24 @@
 {% load i18n %}
 {% extends "base.html" %}
  {% block content %}
- <form action="/admin/comments" method="post" >
+
    <div class="wrap">
 
-      <h2>{% trans "Manage Comments"%}</h2>
-      <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Comments"%}</b><span style='color:gray'> ({{pager.count}}) </span></div>
+      <h2>{% trans "Manage Comments"%}</h2><form action="" method="get">
+      <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Comments"%}</b><span style='color:gray'> ({{pager.count}}) </span>
+		&nbsp;&nbsp;
 
+		<b>Filter:</b>
+		<select name="cq">
+		 <option value='author' {%ifequal cq 'author'%}selected{%endifequal%}>Author</option>
+		 <option value='email' {%ifequal cq 'email'%}selected{%endifequal%}>Email</option>
+		 <option value='ip' {%ifequal cq 'ip'%}selected{%endifequal%}>Ip</option>
+		</select>
+		<input type="text" name="cv" value="{{cv}}"/>
+		<input type="submit" value="Do"/>
+
+	  </div></form>
+<form action="" method="post" >
       <div class="clear"></div>
 
 	   <div class="tablenav">
@@ -31,7 +43,7 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
-		<th>{% trans "Date"%}</th>	<th style="width: 15%;">{% trans "Author"%}</th><th>{%trans "Content"%}</th><th>{% trans "Email" %}</th>	<th>{% trans "Entry"%}</th>	</tr>
+		<th>{% trans "Date"%}</th>	<th style="width: 15%;">{% trans "Author"%}</th><th>{%trans "Content"%}</th><th>{% trans "Email" %}</th><th>{% trans "Ip" %}</th>	<th>{% trans "Entry"%}</th>	</tr>
 			</thead>
 			<tbody>
             {%for comment in comments%}
@@ -41,13 +53,14 @@
                            <td><strong><a target="_blank" class="row-title" title='Edit "{{comment.weburl}}"' href="{{comment.weburl}}">{{comment.author}}</a></strong></td>
                             <td>{{comment.content}}</td>
                             <td>{{comment.email}}</td>
+                             <td>{{comment.ip}}</td>
                             <td><a  target="_blank" href="{{blog.baseurl}}/{{comment.entry.link}}" >{{comment.entry.title}}</a></td>
 
         		</tr>
 			{%endfor%}
 			</tbody>
 		</table>
-
-   </div>
 </form>
+   </div>
+
  {% endblock  %}

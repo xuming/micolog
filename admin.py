@@ -648,15 +648,21 @@ class admin_comments(BaseRequestHandler):
 
 
 
-
-		query=Comment.all().order('-date')
+		cq=self.param('cq')
+		cv=self.param('cv')
+		if cq and cv:
+			query=Comment.all().filter(cq+' =',cv).order('-date')
+		else:
+			query=Comment.all().order('-date')
 		comments,pager=Pager(query=query,items_per_page=15).fetch(page_index)
 
 		self.render2('views/admin/comments.html',
 		 {
 		   'current':'comments',
 		   'comments':comments,
-		   'pager':pager
+		   'pager':pager,
+		   'cq':cq,
+		   'cv':cv
 		  }
 		)
 
@@ -668,7 +674,7 @@ class admin_comments(BaseRequestHandler):
 				comment=Comment.get(key)
 				comment.delit()
 		finally:
-			self.redirect('/admin/comments')
+			self.redirect(self.request.uri)
 
 class admin_links(BaseRequestHandler):
 	def get(self,slug=None):
