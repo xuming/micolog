@@ -43,12 +43,21 @@
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
 <label for="url"><small>Website</small></label></p>
 
-<div id="checkarea">
-<img id='checkimg' src='/checkimg/' title='Click to change image' onclick="reloadCheckImage();"/>
-<p><label for="checkret"><small>Checkcode:</small></label>
-<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" /></p>
-</div>
+{%ifequal blog.comment_check_type 1%}
+<p id="checkarea">
+<iframe src="/checkcode/"  style="width:80px;height:20px;border:0;"SCROLLING=no></iframe>
+<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
+</p>
+{%endifequal%}
+{%ifequal blog.comment_check_type 2%}
+<div id="checkarea" style="padding-bottom:15px">
 
+<div style="float:left;margin-right:8px;"><label for="checkret"><small>Checkcode:</small></label>
+<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
+</div>
+<img id='checkimg' src='/checkimg/' style="border:0px;padding:0px;" title='Click to change image' onclick="reloadCheckImage();"/>
+</div>
+{%endifequal%}
 
 <p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
 
@@ -70,17 +79,7 @@
          $('#author').val(user);
          $('#email').val(email);
          $('#url').val(url);
-         $('#checkarea').hide();
        }
-	   /*
-       else
-       {
-       	num1=Math.round(Math.random()*10);
-       	num2=Math.round(Math.random()*10);
-       	$('#checkarea #checknum').val(num1+'+'+num2);
-       	$('#checkarea #disp_check').text(num1+'+'+num2+'=');
-       	$('#checkarea').show();
-       }*/
 
   $('#commentform').submit(function(){
          var form = this;
@@ -100,19 +99,7 @@
           		 	return false;
           		 }
 	       }
-		   /*
-	        if ($('#checkarea').css('display')!='none')
-								       {
-							             if(eval(form.checknum.value)!=form.checkret.value)
-							             {
-							               alert('check code error');
-							               form.checkret.value='';
-							               form.checkret.focus();
-							               return false;
-							             }
 
-							           }
-*/
       		 if (!form.comment.value)
       		 {
       		 	alert('Please leave some reply message.');

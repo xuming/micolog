@@ -435,6 +435,7 @@ class admin_setup(BaseRequestHandler):
 		g_blog.save()
 		gblog_init()
 		vals={'themes':ThemeIterator()}
+		memcache.flush_all()
 		self.render2('views/admin/setup.html',vals)
 
 class admin_entry(BaseRequestHandler):

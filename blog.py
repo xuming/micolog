@@ -2,9 +2,6 @@
 import cgi, os,sys,math
 import wsgiref.handlers
 import  google.appengine.api
-##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-##from django.utils.translation import  activate
-##from django.conf import settings
 
 # Google App Engine imports.
 from google.appengine.ext.webapp import util
@@ -16,10 +13,6 @@ from google.appengine.ext import db
 
 # Force Django to reload its settings.
 
-##from django.conf import settings
-##settings._target = None
-
-##activate(g_blog.language)
 from datetime import datetime ,timedelta
 import base64,random
 from django.utils import simplejson
@@ -33,6 +26,13 @@ from app.gmemsess import Session
 
 from model import *
 from base import *
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.utils.translation import  activate
+from django.conf import settings
+settings._target = None
+activate(g_blog.language)
+
 
 def doRequestHandle(old_handler,new_handler,**args):
 		new_handler.initialize(old_handler.request,old_handler.response)
@@ -220,7 +220,6 @@ class SinglePost(BasePublicPage):
 
 		comments_nav=self.get_comments_nav(mp,entry.comments().count())
 
-
 		if entry.entrytype=='post':
 			self.render('single',
 						{
@@ -230,8 +229,8 @@ class SinglePost(BasePublicPage):
 						'user_name':commentuser[0],
 						'user_email':commentuser[1],
 						'user_url':commentuser[2],
-						'checknum1':random.randint(1,10),
-						'checknum2':random.randint(1,10),
+						#'checknum1':random.randint(1,10),
+						#'checknum2':random.randint(1,10),
 						'comments_nav':comments_nav,
 						})
 
@@ -282,15 +281,14 @@ class SinglePost(BasePublicPage):
 		logging.info(self.request.path+" "+entry.trackbackurl)
 		#key=self.param("code")
 		#if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
-		#todo　检验trackback有效性(entry.trackbackurl.endswith(self.request.path)) or
 		import cgi
 		param=cgi.parse_qs(self.request.uri)
 		if param.has_key('code'):
 			code=param['code'][0]
 
-		if  str(entry.key())!=code or entry.is_external_page or not entry.allow_trackback:
+		if  (not str(entry.key())==code) or entry.is_external_page or not entry.allow_trackback:
 			self.response.out.write(error % "Invalid trackback url.")
-			logging.info("err")
+			return
 
 
 		coming_url = self.param('url')
@@ -451,51 +449,41 @@ class Post_comment(BaseRequestHandler):
 	#@printinfo
 	def post(self,slug=None):
 		useajax=self.param('useajax')=='1'
-##		if self.is_admin:
-##			name=self.blog.author
-##			email=self.login_user.email()
-##			url=self.blog.baseurl
-##		else:
+
 		name=self.param('author')
 		email=self.param('email')
 		url=self.param('url')
 
 		key=self.param('key')
 		content=self.param('comment')
-		checknum=self.param('checknum')
-		checkret=self.param('checkret')
 		reply_notify_mail=self.parambool('reply_notify_mail')
-##		if useajax:
-##			name=urldecode(name)
-
-##			email=urldecode(email)
-##			url=urldecode(url)
-##			key=urldecode(key)
-##			content=urldecode(content)
-##			checknum=urldecode(checknum)
-##			checkret=urldecode(checkret)
 
 		sess=Session(self,timeout=180)
 		if not self.is_login:
-			if not (self.request.cookies.get('comment_user', '')):
+			#if not (self.request.cookies.get('comment_user', '')):
+			try:
+				check_ret=True
+				if g_blog.comment_check_type>0:
+##					import app.gbtools as gb
+##					checknum=self.param('checknum')
+##					checkret=self.param('checkret')
+##					check_ret=eval(checknum)==int(gb.stringQ2B( checkret))
+##				elif g_blog.comment_check_type==2:
+					checkret=self.param('checkret')
+					check_ret=(int(checkret) == sess['code'])
+				if not check_ret:
 
-				try:
-					#import app.gbtools as gb
-					#if eval(checknum)<>int(gb.stringQ2B( checkret)):
-					if sess.is_new() or (int(checkret) != sess['code']):
-						sess.invalidate()
-						if useajax:
-							self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
-						else:
-							self.error(-102,_('Your check code is invalid .'))
-						return
-				except:
-					sess.invalidate()
 					if useajax:
 						self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
 					else:
 						self.error(-102,_('Your check code is invalid .'))
 					return
+			except:
+				if useajax:
+					self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
+				else:
+					self.error(-102,_('Your check code is invalid .'))
+				return
 
 		sess.invalidate()
 		content=content.replace('\n','<br>')
@@ -548,7 +536,11 @@ class Post_comment(BaseRequestHandler):
 				memcache.delete("/feed/comments")
 				logging.info("cookie:"+str(self.request.cookies))
 			except:
-				self.message('Comment not allowed!')
+				if useajax:
+					self.write(simplejson.dumps((False,-102,_('Comment not allowed.'))))
+				else:
+					self.error(-102,_('Comment not allowed .'))
+
 
 class ChangeTheme(BaseRequestHandler):
 	@requires_admin
@@ -727,14 +719,26 @@ class CheckImg(BaseRequestHandler):
 	def get(self):
 		img = Image()
 		imgdata = img.create()
-		sess=Session(self,timeout=180)
+		sess=Session(self,timeout=900)
 		if not sess.is_new():
 			sess.invalidate()
-			sess=Session(self,timeout=180)
+			sess=Session(self,timeout=900)
 		sess['code']=img.text
 		sess.save()
 		self.response.headers['Content-Type'] = "image/png"
 		self.response.out.write(imgdata)
+
+
+class CheckCode(BaseRequestHandler):
+	def get(self):
+		sess=Session(self,timeout=900)
+		num1=random.randint(1,10)
+		num2=random.randint(1,10)
+		code="<span style='font-size:13px;color:red'>%d + %d =</span>"%(num1,num2)
+		sess['code']=num1+num2
+		sess.save()
+		#self.response.headers['Content-Type'] = "text/html"
+		self.response.out.write(code)
 
 class Other(BaseRequestHandler):
 	def get(self,slug=None):
@@ -753,6 +757,7 @@ def main():
 	application = webapp.WSGIApplication(
 					[('/media/(.*)',getMedia),
 					('/checkimg/', CheckImg),
+					('/checkcode/', CheckCode),
 					('/skin',ChangeTheme),
 					('/feed', FeedHandler),
 					('/feed/comments',CommentsFeedHandler),

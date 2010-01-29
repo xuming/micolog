@@ -112,8 +112,8 @@ h3#comments, h3#respond { font:1.3em Georgia, serif; margin-bottom:30px; backgro
 .box ol.commentlist li .comments { float:right; width:580px; }
 .box ol.commentlist li .comments p { padding-top:10px;}
 #commentform { margin-left:10px;}
-#author,#email,#url,#comment { color: #333; border: 1px solid #d7d7d7; width:400px; display:block; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
-#author:focus,#email:focus,#url:focus,#author.sffocus ,#email.sffocus ,#url.sffocus  { color: #000; border: 1px solid #afc9de; width:400px; display:block; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
+#author,#email,#url,#comment { color: #333; border: 1px solid #d7d7d7; width:400px; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
+#author:focus,#email:focus,#url:focus,#author.sffocus ,#email.sffocus ,#url.sffocus  { color: #000; border: 1px solid #afc9de; width:400px;  padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
 #comment { width:520px;}
 #comment:focus,#comment.sffocus { color: #000; border: 1px solid #afc9de; width:520px; display:block; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
 

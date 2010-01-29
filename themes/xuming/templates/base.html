@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -31,9 +31,15 @@
                 if (ret.isadmin)
                 html+=' <a href="/admin">管理</a>';
                 $('#langpref').html(html);
+
+
               }
               else
-              {$('#langpref').html('<a href="/admin"> 登录</a>');}
+              {
+			     $('#langpref').html('<a href="/admin"> 登录</a>');
+   				 if(typeof(get_check_area)!='undefined')
+                	get_check_area({{blog.comment_check_type}});
+			  }
        });
     }
     loginp();

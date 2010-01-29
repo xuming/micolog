@@ -1,4 +1,4 @@
-application: micolog
+application: mlog
 version: 1
 runtime: python
 api_version: 1
@@ -13,6 +13,9 @@ handlers:
 - url: /robots\.txt
   static_files: static/robots.txt
   upload: static/robots.txt
+
+- url: /xheditor/.*
+  script: $PYTHON_LIB/google/appengine/ext/zipserve
 
 - url: /tinymce/.*
   script: $PYTHON_LIB/google/appengine/ext/zipserve

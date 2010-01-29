@@ -7,7 +7,9 @@
 	{% for comment in comments %}
 
 		<li class="{%cycle alt1,alt %}" id="comment-{{comment.key.id}}">
-			<div class="gravatar"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
+
+
+			<div class="gravatar add" title="回复{{comment.author}}" onclick="return backcomment('{{comment.author}}',{{comment.key.id}});" style="cursor: pointer;"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
      <div class="comments">
      				{%if comment.weburl %}
 			<a href="{{comment.weburl}}" target="_blank">{{comment.author}}</a>
@@ -30,7 +32,7 @@
 <div id="commentsnavi">
 {{comments_nav.nav}}
 </div>
-
+<input type="hidden" value="{{blog.comment_check_type}}" id="check_type"/>
 <h3 id="respond">我要留言</h3>
 {% if entry.allow_comment %}
 <div class="info" id="comment_info"></div>
@@ -45,12 +47,12 @@
 
 <p><input type="text" name="url" id="url"  size="25" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
-
-
-<p id="checkarea">麻烦，计算一下：<span style="color:#D50000" id="disp_check">{{checknum1}}+{{checknum2}}</span>
-<input type="hidden" name="checknum" id="checknum" value="{{checknum1}}+{{checknum2}}" />
+<p id="checkarea" style='display:none'>
+ 验证码：<span id="check"></span>
 <input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
 </p>
+
+
 
 </div>
 
@@ -63,115 +65,7 @@
 </form>
 
  <script>
-       loadjs=false;
 
-       commentuser=$.cookie('comment_user');
-       if (commentuser)
-       {
-         [user,email,url]=commentuser.split('#@#');
-         $('#author').val(user);
-         $('#email').val(email);
-         $('#url').val(url);
-         $('#checkarea').hide();
-       }
-       else
-       {
-       	num1=Math.round(Math.random()*10);
-       	num2=Math.round(Math.random()*10);
-       	$('#checkarea #checknum').val(num1+'+'+num2);
-       	$('#checkarea #disp_check').text(num1+'+'+num2+'=');
-       	$('#checkarea').show();
-       }
-
-       function showinfo(msg)
-       {
-       	  alert(msg);
-       }
-       function add_comment(msg)
-       {
-       	  comment=$(msg)
-       	  if (!loadjs)
-       	  {
-       	  	$("#commentlist").prepend(comment).show();
-       	  	$.getScript("http://dev.jquery.com/view/trunk/plugins/color/jquery.color.js", function(){
-       	  		 comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
-       						.animate( { backgroundColor: 'white' }, "slow")
-							loadjs=true;
-						});
-       	  }else
-       	  {
-       	  	$("#commentlist").prepend(comment);
-       	  	  comment.animate( { backgroundColor: '#fbc7c7' }, "slow")
-       						.animate( { backgroundColor: 'white' }, "slow")
-
-       	  }
-       }
-
-              $('#commentform').ajaxForm({
-              	type:'post',
-              	dataType:  'json',
-              	beforeSubmit:function(formData,jqForm,options){
-              		   var form = jqForm[0];
-              		   if (form.author)
-              		   {
-
-	              			 if (!form.author.value)
-		              		 {
-		              		  showinfo('请输入你的名字!');
-		              		  form.author.focus();
-		              		  return false;
-		              		 }
-		              		 if (!form.email.value)
-		              		 {
-		              		 	showinfo('请输入邮件地址');
-		              		 	form.email.focus();
-		              		 	return false;
-		              		 }
-           		       }
-           		        if ($('#checkarea').css('display')!='none')
-								       {
-							             if(eval(form.checknum.value)!=form.checkret.value)
-							             {
-							               alert('计算错误，这个算术好像在幼儿园学过的吧？');
-							               form.checkret.value='';
-							               form.checkret.focus();
-							               return false;
-							             }
-
-							           }
-
-                  		 if (!form.comment.value)
-                  		 {
-                  		 	showinfo('请输入留言内容');
-                  		 	form.comment.focus();
-                  		 	return false;
-                  		 }
-
-                  		 $('#s_msg').text('正在提交留言...').show();
-                        $("#submit").attr('disabled',true);
-
-	              		 return true;
-
-              		},
-              	success:function(data){
-                    $("#submit").attr('disabled',false);
-              		  if (data[0])
-              		  {
-              		  	/*document.cookie=data[2];*/
-              		  	add_comment(data[1]);
-            		  	$('#s_msg').text('留言提交成功！');
-              		  	$('#comment').val('');
-                        location="#comments";
-              		  }
-              		  else
-              		  {  if (data[1]==-102)
-              		  	 showinfo('计算错误，回幼儿园进修一下再来过。');
-              		  	 $('#s_msg').text('留言提交失败！');
-              		  	 $('#checkret').focus();
-
-              		  }
-              		}
-              });
 
 </script>
 

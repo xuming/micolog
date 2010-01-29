@@ -42,20 +42,6 @@
 {% endblock %}
 
  {% block content %}
- <!-- tinyMCE -->
-<script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript"
-src="/static/js/editor.js"></script>
-<script type='text/javascript'>
-	wpTinyMCEConfig = {
-		defaultEditor: "tinymce"
-	};
-
-</script>
-
-<script language="javascript" type="text/javascript"
-src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
-<!-- /tinyMCE -->
 
 
 <form action="/admin/{{entrytype}}" method="post">
@@ -153,7 +139,24 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
       {%trans "Page" %}
         {%endifequal%}
         </div>
-{%mf entry_content%}
+{%mf admin_entry_edit%}
+
+ <!-- tinyMCE -->
+<script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript"
+src="/static/js/editor.js"></script>
+<script type='text/javascript'>
+	wpTinyMCEConfig = {
+		defaultEditor: "tinymce"
+	};
+
+</script>
+
+<script language="javascript" type="text/javascript"
+src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
+<!-- /tinyMCE -->
+
+
 <div class='editor-toolbar'>
     <span class="alignright" id="spn_html"><a id="edButtonHTML" onclick="switchEditors.go('content');" class="">HTML</a></span>
     <span class="alignright tg"  id="spn_visual" ><a id="edButtonPreview" class="active">Visual</a></span>
@@ -194,6 +197,7 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
  edCanvas = document.getElementById('content');
 </script>
 {%endmf%}
+
 <div class="clear"></div>
 <div class="stuffbox">
 <h3>{% trans "Slug" %}</h3>

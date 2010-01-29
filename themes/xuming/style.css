@@ -199,3 +199,23 @@ padding-left: 20px;color:#BC4F0C;font-size:14px;font-weight:bold;
 }
 .rsstop a {color:#BC4F0C;text-decoration:none;}
 .rsstop a:hover{text-decoration:underline;}
+
+
+#commentlist .tip {
+    background:#FFF;
+    border:1px solid #CCC;
+    width:605px;
+    padding:10px !important;
+    padding:10px 10px 0;
+    margin-top:-130px;
+	margin-left:-20px;
+    position:absolute;
+    z-index:3;
+}
+#commentlist .tip .act {
+    display:none;
+}
+*+html #commentlist .tip {
+    padding:10px 10px 0 !important;
+}
+.atreply {color:#DC7601!important;}

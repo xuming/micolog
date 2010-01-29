@@ -9,6 +9,7 @@
 <script1 type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script1>
 
     {% block header %}{% endblock %}
+{%mf admin_head%}{%endmf%}
 </head>
 <body>
 
@@ -47,9 +48,13 @@
    <li class='page_item page-item-2 {{current|check_current:"plugins"}}'><a href="/admin/plugins" title="plugins">{% trans "Plugins" %}</a></li>
 
     <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">{% trans "Cache" %}</a></li>
-    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
     {% block topmenu %}
     {% endblock %}
+	{%mf admin_topmenu%}{%endmf%}
+
+    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
+
+
     <div class="clear"></div>
 
 </ul>
@@ -78,7 +83,7 @@
 
 <!-- Footer Starts -->
 <div id="footer">
-
+{%mf admin_footer%}
     <div class="fontmlog">
         <div id="credits">
             <!-- Credit link can be removed by giving a $5 donation, it'll help us all build good karma! -->
@@ -92,6 +97,7 @@
          <div class="clear"></div>
 
     </div>
+{%endmf%}
 </div>
 <!-- Footer Ends -->
 

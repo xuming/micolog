@@ -130,6 +130,8 @@ class Blog(db.Model):
 	comments_order=db.IntegerProperty(default=0)
 	#每页评论数
 	comments_per_page=db.IntegerProperty(default=20)
+	#comment check type 0-No 1-算术 2-验证码
+	comment_check_type=db.IntegerProperty(default=1)
 
 	blognotice=db.StringProperty(default='',multiline=True)
 
@@ -724,6 +726,8 @@ def Sitemap_NotifySearch():
 def InitBlogData():
 	import settings
 	global g_blog
+	OptionSet.setValue('PluginActive',[u'googleAnalytics', u'wordpress', u'sys_plugin'])
+
 	g_blog = Blog(key_name = 'default')
 	g_blog.domain=os.environ['HTTP_HOST']
 	g_blog.baseurl="http://"+g_blog.domain
@@ -734,6 +738,8 @@ def InitBlogData():
 	entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
 	entry.publish()
 	entry.update_archive()
+	link=Link(href='http://xuming.net',linktext=_("Xuming's blog").decode('utf8'))
+	link.put()
 	return g_blog
 
 def gblog_init():
