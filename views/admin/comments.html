@@ -8,14 +8,14 @@
       <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Comments"%}</b><span style='color:gray'> ({{pager.count}}) </span>
 		&nbsp;&nbsp;
 
-		<b>Filter:</b>
+		<b>{% trans "Filter:"%}</b>
 		<select name="cq">
-		 <option value='author' {%ifequal cq 'author'%}selected{%endifequal%}>Author</option>
+		 <option value='author' {%ifequal cq 'author'%}selected{%endifequal%}>{% trans "Author"%}</option>
 		 <option value='email' {%ifequal cq 'email'%}selected{%endifequal%}>Email</option>
-		 <option value='ip' {%ifequal cq 'ip'%}selected{%endifequal%}>Ip</option>
+		 <option value='ip' {%ifequal cq 'ip'%}selected{%endifequal%}>IP</option>
 		</select>
 		<input type="text" name="cv" value="{{cv}}"/>
-		<input type="submit" value="Do"/>
+		<input type="submit" value="{% trans "Do"%}"/>
 
 	  </div></form>
 <form action="" method="post" >
@@ -43,7 +43,7 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
-		<th>{% trans "Date"%}</th>	<th style="width: 15%;">{% trans "Author"%}</th><th>{%trans "Content"%}</th><th>{% trans "Email" %}</th><th>{% trans "Ip" %}</th>	<th>{% trans "Entry"%}</th>	</tr>
+		<th>{% trans "Date"%}</th>	<th style="width: 15%;">{% trans "Author"%}</th><th>{%trans "Content"%}</th><th>{% trans "Email" %}</th><th>{% trans "IP" %}</th>	<th>{% trans "Entry"%}</th>	</tr>
 			</thead>
 			<tbody>
             {%for comment in comments%}

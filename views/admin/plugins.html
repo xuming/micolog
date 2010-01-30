@@ -2,9 +2,9 @@
 {% extends "base.html" %}
  {% block content %}
    <div class="wrap">
-<h2>Manage Plugins</h2>
+<h2>{% trans "Manage Plugins"%}</h2>
 <table class="widefat" cellspacing="0">
-<tr><th>Plugin</th><th>Version</th><th>Description</th><th>Author</th><th>Active Status</th></tr>
+<tr><th>{% trans "Plugin"%}</th><th>{% trans "Version"%}</th><th>{% trans "Description"%}</th><th>{% trans "Author"%}</th><th>{% trans "Active Status"%}</th></tr>
 {%for plugin in plugins%}
 <tr>
 <td><a href="/admin/plugins/{{plugin.iname}}">{{plugin.name}}</a></td>
@@ -14,10 +14,10 @@
 <td>
 {%if plugin.active%}
 <form action="?action=deactivate&plugin={{plugin.iname}}" method="post">
-<input type="submit" value="Deactivate"/>
+<input type="submit" value="{% trans "Deactivate"%}"/>
 {%else%}
 <form action="?action=activate&plugin={{plugin.iname}}" method="post">
-<input type="submit" value="Activate"/>
+<input type="submit" value="{% trans "Activate"%}"/>
 {%endif%}
 </form>
 </td>
