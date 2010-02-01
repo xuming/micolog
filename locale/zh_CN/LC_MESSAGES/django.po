@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-30 16:04+0800\n"
-"PO-Revision-Date: 2010-01-30 16:09+0800\n"
+"PO-Revision-Date: 2010-02-01 09:31+0800\n"
 "Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -131,7 +131,7 @@ msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或�
 
 #: .\model.py:741
 msgid "Xuming's blog"
-msgstr ""
+msgstr "徐明的博客"
 
 #: .\plugins\wordpress\wpimport.html.py:52
 msgid "Please select a file which exported from wordpress to import!"

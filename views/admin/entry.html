@@ -179,12 +179,12 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 		enterURL: "Enter the URL",
 		enterImageURL: "Enter the URL of the image",
 		enterImageDescription: "Enter a description of the image"
-	}
+	};
 /* ]]> */
 
 </script>
+
 <script src="/static/js/quicktags.js" type="text/javascript"/>
-<script type="text/javascript">edToolbar()</script>
 <div id="ed_toolbar"><input type="button" value="b" onclick="edInsertTag(edCanvas, 0);" class="ed_button" accesskey="b" id="ed_strong"/><input type="button" value="i" onclick="edInsertTag(edCanvas, 1);" class="ed_button" accesskey="i" id="ed_em"/><input type="button" value="link" onclick="edInsertLink(edCanvas, 2);" class="ed_button" accesskey="a" id="ed_link"/><input type="button" value="b-quote" onclick="edInsertTag(edCanvas, 3);" class="ed_button" accesskey="q" id="ed_block"/><input type="button" value="del" onclick="edInsertTag(edCanvas, 4);" class="ed_button" accesskey="d" id="ed_del"/><input type="button" value="ins" onclick="edInsertTag(edCanvas, 5);" class="ed_button" accesskey="s" id="ed_ins"/><input type="button" value="img" onclick="edInsertImage(edCanvas);" class="ed_button" accesskey="m" id="ed_img"/><input type="button" value="ul" onclick="edInsertTag(edCanvas, 7);" class="ed_button" accesskey="u" id="ed_ul"/><input type="button" value="ol" onclick="edInsertTag(edCanvas, 8);" class="ed_button" accesskey="o" id="ed_ol"/><input type="button" value="li" onclick="edInsertTag(edCanvas, 9);" class="ed_button" accesskey="l" id="ed_li"/><input type="button" value="code" onclick="edInsertTag(edCanvas, 10);" class="ed_button" accesskey="c" id="ed_code"/><input type="button" value="more" onclick="edInsertTag(edCanvas, 11);" class="ed_button" accesskey="t" id="ed_more"/><input type="button" value="lookup" title="Dictionary lookup" onclick="edSpell(edCanvas);" class="ed_button" id="ed_spell"/><input type="button" value="close tags" title="Close all open tags" onclick="edCloseAllTags();" class="ed_button" id="ed_close"/>
 </div>
 </div>
@@ -193,9 +193,7 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
   <textarea style="width: 695px;" cols="40" rows="15" id="content" name="content">{{entry.content|escape}}</textarea>
 </div>
 </div>
-<script type="text/javascript">
- edCanvas = document.getElementById('content');
-</script>
+
 {%endmf%}
 
 <div class="clear"></div>

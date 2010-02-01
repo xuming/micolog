@@ -5,7 +5,7 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = False
 
-LANGUAGE_CODE = 'zh-cn'
+LANGUAGE_CODE = 'zh-CN'
 ##LANGUAGE_CODE = 'fr'
 
 TEMPLATE_LOADERS=('django.template.loaders.filesystem.load_template_source',

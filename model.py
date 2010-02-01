@@ -724,7 +724,6 @@ def Sitemap_NotifySearch():
 		logging.error('Cannot contact: %s' % ping[1])
 
 def InitBlogData():
-	import settings
 	global g_blog
 	OptionSet.setValue('PluginActive',[u'googleAnalytics', u'wordpress', u'sys_plugin'])
 
@@ -732,8 +731,17 @@ def InitBlogData():
 	g_blog.domain=os.environ['HTTP_HOST']
 	g_blog.baseurl="http://"+g_blog.domain
 	g_blog.feedurl=g_blog.baseurl+"/feed"
-	g_blog.language=settings.LANGUAGE_CODE
+	os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+	lang="zh-cn"
+	if os.environ.has_key('HTTP_ACCEPT_LANGUAGE'):
+		lang=os.environ['HTTP_ACCEPT_LANGUAGE'].split(',')[0]
+	g_blog.language=lang
+	from django.utils.translation import  activate
+	from django.conf import settings
+	settings._target = None
+	activate(g_blog.language)
 	g_blog.save()
+
 	entry=Entry(title=_("Hello world!").decode('utf8'))
 	entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
 	entry.publish()
@@ -757,6 +765,7 @@ def gblog_init():
 	g_blog.get_theme()
 	g_blog.rootdir=os.path.dirname(__file__)
 	return g_blog
+
 
 g_blog=gblog_init()
 
