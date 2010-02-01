@@ -897,8 +897,8 @@ class admin_plugins_action(BaseRequestHandler):
 			return
 		plugins=self.blog.plugins.filter('active',True)
 		if not plugin.active:
-			pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
-<input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
+			pcontent=_('''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+<input type="submit" value="Activate Now"/></form>''')%(plugin.name,plugin.iname,plugin.iname)
 			plugins.insert(0,plugin)
 		else:
 			pcontent=plugin.get(self)
@@ -918,8 +918,8 @@ class admin_plugins_action(BaseRequestHandler):
 			return
 		plugins=self.blog.plugins.filter('active',True)
 		if not plugin.active:
-			pcontent='''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
-<input type="submit" value="Activate Now"/></form>'''%(plugin.name,plugin.iname,plugin.iname)
+			pcontent=_('''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
+<input type="submit" value="Activate Now"/></form>''')%(plugin.name,plugin.iname,plugin.iname)
 			plugins.insert(0,plugin)
 		else:
 			pcontent=plugin.post(self)

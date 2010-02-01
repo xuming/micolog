@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-30 16:04+0800\n"
-"PO-Revision-Date: 2010-02-01 09:31+0800\n"
+"POT-Creation-Date: 2010-02-01 10:46+0800\n"
+"PO-Revision-Date: 2010-02-01 10:47+0800\n"
 "Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,16 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+#: .\admin.py:900
+#: .\admin.py:921
+#, python-format
+msgid ""
+"<div>Plugin '%s' havn't actived!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s\">\n"
+"<input type=\"submit\" value=\"Activate Now\"/></form>"
+msgstr ""
+"<div>插件 '%s' 还没有激活!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s\">\n"
+"<input type=\"submit\" value=\"现在激活\"/></form>"
 
 #: .\base.py:131
 #: .\tools\pingback.py:55
@@ -121,15 +131,15 @@ msgstr ""
 "You can see all comments on this post here:\n"
 "%s\n"
 
-#: .\model.py:737
+#: .\model.py:745
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: .\model.py:738
+#: .\model.py:746
 msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
 msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
-#: .\model.py:741
+#: .\model.py:749
 msgid "Xuming's blog"
 msgstr "徐明的博客"
 
@@ -243,7 +253,7 @@ msgstr "名称"
 
 #: .\views\admin\categories.html.py:35
 #: .\views\admin\category.html.py:47
-#: .\views\admin\entry.html.py:203
+#: .\views\admin\entry.html.py:201
 msgid "Slug"
 msgstr "名称(slug)"
 
@@ -392,23 +402,23 @@ msgstr "文章"
 msgid "Page"
 msgstr "页面"
 
-#: .\views\admin\entry.html.py:211
+#: .\views\admin\entry.html.py:209
 msgid "Tag"
 msgstr "标签"
 
-#: .\views\admin\entry.html.py:219
+#: .\views\admin\entry.html.py:217
 msgid "Options"
 msgstr "选项"
 
-#: .\views\admin\entry.html.py:222
+#: .\views\admin\entry.html.py:220
 msgid "Page level:"
 msgstr "页面级别:"
 
-#: .\views\admin\entry.html.py:224
+#: .\views\admin\entry.html.py:222
 msgid "Page order:"
 msgstr "页面顺序:"
 
-#: .\views\admin\entry.html.py:234
+#: .\views\admin\entry.html.py:232
 msgid "Excerpt"
 msgstr "摘要"
 

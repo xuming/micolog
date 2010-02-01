@@ -78,12 +78,7 @@
 </li>
     <li>
 
-<div class="line"></div>
-<h2>我读的书</h2>
-<script type="text/javascript" src="http://www.douban.com/service/badge/chyni/?show=dolist&amp;n=3&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book" ></script>
-</li>
 
-<li>
 <div class="line"></div>
 <h2>标签</h2>
 {% for t in alltags %}
@@ -95,7 +90,7 @@
 	<h2>归档</h2>
 		<ul>
 		{%for archive in archives%}
-		<li><a href="/{{archive.year}}/{{archive.month}}">{{archive.monthyear}}({{archive.entrycount}})</a></li>
+		<li><a href="/{{archive.year}}/{{archive.month}}">{{archive.year}}年{{archive.month}}月({{archive.entrycount}})</a></li>
 		{%endfor%}
 		</ul>
 </li>

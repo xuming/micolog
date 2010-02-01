@@ -680,7 +680,7 @@ class OptionSet(db.Model):
 	def getValue(cls,name,default=None):
 		try:
 			opt=OptionSet.get_by_key_name(name)
-			return pickle.loads(opt.value)
+			return pickle.loads(str(opt.value))
 		except:
 			return default
 
