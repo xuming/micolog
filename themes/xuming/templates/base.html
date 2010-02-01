@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+{%mf head%}
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>{% block title %} {{ blog.title}}{% endblock %}</title>
 <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/style.css" type="text/css" />
@@ -12,6 +13,7 @@
 <link rel="pingback" href="/pingback" />
 <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 {% block head_block %}{% endblock %}
+{%endmf%}
 </head>
 <body>
 <div id="gc-container">
@@ -97,7 +99,8 @@
     {% block topmenu %}
 
     {% endblock %}
-
+{%mf nav_menu%}
+{%endmf%}
 </ul>
 </div>
 <!-- end gc-topnav -->
@@ -119,7 +122,8 @@
     </div>
   </div>
 </div><!-- end gc-footer -->
-
+{%mf footer%}
+{%endmf%}
 </div><!-- end gc-containter -->
 </body>
 </html>
