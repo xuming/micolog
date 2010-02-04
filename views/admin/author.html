@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block h_message %}
   {%if postback%}
@@ -7,7 +8,7 @@
  {% block content %}
 <form action="/admin/author" method="post" >
    <div class="wrap">
-      <h2>{%ifequal action 'edit'%}Edit Author{%else%}Add Author {%endifequal%}</h2>
+      <h2>{%ifequal action 'edit'%}{%trans "Edit Author" %}{%else%}{%trans "Add Author" %} {%endifequal%}</h2>
       <div id="poststuff">
 
 <div id="submitlink" class="submitbox">
@@ -24,10 +25,10 @@
 </p>
 
 <div class="side-info">
-<h5>Related</h5>
+<h5>{%trans "Related" %}</h5>
 
 <ul>
-<li><a href="/admin/authors">Manage All Authors</a></li>
+<li><a href="/admin/authors">{%trans "Manage All Authors"%}</a></li>
 
 
 </ul>
@@ -36,10 +37,10 @@
 
 <div id="post-body">
 <div class="stuffbox" id="namediv">
-<h3>Display Name</h3>
+<h3>{%trans "Display Name"%}</h3>
 <div class="inside">
 	<input type="text" id="name" value="{{author.dispname}}" tabindex="1" size="30" name="name"/><br/>
-    The name is used to display.</div>
+    {%trans "The name is used to display."%}"</div>
 </div>
 
 <div class="stuffbox" id="addressdiv">

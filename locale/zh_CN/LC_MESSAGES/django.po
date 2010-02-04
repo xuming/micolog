@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-01 10:46+0800\n"
-"PO-Revision-Date: 2010-02-01 10:47+0800\n"
+"POT-Creation-Date: 2010-02-04 16:32+0800\n"
+"PO-Revision-Date: 2010-02-04 16:33+0800\n"
 "Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,8 +18,8 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: .\admin.py:900
-#: .\admin.py:921
+#: .\admin.py:931
+#: .\admin.py:953
 #, python-format
 msgid ""
 "<div>Plugin '%s' havn't actived!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s\">\n"
@@ -28,37 +28,37 @@ msgstr ""
 "<div>插件 '%s' 还没有激活!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s\">\n"
 "<input type=\"submit\" value=\"现在激活\"/></form>"
 
-#: .\base.py:131
+#: .\base.py:133
 #: .\tools\pingback.py:55
 msgid "source URL does not exist"
 msgstr ""
 
-#: .\base.py:132
+#: .\base.py:134
 #: .\tools\pingback.py:56
 msgid "The source URL does not contain a link to the target URL"
 msgstr ""
 
-#: .\base.py:133
+#: .\base.py:135
 #: .\tools\pingback.py:57
 msgid "The specified target URL does not exist"
 msgstr ""
 
-#: .\base.py:134
+#: .\base.py:136
 #: .\tools\pingback.py:58
 msgid "The specified target URL cannot be used as a target"
 msgstr ""
 
-#: .\base.py:135
+#: .\base.py:137
 #: .\tools\pingback.py:59
 msgid "The pingback has already been registered"
 msgstr ""
 
-#: .\base.py:136
+#: .\base.py:138
 #: .\tools\pingback.py:60
 msgid "Access Denied"
 msgstr "访问受限"
 
-#: .\base.py:173
+#: .\base.py:175
 #: .\tools\pingback.py:97
 msgid "An unknown server error (%s) occurred"
 msgstr "未知的服务器错误：(%s)"
@@ -156,60 +156,128 @@ msgstr "Wordpress 格式文件(WXR格式):"
 msgid "Import"
 msgstr "导入"
 
-#: .\views\admin\base.html.py:18
-msgid "Micolog Dashboard"
-msgstr "Micolog控制面板"
+#: .\views\admin\author.html.py:11
+msgid "Edit Author"
+msgstr "修改作者"
 
-#: .\views\admin\base.html.py:40
-msgid "Write"
-msgstr "写文章"
+#: .\views\admin\author.html.py:11
+msgid "Add Author"
+msgstr "添加作者"
 
-#: .\views\admin\base.html.py:41
-msgid "Posts"
-msgstr "文章"
+#: .\views\admin\author.html.py:28
+#: .\views\admin\category.html.py:28
+#: .\views\admin\entry.html.py:88
+#: .\views\admin\link.html.py:28
+msgid "Related"
+msgstr "相关操作"
 
-#: .\views\admin\base.html.py:42
-msgid "Pages"
-msgstr "页面"
+#: .\views\admin\author.html.py:31
+msgid "Manage All Authors"
+msgstr "管理作者"
 
-#: .\views\admin\base.html.py:43
-msgid "Links"
-msgstr "链接"
+#: .\views\admin\author.html.py:40
+msgid "Display Name"
+msgstr "名称"
 
-#: .\views\admin\base.html.py:44
-msgid "Categories"
-msgstr "目录"
+#: .\views\admin\author.html.py:43
+msgid "The name is used to display."
+msgstr "用于显示的名字"
 
-#: .\views\admin\base.html.py:45
-msgid "Comments"
-msgstr "评论"
+#: .\views\admin\authors.html.py:7
+msgid "Manage Authors"
+msgstr "管理作者"
 
-#: .\views\admin\base.html.py:47
-msgid "Configuration"
-msgstr "设置"
-
-#: .\views\admin\base.html.py:48
-msgid "Plugins"
-msgstr "插件"
-
-#: .\views\admin\base.html.py:50
-msgid "Cache"
-msgstr "缓存"
-
-#: .\views\admin\base.html.py:55
-msgid "help"
-msgstr "帮助"
-
-#: .\views\admin\categories.html.py:7
-msgid "Manage Categories"
-msgstr "管理目录"
-
+#: .\views\admin\authors.html.py:7
 #: .\views\admin\categories.html.py:7
 #: .\views\admin\links.html.py:7
 #: .\views\admin\pages.html.py:7
 #: .\views\admin\posts.html.py:7
 msgid "add new"
 msgstr "新建"
+
+#: .\views\admin\authors.html.py:8
+msgid "All Authors"
+msgstr "作者"
+
+#: .\views\admin\authors.html.py:18
+#: .\views\admin\categories.html.py:18
+#: .\views\admin\comments.html.py:30
+#: .\views\admin\pages.html.py:18
+#: .\views\admin\posts.html.py:20
+msgid "&laquo; prev"
+msgstr "&laquo; 前一页"
+
+#: .\views\admin\authors.html.py:22
+#: .\views\admin\categories.html.py:22
+#: .\views\admin\comments.html.py:34
+#: .\views\admin\pages.html.py:22
+#: .\views\admin\posts.html.py:24
+msgid "next &raquo;"
+msgstr "后一页 &raquo;"
+
+#: .\views\admin\authors.html.py:23
+#: .\views\admin\categories.html.py:24
+#: .\views\admin\comments.html.py:35
+#: .\views\admin\pages.html.py:23
+#: .\views\admin\posts.html.py:26
+msgid "  Page %(pindex)s"
+msgstr "  第%(pindex)s页"
+
+#: .\views\admin\base.html.py:18
+msgid "Micolog Dashboard"
+msgstr "Micolog控制面板"
+
+#: .\views\admin\base.html.py:18
+msgid "Logout"
+msgstr "注销"
+
+#: .\views\admin\base.html.py:41
+msgid "Write"
+msgstr "写文章"
+
+#: .\views\admin\base.html.py:42
+msgid "Posts"
+msgstr "文章"
+
+#: .\views\admin\base.html.py:43
+msgid "Pages"
+msgstr "页面"
+
+#: .\views\admin\base.html.py:44
+msgid "Links"
+msgstr "链接"
+
+#: .\views\admin\base.html.py:45
+msgid "Categories"
+msgstr "目录"
+
+#: .\views\admin\base.html.py:46
+msgid "Comments"
+msgstr "评论"
+
+#: .\views\admin\base.html.py:48
+msgid "Configuration"
+msgstr "设置"
+
+#: .\views\admin\base.html.py:49
+msgid "Plugins"
+msgstr "插件"
+
+#: .\views\admin\base.html.py:51
+msgid "Cache"
+msgstr "缓存"
+
+#: .\views\admin\base.html.py:52
+msgid "Authors"
+msgstr "作者"
+
+#: .\views\admin\base.html.py:57
+msgid "help"
+msgstr "帮助"
+
+#: .\views\admin\categories.html.py:7
+msgid "Manage Categories"
+msgstr "管理目录"
 
 #: .\views\admin\categories.html.py:8
 msgid "All Categories"
@@ -222,27 +290,6 @@ msgstr "所有目录"
 #: .\views\admin\posts.html.py:15
 msgid "Delete"
 msgstr "删除"
-
-#: .\views\admin\categories.html.py:18
-#: .\views\admin\comments.html.py:30
-#: .\views\admin\pages.html.py:18
-#: .\views\admin\posts.html.py:20
-msgid "&laquo; prev"
-msgstr "&laquo; 前一页"
-
-#: .\views\admin\categories.html.py:22
-#: .\views\admin\comments.html.py:34
-#: .\views\admin\pages.html.py:22
-#: .\views\admin\posts.html.py:24
-msgid "next &raquo;"
-msgstr "后一页 &raquo;"
-
-#: .\views\admin\categories.html.py:24
-#: .\views\admin\comments.html.py:35
-#: .\views\admin\pages.html.py:23
-#: .\views\admin\posts.html.py:26
-msgid "  Page %(pindex)s"
-msgstr "  第%(pindex)s页"
 
 #: .\views\admin\categories.html.py:35
 #: .\views\admin\category.html.py:40
@@ -270,12 +317,6 @@ msgstr "添加目录"
 #: .\views\admin\link.html.py:24
 msgid "Save"
 msgstr "保存"
-
-#: .\views\admin\category.html.py:28
-#: .\views\admin\entry.html.py:88
-#: .\views\admin\link.html.py:28
-msgid "Related"
-msgstr "相关操作"
 
 #: .\views\admin\category.html.py:31
 msgid "Manage All Categories"
@@ -781,8 +822,6 @@ msgstr "该操作将更新归档"
 #, fuzzy
 #~ msgid "Web Comment"
 #~ msgstr "评论"
-#~ msgid "Authors"
-#~ msgstr "作者"
 #~ msgid "Advance"
 #~ msgstr "高级"
 

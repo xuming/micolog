@@ -51,7 +51,7 @@ myBoxObject.applyCornersToAll();
     <li class="page_item" ><a href="{{blog.feedurl}}">(RSS)</a></li>
     {% block topmenu %}{% endblock %}
 
-    {%if self.is_admin%}
+    {%if self.is_admin or self.author%}
      <li><a href="/admin">Admin</a> </li>
     {%endif%}
       <li>

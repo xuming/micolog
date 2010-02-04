@@ -14,7 +14,7 @@ from django.utils.translation import  activate
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 settings._target = None
-from model import g_blog
+from model import g_blog,User
 activate(g_blog.language)
 from google.appengine.api.labs import taskqueue
 import wsgiref.handlers
@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 import urllib
 import traceback
 import micolog_template
+
 
 logging.info('module base reloaded')
 def urldecode(value):
@@ -42,7 +43,8 @@ def requires_admin(method):
 		if not self.is_login:
 			self.redirect(users.create_login_url(self.request.uri))
 			return
-		elif not self.is_admin:
+		elif not (self.is_admin
+			or self.author):
 			return self.error(403)
 		else:
 			return method(self, *args, **kwargs)
@@ -230,18 +232,21 @@ class BaseRequestHandler(webapp.RequestHandler):
 		self.is_login = (self.login_user != None)
 		self.loginurl=users.create_login_url(self.request.uri)
 		self.logouturl=users.create_logout_url(self.request.uri)
-##		if self.is_login:
-##			self.loginurl=users.create_logout_url(self.request.uri)
-##			#self.user = User.all().filter('user = ', self.login_user).get() or User(user = self.login_user)
-##		else:
-##			self.loginurl=users.create_login_url(self.request.uri)
-##			#self.user = None
-
 		self.is_admin = users.is_current_user_admin()
+
 		if self.is_admin:
 			self.auth = 'admin'
+			self.author=User.all().filter('email =',self.login_user.email()).get()
+			if not self.author:
+				self.author=User(dispname=self.login_user.nickname(),email=self.login_user.email())
+				self.author.isadmin=True
+				self.author.put()
 		elif self.is_login:
-			self.auth = 'login'
+			self.author=User.all().filter('email =',self.login_user.email()).get()
+			if self.author:
+				self.auth='author'
+			else:
+				self.auth = 'login'
 		else:
 			self.auth = 'guest'
 

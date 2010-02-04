@@ -293,7 +293,12 @@ def wp_deletePage(blogid,pageid):
 
 @checkauth()
 def wp_getAuthors(blogid):
-	return [{'user_id':1,'user_login':'','display_name':'admin'}]
+	ulist=[]
+	i=1
+	for user in User.all():
+		ulist.append({'user_id':i,'user_login':'','display_name':user.dispname})
+		i=i+1
+	return ulist
 
 @checkauth()
 def wp_getPageList(blogid):

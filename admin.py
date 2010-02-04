@@ -56,7 +56,9 @@ class setlanguage(BaseRequestHandler):
 ##			self.write(cookiestr)
 
 			#self.response.headers.add_header('Set-Cookie', cookiestr)
+
 class admin_do_import(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -70,6 +72,7 @@ class admin_do_import(BaseRequestHandler):
 		self.write("wordpress")
 
 class admin_do_action(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -80,6 +83,7 @@ class admin_do_action(BaseRequestHandler):
 		except:
 			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
 
+	@requires_admin
 	def post(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -284,7 +288,7 @@ class admin_import_next(BaseRequestHandler):
 		except:
 			logging.info("import error")
 
-
+	@requires_admin
 	def get(self,slug=None):
 		imt=memcache.get('imt')
 		if imt and imt.cur_do:
@@ -303,6 +307,7 @@ class admin_tools(BaseRequestHandler):
 	def __init__(self):
 		self.current="config"
 
+	@requires_admin
 	def get(self,slug=None):
 		self.render2('views/admin/tools.html')
 
@@ -311,10 +316,12 @@ class admin_sitemap(BaseRequestHandler):
 	def __init__(self):
 		self.current="config"
 
+	@requires_admin
 	def get(self,slug=None):
 		self.render2('views/admin/sitemap.html')
 
 
+	@requires_admin
 	def post(self):
 		str_options= self.param('str_options').split(',')
 		for name in str_options:
@@ -349,6 +356,7 @@ class admin_import(BaseRequestHandler):
 	def __init__(self):
 		self.current='config'
 
+	@requires_admin
 	def get(self,slug=None):
 		gblog_init()
 		self.render2('views/admin/import.html',{'importitems':
@@ -394,11 +402,12 @@ class admin_setup(BaseRequestHandler):
 	def __init__(self):
 		self.current='config'
 
-	#@requires_admin
+	@requires_admin
 	def get(self,slug=None):
 		vals={'themes':ThemeIterator()}
 		self.render2('views/admin/setup.html',vals)
 
+	@requires_admin
 	def post(self):
 		old_theme=g_blog.theme_name
 		str_options= self.param('str_options').split(',')
@@ -442,7 +451,7 @@ class admin_entry(BaseRequestHandler):
 	def __init__(self):
 		self.current='write'
 
-
+	@requires_admin
 	def get(self,slug='post'):
 		action=self.param("action")
 		entry=None
@@ -463,6 +472,7 @@ class admin_entry(BaseRequestHandler):
 		vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats)}
 		self.render2('views/admin/entry.html',vals)
 
+	@requires_admin
 	def post(self,slug='post'):
 		action=self.param("action")
 		title=self.param("post_title")
@@ -516,7 +526,7 @@ class admin_entry(BaseRequestHandler):
 				newcates=[]
 				entry.allow_comment=allow_comment
 				entry.allow_trackback=allow_trackback
-
+				entry.author=self.author.dispname
 				if cats:
 
 				   for cate in cats:
@@ -545,6 +555,7 @@ class admin_entry(BaseRequestHandler):
 					entry.target=target
 					entry.external_page_address=external_page_address
 					entry.settags(tags)
+					entry.author=self.author.dispname
 					newcates=[]
 					if cats:
 
@@ -570,6 +581,7 @@ class admin_entry(BaseRequestHandler):
 
 
 class admin_entries(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug='post'):
 		try:
 			page_index=int(self.param('page'))
@@ -590,6 +602,7 @@ class admin_entries(BaseRequestHandler):
 		  }
 		)
 
+	@requires_admin
 	def post(self,slug='post'):
 		try:
 			linkcheck= self.request.get_all('checks')
@@ -609,6 +622,7 @@ class admin_entries(BaseRequestHandler):
 
 
 class admin_categories(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		try:
 			page_index=int(self.param('page'))
@@ -629,6 +643,7 @@ class admin_categories(BaseRequestHandler):
 		  }
 		)
 
+	@requires_admin
 	def post(self,slug=None):
 		try:
 			linkcheck= self.request.get_all('checks')
@@ -640,6 +655,7 @@ class admin_categories(BaseRequestHandler):
 			self.redirect('/admin/categories')
 
 class admin_comments(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		try:
 			page_index=int(self.param('page'))
@@ -666,6 +682,7 @@ class admin_comments(BaseRequestHandler):
 		  }
 		)
 
+	@requires_admin
 	def post(self,slug=None):
 		try:
 			linkcheck= self.request.get_all('checks')
@@ -677,6 +694,7 @@ class admin_comments(BaseRequestHandler):
 			self.redirect(self.request.uri)
 
 class admin_links(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		self.render2('views/admin/links.html',
 		 {
@@ -684,6 +702,7 @@ class admin_links(BaseRequestHandler):
 		  'links':Link.all().filter('linktype =','blogroll')#.order('-createdate')
 		  }
 		)
+	@requires_admin
 	def post(self):
 		linkcheck= self.request.get_all('linkcheck')
 		for link_id in linkcheck:
@@ -693,6 +712,7 @@ class admin_links(BaseRequestHandler):
 		self.redirect('/admin/links')
 
 class admin_link(BaseRequestHandler):
+	@requires_admin
 	def get(self,slug=None):
 		action=self.param("action")
 		vals={'current':'links'}
@@ -709,6 +729,7 @@ class admin_link(BaseRequestHandler):
 
 		self.render2('views/admin/link.html',vals)
 
+	@requires_admin
 	def post(self):
 		action=self.param("action")
 		name=self.param("link_name")
@@ -744,6 +765,7 @@ class admin_category(BaseRequestHandler):
 	def __init__(self):
 		self.current='categories'
 
+	@requires_admin
 	def get(self,slug=None):
 		action=self.param("action")
 		category=None
@@ -759,6 +781,7 @@ class admin_category(BaseRequestHandler):
 		vals={'action':action,'category':category}
 		self.render2('views/admin/category.html',vals)
 
+	@requires_admin
 	def post(self):
 		action=self.param("action")
 		name=self.param("name")
@@ -788,9 +811,11 @@ class admin_category(BaseRequestHandler):
 					self.render2('views/admin/category.html',vals)
 
 class admin_status(BaseRequestHandler):
+	@requires_admin
 	def get(self):
 		self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
 class admin_authors(BaseRequestHandler):
+	@requires_admin
 	def get(self):
 		try:
 			page_index=int(self.param('page'))
@@ -812,6 +837,7 @@ class admin_authors(BaseRequestHandler):
 		)
 
 
+	@requires_admin
 	def post(self,slug=None):
 		try:
 			linkcheck= self.request.get_all('checks')
@@ -825,6 +851,7 @@ class admin_author(BaseRequestHandler):
 	def __init__(self):
 		self.current='authors'
 
+	@requires_admin
 	def get(self,slug=None):
 		action=self.param("action")
 		author=None
@@ -840,6 +867,7 @@ class admin_author(BaseRequestHandler):
 		vals={'action':action,'author':author}
 		self.render2('views/admin/author.html',vals)
 
+	@requires_admin
 	def post(self):
 		action=self.param("action")
 		name=self.param("name")
@@ -871,10 +899,12 @@ class admin_plugins(BaseRequestHandler):
 	def __init__(self):
 		self.current='plugins'
 
+	@requires_admin
 	def get(self,slug=None):
 		vals={'plugins':self.blog.plugins}
 		self.render2('views/admin/plugins.html',vals)
 
+	@requires_admin
 	def post(self):
 		action=self.param("action")
 		name=self.param("plugin")
@@ -890,6 +920,7 @@ class admin_plugins_action(BaseRequestHandler):
 	def __init__(self):
 		self.current='plugins'
 
+	@requires_admin
 	def get(self,slug=None):
 		plugin=self.blog.plugins.getPluginByName(slug)
 		if not plugin :
@@ -910,6 +941,7 @@ class admin_plugins_action(BaseRequestHandler):
 
 		self.render2('views/admin/plugin_action.html',vals)
 
+	@requires_admin
 	def post(self,slug=None):
 
 		plugin=self.blog.plugins.getPluginByName(slug)
@@ -932,6 +964,7 @@ class admin_plugins_action(BaseRequestHandler):
 		self.render2('views/admin/plugin_action.html',vals)
 
 class WpHandler(BaseRequestHandler):
+	@requires_admin
 	def get(self,tags=None):
 		try:
 			all=self.param('all')
@@ -958,14 +991,19 @@ class WpHandler(BaseRequestHandler):
 		self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
 
-
-
+class admin_main(BaseRequestHandler):
+	@requires_admin
+	def get(self,slug=None):
+		if self.is_admin:
+			self.redirect('/admin/setup')
+		else:
+			self.redirect('/admin/entries/post')
 
 def main():
 	webapp.template.register_template_library('filter')
 	application = webapp.WSGIApplication(
 					[
-					('/admin/{0,1}',admin_setup),
+					('/admin/{0,1}',admin_main),
 					('/admin/setup',admin_setup),
 					('/admin/entries/(post|page)',admin_entries),
 					('/admin/links',admin_links),

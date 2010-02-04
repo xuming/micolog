@@ -15,7 +15,8 @@
 
 <!-- Dashboard Starts -->
 <div id="dashboard">
-<div style="float:left"> <a title="Are you lost?" href="/admin/">{% trans  "Micolog Dashboard" %}</a></div>
+<div style="float:left"> <a title="Are you lost?" href="/admin/">{% trans  "Micolog Dashboard" %}</a><a href="{{self.logouturl}}">[{% trans "Logout"%}]</a>
+</div>
 <div style="float:right;margin-right:8px"><a href="/admin/lang?language=zh-cn">Chinese</a>
 <a href="/admin/lang?language=en-us">English</a></div>
 <div class="clear"></div>
@@ -43,16 +44,17 @@
     <li class='page_item page-item-2 {{current|check_current:"links"}}' ><a href="/admin/links" title="Blogroll">{% trans "Links" %}</a></li>
      <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">{% trans "Categories" %}</a></li>
     <li class='page_item page-item-2 {{current|check_current:"comments"}}' ><a href="/admin/comments" title="Comments">{% trans "Comments" %}</a></li>
-
+{%if self.is_admin%}
    <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="setup">{% trans "Configuration" %}</a></li>
    <li class='page_item page-item-2 {{current|check_current:"plugins"}}'><a href="/admin/plugins" title="plugins">{% trans "Plugins" %}</a></li>
 
     <li class='page_item page-item-2 {{current|check_current:"status"}}'><a href="/admin/status" title="Cache">{% trans "Cache" %}</a></li>
+    <li class='page_item page-item-2 {{current|check_current:"authors"}}'><a href="/admin/authors" title="authors">{% trans "Authors" %}</a></li>
     {% block topmenu %}
     {% endblock %}
 	{%mf admin_topmenu%}{%endmf%}
-
-    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://xuming.net/about" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
+{%endif%}
+    <li class='page_item page-item-2 {{current|check_current:"help"}}' style="float:right;font-size:1em"><a href="http://micolog.xuming.net/{{blog.language|lower}}/main" id="dshelp" rel="facebox" title="help">{% trans "help" %}</a></li>
 
 
     <div class="clear"></div>
