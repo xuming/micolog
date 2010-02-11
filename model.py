@@ -281,7 +281,7 @@ class Link(db.Model):
 		g_blog.tigger_action("delete_link",self)
 
 class Entry(BaseModel):
-	author = db.StringProperty()
+	author = db.UserProperty()
 	published = db.BooleanProperty(default=False)
 	content = db.TextProperty(default='')
 	readtimes = db.IntegerProperty(default=0)

@@ -526,7 +526,7 @@ class admin_entry(BaseRequestHandler):
 				newcates=[]
 				entry.allow_comment=allow_comment
 				entry.allow_trackback=allow_trackback
-				entry.author=self.author.dispname
+				entry.author=self.author.user
 				if cats:
 
 				   for cate in cats:
@@ -555,7 +555,7 @@ class admin_entry(BaseRequestHandler):
 					entry.target=target
 					entry.external_page_address=external_page_address
 					entry.settags(tags)
-					entry.author=self.author.dispname
+					entry.author=self.author.user
 					newcates=[]
 					if cats:
 
@@ -880,6 +880,7 @@ class admin_author(BaseRequestHandler):
 		else:
 			if action=='add':
 			   author= User(dispname=name,email=slug	)
+			   author.user=db.users.User(slug)
 			   author.put()
 			   vals.update({'result':True,'msg':'Saved ok'})
 			   self.render2('views/admin/author.html',vals)
@@ -889,6 +890,7 @@ class admin_author(BaseRequestHandler):
 					author=User.get(key)
 					author.dispname=name
 					author.email=slug
+					author.user=db.users.User(slug)
 					author.put()
 					self.redirect('/admin/authors')
 

@@ -112,6 +112,9 @@ def metaWeblog_newPost(blogid, struct, publish):
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 
+	if struct.has_key('wp_author_id'):
+		entry.author=db.users.User(struct['wp_author_id'])
+
 	if publish:
 		entry.publish(True)
 
@@ -159,6 +162,8 @@ def metaWeblog_editPost(postid, struct, publish):
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 
+	if struct.has_key('wp_author_id'):
+		entry.author=db.users.User(struct['wp_author_id'])
 
 	entry.title = struct['title']
 	entry.content = struct['description']
@@ -235,7 +240,11 @@ def wp_newPage(blogid,struct,publish):
 		if struct.has_key('wp_page_order'):
 			entry.menu_order=int(struct['wp_page_order'])
 		if struct.has_key('wp_password'):
-		   entry.password=struct['wp_password']
+			entry.password=struct['wp_password']
+
+		if struct.has_key('wp_author_id'):
+			entry.author=db.users.User(struct['wp_author_id'])
+
 		entry.entrytype='page'
 		if publish:
 			entry.publish(True)
@@ -272,7 +281,8 @@ def wp_editPage(blogid,pageid,struct,publish):
 
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
-
+	if struct.has_key('wp_author_id'):
+		entry.author=db.users.User(struct['wp_author_id'])
 	entry.title = struct['title']
 	entry.content = struct['description']
 	if struct.has_key('mt_text_more'):
@@ -296,7 +306,7 @@ def wp_getAuthors(blogid):
 	ulist=[]
 	i=1
 	for user in User.all():
-		ulist.append({'user_id':i,'user_login':'','display_name':user.dispname})
+		ulist.append({'user_id':user.email,'user_login':'','display_name':user.dispname})
 		i=i+1
 	return ulist
 

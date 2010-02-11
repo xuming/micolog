@@ -240,6 +240,7 @@ class BaseRequestHandler(webapp.RequestHandler):
 			if not self.author:
 				self.author=User(dispname=self.login_user.nickname(),email=self.login_user.email())
 				self.author.isadmin=True
+				self.author.user=self.login_user
 				self.author.put()
 		elif self.is_login:
 			self.author=User.all().filter('email =',self.login_user.email()).get()
