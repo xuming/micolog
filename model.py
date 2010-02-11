@@ -665,10 +665,17 @@ You can see all comments on this post here:
 		g_blog.tigger_action("delete_comment",self)
 
 class Media(db.Model):
-   name =db.StringProperty()
-   mtype=db.StringProperty()
-   bits=db.BlobProperty()
-   date=db.DateTimeProperty(auto_now_add=True)
+	name =db.StringProperty()
+	mtype=db.StringProperty()
+	bits=db.BlobProperty()
+	date=db.DateTimeProperty(auto_now_add=True)
+	download=db.IntegerProperty(default=0)
+
+	@property
+	def size(self):
+		return len(self.bits)
+
+
 
 class OptionSet(db.Model):
 	name=db.StringProperty()

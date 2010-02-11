@@ -990,6 +990,59 @@ class WpHandler(BaseRequestHandler):
 		self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
 		self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
+class Upload(BaseRequestHandler):
+
+	@requires_admin
+	def post(self):
+		name = self.param('filename')
+		mtype = self.param('fileext')
+		bits = self.param('upfile')
+		Media(name = name, mtype = mtype, bits = bits).put()
+
+		self.redirect('/admin/filemanager')
+
+class UploadEx(BaseRequestHandler):
+	@requires_admin
+	def get(self):
+		extstr=self.param('ext')
+		ext=extstr.split('|')
+		self.render2('views/admin/upload.html',{'ext':extstr,'files':Media.all().filter('mtype IN',ext)})
+
+	@requires_admin
+	def post(self):
+		ufile=self.request.params['userfile']
+		#if ufile:
+		name=ufile.filename
+		mtype =os.path.splitext(name)[1][1:]
+		bits = self.param('userfile')
+		media=Media(name = name, mtype = mtype, bits = bits)
+		media.put()
+		self.write(simplejson.dumps({'name':media.name,'size':media.size,'id':str(media.key())}))
+
+class FileManager(BaseRequestHandler):
+
+	def __init__(self):
+		self.current='files'
+
+	@requires_admin
+	def get(self):
+		try:
+			page_index=int(self.param('page'))
+		except:
+			page_index=1
+		files = Media.all().order('-date')
+		files,links=Pager(query=files,items_per_page=15).fetch(page_index)
+		self.render2('views/admin/filemanager.html',{'files' : files,'pager':links})
+
+	@requires_admin
+	def post(self): # delete files
+		delids = self.request.POST.getall('del')
+		if delids:
+			for id in delids:
+				file = Media.get_by_id(int(id))
+				file.delete()
+
+		self.redirect('/admin/filemanager')
 
 class admin_main(BaseRequestHandler):
 	@requires_admin
@@ -1025,6 +1078,11 @@ def main():
 					 ('/admin/import_next',admin_import_next),
 					 ('/admin/do/(\w+)',admin_do_action),
 					 ('/admin/lang',setlanguage),
+
+					 ('/admin/upload', Upload),
+					 ('/admin/filemanager', FileManager),
+
+					 ('/admin/uploadex', UploadEx),
 
 					 ('.*',Error404),
 					 ],debug=True)

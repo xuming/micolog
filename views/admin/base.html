@@ -5,8 +5,7 @@
     <title>{% block title %} {{ blog.title }}{% endblock %}</title>
     <meta name="generator" content="Mlog" />
     <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
-     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script1 type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script1>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
 
     {% block header %}{% endblock %}
 {%mf admin_head%}{%endmf%}
@@ -44,7 +43,9 @@
     <li class='page_item page-item-2 {{current|check_current:"links"}}' ><a href="/admin/links" title="Blogroll">{% trans "Links" %}</a></li>
      <li class='page_item page-item-2 {{current|check_current:"categories"}}' ><a href="/admin/categories" title="categories">{% trans "Categories" %}</a></li>
     <li class='page_item page-item-2 {{current|check_current:"comments"}}' ><a href="/admin/comments" title="Comments">{% trans "Comments" %}</a></li>
+<li class='page_item page-item-2 {{current|check_current:"files"}}' ><a href="/admin/filemanager" title="Files">{% trans "Files" %}</a></li>
 {%if self.is_admin%}
+
    <li class='page_item page-item-2 {{current|check_current:"config"}}'><a href="/admin/setup" title="setup">{% trans "Configuration" %}</a></li>
    <li class='page_item page-item-2 {{current|check_current:"plugins"}}'><a href="/admin/plugins" title="plugins">{% trans "Plugins" %}</a></li>
 

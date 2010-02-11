@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-04 16:32+0800\n"
-"PO-Revision-Date: 2010-02-04 16:33+0800\n"
+"POT-Creation-Date: 2010-02-12 00:25+0800\n"
+"PO-Revision-Date: 2010-02-12 00:26+0800\n"
 "Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -131,15 +131,15 @@ msgstr ""
 "You can see all comments on this post here:\n"
 "%s\n"
 
-#: .\model.py:745
+#: .\model.py:752
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: .\model.py:746
+#: .\model.py:753
 msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
 msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
-#: .\model.py:749
+#: .\model.py:756
 msgid "Xuming's blog"
 msgstr "徐明的博客"
 
@@ -166,7 +166,7 @@ msgstr "添加作者"
 
 #: .\views\admin\author.html.py:28
 #: .\views\admin\category.html.py:28
-#: .\views\admin\entry.html.py:88
+#: .\views\admin\entry.html.py:103
 #: .\views\admin\link.html.py:28
 msgid "Related"
 msgstr "相关操作"
@@ -199,9 +199,20 @@ msgstr "新建"
 msgid "All Authors"
 msgstr "作者"
 
+#: .\views\admin\authors.html.py:14
+#: .\views\admin\categories.html.py:14
+#: .\views\admin\comments.html.py:26
+#: .\views\admin\filemanager.html.py:53
+#: .\views\admin\links.html.py:12
+#: .\views\admin\pages.html.py:14
+#: .\views\admin\posts.html.py:15
+msgid "Delete"
+msgstr "删除"
+
 #: .\views\admin\authors.html.py:18
 #: .\views\admin\categories.html.py:18
 #: .\views\admin\comments.html.py:30
+#: .\views\admin\filemanager.html.py:57
 #: .\views\admin\pages.html.py:18
 #: .\views\admin\posts.html.py:20
 msgid "&laquo; prev"
@@ -210,6 +221,7 @@ msgstr "&laquo; 前一页"
 #: .\views\admin\authors.html.py:22
 #: .\views\admin\categories.html.py:22
 #: .\views\admin\comments.html.py:34
+#: .\views\admin\filemanager.html.py:61
 #: .\views\admin\pages.html.py:22
 #: .\views\admin\posts.html.py:24
 msgid "next &raquo;"
@@ -218,60 +230,77 @@ msgstr "后一页 &raquo;"
 #: .\views\admin\authors.html.py:23
 #: .\views\admin\categories.html.py:24
 #: .\views\admin\comments.html.py:35
+#: .\views\admin\filemanager.html.py:62
 #: .\views\admin\pages.html.py:23
 #: .\views\admin\posts.html.py:26
 msgid "  Page %(pindex)s"
 msgstr "  第%(pindex)s页"
 
-#: .\views\admin\base.html.py:18
+#: .\views\admin\authors.html.py:34
+#: .\views\admin\categories.html.py:35
+#: .\views\admin\category.html.py:40
+#: .\views\admin\link.html.py:40
+#: .\views\admin\links.html.py:22
+msgid "Name"
+msgstr "名称"
+
+#: .\views\admin\authors.html.py:34
+msgid "IsAdmin"
+msgstr "是否管理员"
+
+#: .\views\admin\base.html.py:17
 msgid "Micolog Dashboard"
 msgstr "Micolog控制面板"
 
-#: .\views\admin\base.html.py:18
+#: .\views\admin\base.html.py:17
 msgid "Logout"
 msgstr "注销"
 
-#: .\views\admin\base.html.py:41
+#: .\views\admin\base.html.py:40
 msgid "Write"
 msgstr "写文章"
 
-#: .\views\admin\base.html.py:42
+#: .\views\admin\base.html.py:41
 msgid "Posts"
 msgstr "文章"
 
-#: .\views\admin\base.html.py:43
+#: .\views\admin\base.html.py:42
 msgid "Pages"
 msgstr "页面"
 
-#: .\views\admin\base.html.py:44
+#: .\views\admin\base.html.py:43
 msgid "Links"
 msgstr "链接"
 
-#: .\views\admin\base.html.py:45
+#: .\views\admin\base.html.py:44
 msgid "Categories"
 msgstr "目录"
 
-#: .\views\admin\base.html.py:46
+#: .\views\admin\base.html.py:45
 msgid "Comments"
 msgstr "评论"
 
-#: .\views\admin\base.html.py:48
+#: .\views\admin\base.html.py:46
+msgid "Files"
+msgstr "文件"
+
+#: .\views\admin\base.html.py:49
 msgid "Configuration"
 msgstr "设置"
 
-#: .\views\admin\base.html.py:49
+#: .\views\admin\base.html.py:50
 msgid "Plugins"
 msgstr "插件"
 
-#: .\views\admin\base.html.py:51
+#: .\views\admin\base.html.py:52
 msgid "Cache"
 msgstr "缓存"
 
-#: .\views\admin\base.html.py:52
+#: .\views\admin\base.html.py:53
 msgid "Authors"
 msgstr "作者"
 
-#: .\views\admin\base.html.py:57
+#: .\views\admin\base.html.py:58
 msgid "help"
 msgstr "帮助"
 
@@ -283,24 +312,9 @@ msgstr "管理目录"
 msgid "All Categories"
 msgstr "所有目录"
 
-#: .\views\admin\categories.html.py:14
-#: .\views\admin\comments.html.py:26
-#: .\views\admin\links.html.py:12
-#: .\views\admin\pages.html.py:14
-#: .\views\admin\posts.html.py:15
-msgid "Delete"
-msgstr "删除"
-
-#: .\views\admin\categories.html.py:35
-#: .\views\admin\category.html.py:40
-#: .\views\admin\link.html.py:40
-#: .\views\admin\links.html.py:22
-msgid "Name"
-msgstr "名称"
-
 #: .\views\admin\categories.html.py:35
 #: .\views\admin\category.html.py:47
-#: .\views\admin\entry.html.py:201
+#: .\views\admin\entry.html.py:165
 msgid "Slug"
 msgstr "名称(slug)"
 
@@ -313,7 +327,7 @@ msgid "Add category"
 msgstr "添加目录"
 
 #: .\views\admin\category.html.py:24
-#: .\views\admin\entry.html.py:78
+#: .\views\admin\entry.html.py:93
 #: .\views\admin\link.html.py:24
 msgid "Save"
 msgstr "保存"
@@ -374,94 +388,131 @@ msgstr ""
 msgid "Entry"
 msgstr "文章/页面"
 
-#: .\views\admin\entry.html.py:40
+#: .\views\admin\entry.html.py:55
 msgid "New Post"
 msgstr "新建文章"
 
-#: .\views\admin\entry.html.py:40
+#: .\views\admin\entry.html.py:55
 msgid "New Page"
 msgstr "新建页面"
 
-#: .\views\admin\entry.html.py:52
+#: .\views\admin\entry.html.py:67
 msgid "Write Post"
 msgstr "写文章"
 
-#: .\views\admin\entry.html.py:54
+#: .\views\admin\entry.html.py:69
 msgid "Write Page"
 msgstr "写页面"
 
-#: .\views\admin\entry.html.py:64
+#: .\views\admin\entry.html.py:79
 msgid "Category"
 msgstr "目录"
 
-#: .\views\admin\entry.html.py:79
+#: .\views\admin\entry.html.py:94
 #: .\views\admin\pages.html.py:42
 #: .\views\admin\posts.html.py:45
 msgid "Published"
 msgstr "发布"
 
-#: .\views\admin\entry.html.py:83
+#: .\views\admin\entry.html.py:98
 #: .\views\admin\posts.html.py:37
 msgid "allow comment"
 msgstr "允许评论"
 
-#: .\views\admin\entry.html.py:85
+#: .\views\admin\entry.html.py:100
 msgid "allow trackback"
 msgstr "允许 Trackback"
 
-#: .\views\admin\entry.html.py:91
+#: .\views\admin\entry.html.py:106
 msgid "Manage All Posts"
 msgstr "管理所有文章"
 
-#: .\views\admin\entry.html.py:92
+#: .\views\admin\entry.html.py:107
 msgid "Manage All Pages"
 msgstr "管理所有页面"
 
-#: .\views\admin\entry.html.py:103
+#: .\views\admin\entry.html.py:118
 msgid "Use as  external page"
 msgstr "用作外链接"
 
-#: .\views\admin\entry.html.py:107
+#: .\views\admin\entry.html.py:122
 #: .\views\admin\pages.html.py:34
 #: .\views\admin\posts.html.py:37
 msgid "Title"
 msgstr "标题"
 
-#: .\views\admin\entry.html.py:120
+#: .\views\admin\entry.html.py:135
 msgid "External page address"
 msgstr "外链接地址"
 
-#: .\views\admin\entry.html.py:124
+#: .\views\admin\entry.html.py:139
 msgid "Target"
 msgstr "目标"
 
-#: .\views\admin\entry.html.py:137
+#: .\views\admin\entry.html.py:150
 msgid "Post"
 msgstr "文章"
 
-#: .\views\admin\entry.html.py:139
+#: .\views\admin\entry.html.py:152
 msgid "Page"
 msgstr "页面"
 
-#: .\views\admin\entry.html.py:209
+#: .\views\admin\entry.html.py:173
 msgid "Tag"
 msgstr "标签"
 
-#: .\views\admin\entry.html.py:217
+#: .\views\admin\entry.html.py:181
 msgid "Options"
 msgstr "选项"
 
-#: .\views\admin\entry.html.py:220
+#: .\views\admin\entry.html.py:184
 msgid "Page level:"
 msgstr "页面级别:"
 
-#: .\views\admin\entry.html.py:222
+#: .\views\admin\entry.html.py:186
 msgid "Page order:"
 msgstr "页面顺序:"
 
-#: .\views\admin\entry.html.py:232
+#: .\views\admin\entry.html.py:196
 msgid "Excerpt"
 msgstr "摘要"
+
+#: .\views\admin\filemanager.html.py:31
+msgid "Upload a file"
+msgstr "上传一个文件"
+
+#: .\views\admin\filemanager.html.py:37
+msgid "Upload"
+msgstr "上传"
+
+#: .\views\admin\filemanager.html.py:46
+msgid "Manage Files"
+msgstr "管理文件"
+
+#: .\views\admin\filemanager.html.py:47
+msgid "All Files"
+msgstr "所有文件"
+
+#: .\views\admin\filemanager.html.py:72
+msgid "File Name"
+msgstr "文件名"
+
+#: .\views\admin\filemanager.html.py:73
+#: .\views\admin\upload.html.py:82
+msgid "Size"
+msgstr "大小"
+
+#: .\views\admin\filemanager.html.py:74
+msgid "Upload Date"
+msgstr "上传日期"
+
+#: .\views\admin\filemanager.html.py:76
+msgid "Url"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:77
+msgid "Download"
+msgstr "下载"
 
 #: .\views\admin\import.html.py:34
 #: .\views\admin\setup.html.py:11
@@ -818,6 +869,30 @@ msgstr "更新归档"
 #: .\views\admin\tools.html.py:120
 msgid "It will update the monthyear of entries."
 msgstr "该操作将更新归档"
+
+#: .\views\admin\upload.html.py:29
+msgid "Error: invalid file extension"
+msgstr "错误：不支持的文件格式"
+
+#: .\views\admin\upload.html.py:53
+#: .\views\admin\upload.html.py:85
+msgid "Add"
+msgstr "添加"
+
+#: .\views\admin\upload.html.py:76
+msgid "New file"
+msgstr "添加文件"
+
+#: .\views\admin\upload.html.py:82
+msgid "Filename"
+msgstr "文件名"
+
+#: .\views\admin\upload.html.py:82
+msgid "Operater"
+msgstr "操作"
+
+#~ msgid "Insert"
+#~ msgstr "插入"
 
 #, fuzzy
 #~ msgid "Web Comment"

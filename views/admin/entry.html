@@ -30,40 +30,19 @@
     });
 </script>
 {%mf editor_header%}
- <!-- tinyMCE -->
-<script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript"
-src="/static/js/editor.js"></script>
-<script type='text/javascript'>
-	wpTinyMCEConfig = {
-		defaultEditor: "tinymce"
-	};
-
+{%ifequal blog.language 'zh-cn'%}
+<script type="text/javascript" src="/xheditor/xheditor-zh-cn.js"></script>
+{%else%}
+<script type="text/javascript" src="/xheditor/xheditor-en.js"></script>
+{%endifequal%}
+<script type="text/javascript">
+$(function(){
+  $("#content").xheditor(true,{
+  upImgUrl:'!/admin/uploadex?ext=jpg|png|jpeg|gif',
+  upFlashUrl:'!/admin/uploadex?ext=swf',
+  upMediaUrl:'!/admin/uploadex?ext=wmv|avi|wma|mp3|mid'});
+});
 </script>
-
-<script language="javascript" type="text/javascript"
-src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
-<!-- /tinyMCE -->
-	<script type="text/javascript">
-
-/* <![CDATA[ */
-	quicktagsL10n = {
-		quickLinks: "(Quick Links)",
-		wordLookup: "Enter a word to look up:",
-		dictionaryLookup: "Dictionary lookup",
-		lookup: "lookup",
-		closeAllOpenTags: "Close all open tags",
-		closeTags: "close tags",
-		enterURL: "Enter the URL",
-		enterImageURL: "Enter the URL of the image",
-		enterImageDescription: "Enter a description of the image"
-	};
-/* ]]> */
-
-</script>
-
-<script src="/static/js/quicktags.js" type="text/javascript"/>
-
 {%endmf%}
 {% endblock %}
 
@@ -165,36 +144,21 @@ src="/static/js/tiny_mce_config_{{blog.language}}.js"></script>
 
 </div>
 
-
 <div class="stuffbox" id="postarea" {%if entry.is_external_page%}style="display:none"{%endif%}>
 <h3>
-<div class="title">
 {%ifequal entrytype "post"%}
       {%trans "Post"%}
         {%else%}
       {%trans "Page" %}
         {%endifequal%}
-        </div>
-{%mf admin_entry_edit%}
-<div class='editor-toolbar'>
-    <span class="alignright" id="spn_html"><a id="edButtonHTML" onclick="switchEditors.go('content');" class="">HTML</a></span>
-    <span class="alignright tg"  id="spn_visual" ><a id="edButtonPreview" class="active">Visual</a></span>
-    <div class='clear'></div>
-</div>
-<div class='clear'></div>
 </h3>
-
-<div id="quicktags" style="display: none;">
-<div id="ed_toolbar"><input type="button" value="b" onclick="edInsertTag(edCanvas, 0);" class="ed_button" accesskey="b" id="ed_strong"/><input type="button" value="i" onclick="edInsertTag(edCanvas, 1);" class="ed_button" accesskey="i" id="ed_em"/><input type="button" value="link" onclick="edInsertLink(edCanvas, 2);" class="ed_button" accesskey="a" id="ed_link"/><input type="button" value="b-quote" onclick="edInsertTag(edCanvas, 3);" class="ed_button" accesskey="q" id="ed_block"/><input type="button" value="del" onclick="edInsertTag(edCanvas, 4);" class="ed_button" accesskey="d" id="ed_del"/><input type="button" value="ins" onclick="edInsertTag(edCanvas, 5);" class="ed_button" accesskey="s" id="ed_ins"/><input type="button" value="img" onclick="edInsertImage(edCanvas);" class="ed_button" accesskey="m" id="ed_img"/><input type="button" value="ul" onclick="edInsertTag(edCanvas, 7);" class="ed_button" accesskey="u" id="ed_ul"/><input type="button" value="ol" onclick="edInsertTag(edCanvas, 8);" class="ed_button" accesskey="o" id="ed_ol"/><input type="button" value="li" onclick="edInsertTag(edCanvas, 9);" class="ed_button" accesskey="l" id="ed_li"/><input type="button" value="code" onclick="edInsertTag(edCanvas, 10);" class="ed_button" accesskey="c" id="ed_code"/><input type="button" value="more" onclick="edInsertTag(edCanvas, 11);" class="ed_button" accesskey="t" id="ed_more"/><input type="button" value="lookup" title="Dictionary lookup" onclick="edSpell(edCanvas);" class="ed_button" id="ed_spell"/><input type="button" value="close tags" title="Close all open tags" onclick="edCloseAllTags();" class="ed_button" id="ed_close"/>
-</div>
-</div>
 <div id="editorcontainer">
+{%mf admin_entry_edit%}
 
-  <textarea style="width: 695px;" cols="40" rows="15" id="content" name="content">{{entry.content|escape}}</textarea>
-</div>
-</div>
-
+  <textarea style="width: 100%;border:0px;" cols="40" rows="15" id="content" name="content">{{entry.content|escape}}</textarea>
 {%endmf%}
+</div>
+</div>
 
 <div class="clear"></div>
 <div class="stuffbox">

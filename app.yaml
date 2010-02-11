@@ -16,13 +16,10 @@ handlers:
 - url: /xheditor/.*
   script: $PYTHON_LIB/google/appengine/ext/zipserve
 
-- url: /tinymce/.*
-  script: $PYTHON_LIB/google/appengine/ext/zipserve
-
 - url: /static
   static_dir: static
 
-- url: /rpc
+- url: /rpc|/rpc/.*
   script: api_rpc.py
 
 - url: /themes/.*
@@ -36,7 +33,11 @@ handlers:
   script: admin.py
   login: required
 
-- url: /admin/{0,1}|/admin/link|/admin/category|/admin/(post|page)|/admin/lang
+- url: /admin/{0,1}
+  script: admin.py
+  login: required
+
+- url: /admin/link|/admin/category|/admin/(post|page)|/admin/lang|/admin/filemanager|/admin/upload|/admin/uploadex
   script: admin.py
   login: required
 
