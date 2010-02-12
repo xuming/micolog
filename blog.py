@@ -140,11 +140,11 @@ class entriesByCategory(BasePublicPage):
 			page_index=int (self.param('page'))
 		except:
 			page_index=1
-		slug=urllib.unquote(slug).decode('utf8')
+		slug=urldecode(slug)
 		cats=Category.all().filter('slug =',slug).fetch(1)
 		if cats:
 			entries=Entry.all().filter("published =", True).filter('categorie_keys =',cats[0].key()).order("-date")
-			entries,links=Pager(query=entries).fetch(page_index)
+			entries,links=Pager(query=entries,items_per_page=20).fetch(page_index)
 			self.render('category',{'entries':entries,'category':cats[0],'pager':links})
 		else:
 			self.error(414,slug)
@@ -181,7 +181,7 @@ class entriesByTag(BasePublicPage):
 		slug=urldecode(slug)
 
 		entries=Entry.all().filter("published =", True).filter('tags =',slug).order("-date")
-		entries,links=Pager(query=entries).fetch(page_index)
+		entries,links=Pager(query=entries,items_per_page=20).fetch(page_index)
 		self.render('tag',{'entries':entries,'tag':slug,'pager':links})
 
 
