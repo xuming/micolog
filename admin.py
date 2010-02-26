@@ -441,6 +441,7 @@ class admin_setup(BaseRequestHandler):
 
 
 		g_blog.owner=self.login_user
+		g_blog.author=self.owner.nickname()
 		g_blog.save()
 		gblog_init()
 		vals={'themes':ThemeIterator()}
@@ -527,6 +528,7 @@ class admin_entry(BaseRequestHandler):
 				entry.allow_comment=allow_comment
 				entry.allow_trackback=allow_trackback
 				entry.author=self.author.user
+				entry.author_name=self.author.dispname
 				if cats:
 
 				   for cate in cats:
@@ -556,6 +558,7 @@ class admin_entry(BaseRequestHandler):
 					entry.external_page_address=external_page_address
 					entry.settags(tags)
 					entry.author=self.author.user
+					entry.author_name=self.author.dispname
 					newcates=[]
 					if cats:
 
@@ -892,6 +895,8 @@ class admin_author(BaseRequestHandler):
 					author.email=slug
 					author.user=db.users.User(slug)
 					author.put()
+					if author.isadmin:
+						g_blog.author=name
 					self.redirect('/admin/authors')
 
 				except:

@@ -7,7 +7,7 @@
     <link href="{{ blog.baseurl }}/feed" rel="self" />
     <updated>{{last_updated}}</updated>
     <author>
-      <name>{{ blog.owner.nickname|escape }}</name>
+      <name>{{ blog.author|escape }}</name>
     </author>
 {% for entry in entries %}
   <entry>
@@ -28,7 +28,7 @@
 
       ]]></content>
       <author>
-          <name>{{entry.author|escape}}</name>
+          <name>{{entry.author_name|escape}}</name>
       </author>
       <updated>{{entry.formatted_date}}</updated>
   </entry>

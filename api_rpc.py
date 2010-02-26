@@ -113,7 +113,12 @@ def metaWeblog_newPost(blogid, struct, publish):
 		entry.password=struct['wp_password']
 
 	if struct.has_key('wp_author_id'):
-		entry.author=db.users.User(struct['wp_author_id'])
+		author=User.all().filter('email =',struct['wp_author_id']).get()
+		entry.author=author.user
+		entry.author_name=author.dispname
+	else:
+		entry.author=g_blog.owner
+		entry.author_name=g_blog.author
 
 	if publish:
 		entry.publish(True)
@@ -163,7 +168,12 @@ def metaWeblog_editPost(postid, struct, publish):
 		entry.password=struct['wp_password']
 
 	if struct.has_key('wp_author_id'):
-		entry.author=db.users.User(struct['wp_author_id'])
+		author=User.all().filter('email =',struct['wp_author_id']).get()
+		entry.author=author.user
+		entry.author_name=author.dispname
+	else:
+		entry.author=g_blog.owner
+		entry.author_name=g_blog.author
 
 	entry.title = struct['title']
 	entry.content = struct['description']
@@ -243,7 +253,12 @@ def wp_newPage(blogid,struct,publish):
 			entry.password=struct['wp_password']
 
 		if struct.has_key('wp_author_id'):
-			entry.author=db.users.User(struct['wp_author_id'])
+			author=User.all().filter('email =',struct['wp_author_id']).get()
+			entry.author=author.user
+			entry.author_name=author.dispname
+		else:
+			entry.author=g_blog.owner
+			entry.author_name=g_blog.author
 
 		entry.entrytype='page'
 		if publish:
@@ -282,7 +297,12 @@ def wp_editPage(blogid,pageid,struct,publish):
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 	if struct.has_key('wp_author_id'):
-		entry.author=db.users.User(struct['wp_author_id'])
+		author=User.all().filter('email =',struct['wp_author_id']).get()
+		entry.author=author.user
+		entry.author_name=author.dispname
+	else:
+		entry.author=g_blog.owner
+		entry.author_name=g_blog.author
 	entry.title = struct['title']
 	entry.content = struct['description']
 	if struct.has_key('mt_text_more'):
