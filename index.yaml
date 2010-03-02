@@ -120,6 +120,12 @@ indexes:
 - kind: Entry
   properties:
   - name: published
+  - name: date
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: published
   - name: tags
   - name: date
     direction: desc

@@ -227,6 +227,8 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 	def initialize(self, request, response):
 		webapp.RequestHandler.initialize(self, request, response)
+		os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
 		self.blog = g_blog
 		self.login_user = users.get_current_user()
 		self.is_login = (self.login_user != None)

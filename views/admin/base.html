@@ -6,7 +6,18 @@
     <meta name="generator" content="Mlog" />
     <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
-
+<script>
+$(function(){
+$('#more').click(
+	function(){
+		$('#lang_menu').show();
+		$('body').one('click',function(){
+								$('#lang_menu').hide();}
+								);
+		return false;
+});
+});
+</script>
     {% block header %}{% endblock %}
 {%mf admin_head%}{%endmf%}
 </head>
@@ -16,10 +27,16 @@
 <div id="dashboard">
 <div style="float:left"> <a title="Are you lost?" href="/admin/">{% trans  "Micolog Dashboard" %}</a><a href="{{self.logouturl}}">[{% trans "Logout"%}]</a>
 </div>
-<div style="float:right;margin-right:8px"><a href="/admin/lang?language=zh-cn">Chinese</a>
-<a href="/admin/lang?language=en-us">English</a></div>
+<div style="float:right;margin-right:8px;font-size:11px">
+<a href="#" id="more" >{{blog.cur_language.lang}}<small>&#9660;</small></a></div>
 <div class="clear"></div>
+<div id="lang_menu">
+{%for lang in blog.get_langs%}
+<a href="/admin/lang?language={{lang.code}}">{{lang.lang}}</a>
+{%endfor%}
 
+
+</div>
 
 </div>
 <!-- Dashboard Ends -->

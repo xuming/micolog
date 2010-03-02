@@ -1,7 +1,12 @@
 import cgi, os,sys,traceback
 import wsgiref.handlers
-import settings
-
+##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+##from django.conf import settings
+##settings._target = None
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.utils.translation import check_for_language, activate, to_locale, get_language
+from django.conf import settings
+settings._target = None
 
 from google.appengine.ext.webapp import template, \
 	WSGIApplication
@@ -34,12 +39,14 @@ class setlanguage(BaseRequestHandler):
 			next = os.environ['HTTP_REFERER']
 		if not next:
 			next = '/'
+		os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 		from django.utils.translation import check_for_language, activate, to_locale, get_language
+		from django.conf import settings
+		settings._target = None
 
 		if lang_code and check_for_language(lang_code):
 			g_blog.language=lang_code
-
-			activate(lang_code)
+			activate(g_blog.language)
 			g_blog.save()
 		self.redirect(next)
 
@@ -441,7 +448,7 @@ class admin_setup(BaseRequestHandler):
 
 
 		g_blog.owner=self.login_user
-		g_blog.author=self.owner.nickname()
+		g_blog.author=g_blog.owner.nickname()
 		g_blog.save()
 		gblog_init()
 		vals={'themes':ThemeIterator()}

@@ -82,6 +82,42 @@ class ThemeIterator:
 			return value
 			#return (str(value), unicode(value))
 
+class LangIterator:
+	def __init__(self,path='locale'):
+		self.iterating = False
+		self.path = path
+		self.list = []
+		for value in  os.listdir(self.path):
+				if os.path.isdir(os.path.join(self.path,value)):
+					if os.path.exists(os.path.join(self.path,value,'LC_MESSAGES')):
+						try:
+							lang=open(os.path.join(self.path,value,'language')).readline()
+							self.list.append({'code':value,'lang':lang})
+						except:
+							self.list.append( {'code':value,'lang':value})
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		if not self.iterating:
+			self.iterating = True
+			self.cursor = 0
+
+		if self.cursor >= len(self.list):
+			self.iterating = False
+			raise StopIteration
+		else:
+			value = self.list[self.cursor]
+			self.cursor += 1
+			return value
+
+	def getlang(self,language):
+		from django.utils.translation import  to_locale
+		for item in self.list:
+			if item['code']==language or item['code']==to_locale(language):
+				return item
+		return {'code':'en_US','lang':'English'}
 
 class BaseModel(db.Model):
 	def __init__(self, parent=None, key_name=None, _app=None, **kwds):
@@ -152,6 +188,11 @@ class Blog(db.Model):
 	allow_trackback=db.BooleanProperty(default=False)
 
 	theme=None
+	langs=None
+
+
+
+
 	def __init__(self,
 			   parent=None,
 			   key_name=None,
@@ -182,6 +223,12 @@ class Blog(db.Model):
 		self.theme= Theme(self.theme_name);
 		return self.theme
 
+	def get_langs(self):
+		self.langs=LangIterator()
+		return self.langs
+
+	def cur_language(self):
+		return self.get_langs().getlang(self.language)
 
 	@vcache("blog.hotposts")
 	def hotposts(self):
@@ -743,8 +790,8 @@ def InitBlogData():
 	lang="zh-cn"
 	if os.environ.has_key('HTTP_ACCEPT_LANGUAGE'):
 		lang=os.environ['HTTP_ACCEPT_LANGUAGE'].split(',')[0]
-	g_blog.language=lang
-	from django.utils.translation import  activate
+	from django.utils.translation import  activate,to_locale
+	g_blog.language=to_locale(lang)
 	from django.conf import settings
 	settings._target = None
 	activate(g_blog.language)

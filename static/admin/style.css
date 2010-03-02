@@ -1104,3 +1104,27 @@ padding : 5px 0px;}
 #pcontent{padding:5px 10px}
 
 #pcontent h3{margin-top:0px;}
+
+#lang_menu{
+border-color:#333333 #3366CC #3366CC #A2BAE7;
+border-style:solid;
+border-width:1px;
+z-index:1001;
+background:#FFFFFF none repeat scroll 0 0;
+left:0;
+position:absolute;
+text-align:left;
+left:auto;
+right:10px;
+top:24px;
+display:none;
+}
+#lang_menu a{display:block;
+padding:0.2em 0.5em;
+text-decoration:none;
+color:#0000CC !important;
+background:#E4F2FD;
+font-size:11px;
+}
+#lang_menu a:hover{background:#333333 none repeat scroll 0 0;
+color:#FFFFFF !important;}
