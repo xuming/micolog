@@ -169,7 +169,7 @@ class Blog(db.Model):
 	#comment check type 0-No 1-算术 2-验证码
 	comment_check_type=db.IntegerProperty(default=1)
 
-	blognotice=db.StringProperty(default='',multiline=True)
+	blognotice=db.TextProperty(default='')
 
 	domain=db.StringProperty()
 	show_excerpt=db.BooleanProperty(default=True)
@@ -189,6 +189,7 @@ class Blog(db.Model):
 
 	theme=None
 	langs=None
+	application=None
 
 
 
@@ -200,7 +201,7 @@ class Blog(db.Model):
 			   _from_entity=False,
 			   **kwds):
 		from micolog_plugin import Plugins
-		self.plugins=Plugins()
+		self.plugins=Plugins(self)
 		db.Model.__init__(self,parent,key_name,_app,_from_entity,**kwds)
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
@@ -211,6 +212,9 @@ class Blog(db.Model):
 
 	def tigger_urlmap(self,url,*arg1,**arg2):
 		return self.plugins.tigger_urlmap(url,blog=self,*arg1,**arg2)
+
+	def get_ziplist(self):
+		return self.plugins.get_ziplist();
 
 	def save(self):
 		self.put()

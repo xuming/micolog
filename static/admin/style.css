@@ -942,141 +942,141 @@ background-color:#cee1ef;
 
 
 /* TinyMCE */
-.wp_themeSkin *,
-.wp_themeSkin a:hover,
-.wp_themeSkin a:link,
-.wp_themeSkin a:visited,
-.wp_themeSkin a:active {
+.mceEditor *,
+.mceEditor a:hover,
+.mceEditor a:link,
+.mceEditor a:visited,
+.mceEditor a:active {
 	 color: #000;
 }
 
 /* Containers */
-.wp_themeSkin table {
+.mceEditor table {
 	background: #cee1ef;
 }
 
-.wp_themeSkin iframe {
+.mceEditor iframe {
 	background: #fff;
 }
 
 /* Layout */
-.wp_themeSkin .mceStatusbar {
+.mceEditor .mceStatusbar {
 	 color:#000;
 	 background-color: #eaf3fa;
 }
 
 /* Button */
-.wp_themeSkin .mceButton {
+.mceEditor .mceButton {
 	background-color: #e9e8e8;
 	border-color: #abc0fb;
 }
 
-.wp_themeSkin a.mceButtonEnabled:hover,
-.wp_themeSkin a.mceButtonActive,
-.wp_themeSkin a.mceButtonSelected {
+.mceEditor a.mceButtonEnabled:hover,
+.mceEditor a.mceButtonActive,
+.mceEditor a.mceButtonSelected {
 	background-color: #d6d8da;
 	border-color: #7789ba !important;
 }
 
-.wp_themeSkin .mceButtonDisabled {
+.mceEditor .mceButtonDisabled {
 	border-color: #bdd !important;
 }
 
 /* ListBox */
-.wp_themeSkin .mceListBox .mceText,
-.wp_themeSkin .mceListBox .mceOpen  {
+.mceEditor .mceListBox .mceText,
+.mceEditor .mceListBox .mceOpen  {
 	border-color: #abc0fb;
 	background-color: #e9e8e8;
 }
 
-.wp_themeSkin table.mceListBoxEnabled:hover .mceOpen,
-.wp_themeSkin .mceListBoxHover .mceOpen,
-.wp_themeSkin .mceListBoxSelected .mceOpen,
-.wp_themeSkin .mceListBoxSelected .mceText {
+.mceEditor table.mceListBoxEnabled:hover .mceOpen,
+.mceEditor .mceListBoxHover .mceOpen,
+.mceEditor .mceListBoxSelected .mceOpen,
+.mceEditor .mceListBoxSelected .mceText {
 	border-color: #7789ba !important;
 	background-color: #d6d8da;
 }
 
-.wp_themeSkin table.mceListBoxEnabled:hover .mceText,
-.wp_themeSkin .mceListBoxHover .mceText {
+.mceEditor table.mceListBoxEnabled:hover .mceText,
+.mceEditor .mceListBoxHover .mceText {
 	border-color: #7789ba !important;
 }
 
-.wp_themeSkin select.mceListBox {
+.mceEditor select.mceListBox {
 	border-color: #b3c7e1;
 	background-color: #fff;
 }
 
 /* SplitButton */
-.wp_themeSkin .mceSplitButton a.mceAction,
-.wp_themeSkin .mceSplitButton a.mceOpen {
+.mceEditor .mceSplitButton a.mceAction,
+.mceEditor .mceSplitButton a.mceOpen {
 	background-color: #e9e8e8;
 	border-color: #abc0fb;
 }
 
-.wp_themeSkin .mceSplitButton a.mceOpen:hover,
-.wp_themeSkin .mceSplitButtonSelected a.mceOpen,
-.wp_themeSkin table.mceSplitButtonEnabled:hover a.mceAction,
-.wp_themeSkin .mceSplitButton a.mceAction:hover {
+.mceEditor .mceSplitButton a.mceOpen:hover,
+.mceEditor .mceSplitButtonSelected a.mceOpen,
+.mceEditor table.mceSplitButtonEnabled:hover a.mceAction,
+.mceEditor .mceSplitButton a.mceAction:hover {
 	background-color: #d6d8da;
 	border-color: #7789ba !important;
 }
 
-.wp_themeSkin .mceSplitButtonActive {
+.mceEditor .mceSplitButtonActive {
 	background-color: #d6d8da;
 }
 
 /* ColorSplitButton */
-.wp_themeSkin div.mceColorSplitMenu table {
+div.mceColorSplitMenu table {
 	background-color: #ebeaeb;
 	border-color: #808080;
 }
 
-.wp_themeSkin .mceColorSplitMenu a {
+.mceColorSplitMenu a {
 	border-color: #808080;
 }
 
-.wp_themeSkin .mceColorSplitMenu a.mceMoreColors {
+.mceColorSplitMenu a.mceMoreColors {
 	border-color: #fff;
 }
 
-.wp_themeSkin .mceColorSplitMenu a.mceMoreColors:hover {
+.mceColorSplitMenu a.mceMoreColors:hover {
 	border-color: #0A246A;
 	background-color: #B6BDD2;
 }
 
-.wp_themeSkin a.mceMoreColors:hover {
+a.mceMoreColors:hover {
 	border-color: #0A246A;
 }
 
 /* Menu */
-.wp_themeSkin .mceMenu {
+.mceListBoxMenu .mceMenu {
 	border-color: #ddd;
 }
 
-.wp_themeSkin .mceMenu table {
+.mceListBoxMenu .mceMenu table {
 	background-color: #ebeaeb;
 }
 
-.wp_themeSkin .mceMenu .mceText {
+.mceListBoxMenu .mceMenu .mceText {
 	color: #000;
 }
 
-.wp_themeSkin .mceMenu .mceMenuItemEnabled a:hover,
-.wp_themeSkin .mceMenu .mceMenuItemActive {
+.mceListBoxMenu .mceMenu .mceMenuItemEnabled a:hover,
+.mceListBoxMenu .mceMenu .mceMenuItemActive {
 	background-color: #CEE1EF;
 }
-.wp_themeSkin td.mceMenuItemSeparator {
+.mceListBoxMenu td.mceMenuItemSeparator {
 	background-color: #aaa;
 }
-.wp_themeSkin .mceMenuItemTitle a {
+.mceListBoxMenu .mceMenuItemTitle a {
 	background-color: #ccc;
 	border-bottom-color: #aaa;
 }
-.wp_themeSkin .mceMenuItemTitle span.mceText {
+.mceListBoxMenu .mceMenuItemTitle span.mceText {
 	color: #000;
 }
-.wp_themeSkin .mceMenuItemDisabled .mceText {
+.mceListBoxMenu .mceMenuItemDisabled .mceText {
 	color: #888;
 }
 

@@ -5,8 +5,11 @@
     <title>{% block title %} {{ blog.title }}{% endblock %}</title>
     <meta name="generator" content="Mlog" />
     <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
+     <script type="text/javascript" src="/static/js/utils.js"></script>
      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
 <script>
+var userSettings = {'url':'/','uid':'{{blog.author}}','time':'{% now "r" %}'};
+
 $(function(){
 $('#more').click(
 	function(){

@@ -1,6 +1,7 @@
 {% load i18n %}
-<script>
-$(document).ready(function() {
+
+<script type="text/javascript">
+$(function() {
     get_next();
 });
 
@@ -10,8 +11,6 @@ function get_next()
 }
  function stop()
  {
-
-
     $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Stop importing now...</h3>' });
  	$.getJSON("/admin/do/stop_import", function(json){
  		   $.unblockUI();
@@ -44,7 +43,6 @@ function next_result(json)
 
 
 </script>
-
 <h3>Wordpress Import</h3>
 
 <div id="wp_import" style="display:none">

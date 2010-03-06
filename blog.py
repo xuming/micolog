@@ -32,6 +32,7 @@ from base import *
 ##from django.conf import settings
 ##settings._target = None
 ##activate(g_blog.language)
+from google.appengine.ext import zipserve
 
 
 def doRequestHandle(old_handler,new_handler,**args):
@@ -676,28 +677,37 @@ class Other(BaseRequestHandler):
 		else:
 			self.error(404)
 
+def getZipHandler(**args):
+	return ('/xheditor/(.*)',zipserve.make_zip_handler('''D:\\work\\micolog\\plugins\\xheditor\\xheditor.zip'''))
+
 def main():
 	webapp.template.register_template_library('filter')
-	application = webapp.WSGIApplication(
-					[('/media/([^/]*)/{0,1}.*',getMedia),
-					('/checkimg/', CheckImg),
-					('/checkcode/', CheckCode),
-					('/skin',ChangeTheme),
-					('/feed', FeedHandler),
-					('/feed/comments',CommentsFeedHandler),
-					('/sitemap', SitemapHandler),
-					('/post_comment',Post_comment),
-					('/page/(?P<page>\d+)', MainPage),
-					('/category/(.*)',entriesByCategory),
-					('/(\d{4})/(\d{2})',archive_by_month),
-					('/tag/(.*)',entriesByTag),
-					#('/\?p=(?P<postid>\d+)',SinglePost),
-					('/', MainPage),
-					('/do/(\w+)', do_action),
-					('/e/(.*)',Other),
-					('/([\\w\\-\\./%]+)', SinglePost),
-					('.*',Error404),
-					],debug=True)
+	urls=	[('/media/([^/]*)/{0,1}.*',getMedia),
+			('/checkimg/', CheckImg),
+			('/checkcode/', CheckCode),
+			('/skin',ChangeTheme),
+			('/feed', FeedHandler),
+			('/feed/comments',CommentsFeedHandler),
+			('/sitemap', SitemapHandler),
+			('/post_comment',Post_comment),
+			('/page/(?P<page>\d+)', MainPage),
+			('/category/(.*)',entriesByCategory),
+			('/(\d{4})/(\d{2})',archive_by_month),
+			('/tag/(.*)',entriesByTag),
+			#('/\?p=(?P<postid>\d+)',SinglePost),
+			('/', MainPage),
+			('/do/(\w+)', do_action),
+			('/e/(.*)',Other),
+			('/([\\w\\-\\./%]+)', SinglePost),
+			('.*',Error404),
+			]
+	application = webapp.WSGIApplication(urls,debug=True)
+	g_blog.application=application
+	g_blog.plugins.register_ziplist(application)
+	for p in application._pattern_map:
+		logging.info(p)
+	#for p in application._url_mapping:
+	#	logging.info( p[0].pattern )
 	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
