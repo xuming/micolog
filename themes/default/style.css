@@ -91,9 +91,7 @@ img.centered a:link, img.alignright a:link, img.alignleft a:link { border:none;}
 html>body .box ul { margin-left: 0px; padding: 0 0 0 30px; list-style: none; padding-left: 10px; text-indent: -10px; }
 html>body .box li { margin: 7px 0 8px 10px; }
 .box ul li:before{ content: "\00BB \0020"; }
-code { font: 1.1em ‘Courier New? Courier, Fixed; display:block; padding:5px 5px 0 5px; border:1px solid #dadada; background:#fff; margin-bottom:-5px; }
-p code { padding:20px;}
-blockquote { font: 1.1em ‘Courier New? Courier, Fixed; display:block; padding:5px 5px 0 5px; border:1px solid #dadada; margin-bottom:10px; background:#f8f8f4;}
+blockquote { font: 1.1em Courier New, Courier, Fixed; display:block; padding:5px 5px 0 5px; border:1px solid #dadada; margin-bottom:10px; background:#f8f8f4;}
 acronym, abbr, span.caps { font-size: 0.9em; letter-spacing: .07em; }
 .box .smallattachment { text-align: center; float: left; width: 128px; margin: 5px 5px 5px 0px; }
 .box .attachment { text-align: center; margin: 5px 0px;}

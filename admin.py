@@ -1020,7 +1020,10 @@ class UploadEx(BaseRequestHandler):
 	def get(self):
 		extstr=self.param('ext')
 		ext=extstr.split('|')
-		self.render2('views/admin/upload.html',{'ext':extstr,'files':Media.all().filter('mtype IN',ext)})
+		files=Media.all()
+		if extstr!='*':
+			files=files.filter('mtype IN',ext)
+		self.render2('views/admin/upload.html',{'ext':extstr,'files':files})
 
 	@requires_admin
 	def post(self):

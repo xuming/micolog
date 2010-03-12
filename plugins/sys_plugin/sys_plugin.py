@@ -20,10 +20,12 @@ class sys_plugin(Plugin):
 
 
 	def head(self,content,blog=None,*arg1,**arg2):
-	    return content+'<meta name="generator" content="Micolog %s" />'%blog.version
+		content=content+'<meta name="generator" content="Micolog %s" />'%blog.version
+		return content
 
 	def footer(self,content,blog=None,*arg1,**arg2):
-	    return content+'<!--Powered by micolog %s-->'%blog.version
+
+		return content+'<!--Powered by micolog %s-->'%blog.version
 
 	def setup(self,page=None,*arg1,**arg2):
 		if not page.is_login:
