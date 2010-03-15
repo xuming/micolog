@@ -212,7 +212,6 @@ class Plugins:
 
 
 	def tigger_filter(self,name,content,*arg1,**arg2):
-		logging.info(name)
 		for func in self.get_filter_plugins(name):
 			content=func(content,*arg1,**arg2)
 		return content
@@ -270,7 +269,6 @@ class Plugin:
 
 	def register_urlzip(self,name,zipfile):
 		zipfile=os.path.join(self.dir,zipfile)
-		logging.info('zipfile:'+zipfile)
 		self._ziplist[name]=zipserve.make_zip_handler(zipfile)
 
 

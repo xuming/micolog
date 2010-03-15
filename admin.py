@@ -157,7 +157,6 @@ class admin_do_action(BaseRequestHandler):
 			if entry.tags:
 				for t in entry.tags:
 					try:
-						logging.info('sss:'+t)
 						Tag.add(t)
 					except:
 						traceback.print_exc()
@@ -226,7 +225,6 @@ class admin_import_next(BaseRequestHandler):
 						if import_data[0]=='cat':
 
 							_cat=import_data[1]
-							logging.info("\n1\n%s",_cat)
 							nicename=_cat['slug']
 							cat=Category.get_by_key_name('cat_'+nicename)
 							if not cat:

@@ -280,7 +280,6 @@ class SinglePost(BasePublicPage):
 			return
 		#check code ,rejest spam
 		entry=entries[0]
-		logging.info(self.request.path+" "+entry.trackbackurl)
 		#key=self.param("code")
 		#if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
 		import cgi
@@ -515,7 +514,6 @@ class Post_comment(BaseRequestHandler):
 
 			info_str='#@#'.join([urlencode(name),urlencode(email),urlencode(url)])
 
-			logging.info("info:"+info_str)
 			 #info_str='#@#'.join([name,email,url.encode('utf8')])
 			cookiestr='comment_user=%s;expires=%s;domain=%s;path=/'%( info_str,
 					   (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
@@ -536,7 +534,6 @@ class Post_comment(BaseRequestHandler):
 				comment.notify()
 				comment.entry.removecache()
 				memcache.delete("/feed/comments")
-				logging.info("cookie:"+str(self.request.cookies))
 			except:
 				if useajax:
 					self.write(simplejson.dumps((False,-102,_('Comment not allowed.'))))
@@ -634,7 +631,6 @@ class getMedia(webapp.RequestHandler):
 			self.response.headers['Content-Type'] = str(media.mtype)
 			self.response.out.write(media.bits)
 			a=self.request.get('a')
-			logging.info('a=%s'%a)
 			if a and a.lower()=='download':
 				media.download+=1
 				media.put()
@@ -705,10 +701,6 @@ def main():
 	application = webapp.WSGIApplication(urls,debug=True)
 	g_blog.application=application
 	g_blog.plugins.register_ziplist(application)
-	for p in application._pattern_map:
-		logging.info(p)
-	#for p in application._url_mapping:
-	#	logging.info( p[0].pattern )
 	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
