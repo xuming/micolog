@@ -251,7 +251,8 @@ def wp_newCategory(blogid,struct):
 	if category and len(category):
 		return category[0].slug
 	else:
-		category=Category(key_name=urlencode(name), name=name,slug=urlencode(name))
+		#category=Category(key_name=urlencode(name), name=name,slug=urlencode(name))
+		category=Category(key_name=name, name=name,slug=name)
 		category.put()
 		return category.slug
 

@@ -138,10 +138,11 @@ class entriesByCategory(BasePublicPage):
 			 self.error(404)
 			 return
 		try:
-			page_index=int (self.param('page'))
+			page_index=int(self.param('page'))
 		except:
 			page_index=1
 		slug=urldecode(slug)
+
 		cats=Category.all().filter('slug =',slug).fetch(1)
 		if cats:
 			entries=Entry.all().filter("published =", True).filter('categorie_keys =',cats[0].key()).order("-date")
