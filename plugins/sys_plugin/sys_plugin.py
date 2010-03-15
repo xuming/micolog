@@ -9,8 +9,8 @@ class sys_plugin(Plugin):
 		self.authoruri="http://xuming.net"
 		self.uri="http://xuming.net"
 		self.description="SysPlugin."
-		self.name="sys plugin"
-		self.version="0.7"
+		self.name="sys plugin demo"
+		self.version="0.1"
 		self.blocklist=OptionSet.getValue("sys_plugin_blocklist",default="")
 		self.register_filter('head',self.head)
 		self.register_filter('footer',self.footer)

@@ -33,9 +33,12 @@ def checkauth(pos=1):
 
 def format_date(d):
 	if not d: return None
-	return xmlrpclib.DateTime(d.isoformat())
+	#return xmlrpclib.DateTime(d.isoformat())
+    	return xmlrpclib.DateTime(d)
 
 def entry_struct(entry):
+	if not entry:
+		 raise Fault(404, "Post does not exist")
 	categories=[]
 	if entry.categorie_keys:
 		categories =[cate.name for cate in  entry.categories]
@@ -52,10 +55,10 @@ def entry_struct(entry):
 		'mt_keywords':','.join(entry.tags),
 		'wp_slug':entry.slug,
 		'wp_page_order':entry.menu_order,
-		# 'mt_excerpt': '',
-		# 'mt_text_more': '',
-		# 'mt_allow_comments': 1,
-		# 'mt_allow_pings': 1}
+		'mt_excerpt': '',
+		'mt_text_more': '',
+		'mt_allow_comments': entry.allow_comment and 1 or 0,
+		'mt_allow_pings': entry.allow_trackback and 1 or 0
 		}
 	if entry.date:
 		struct['dateCreated'] = format_date(entry.date)
@@ -73,7 +76,21 @@ class Logger(db.Model):
 
 @checkauth()
 def blogger_getUsersBlogs(discard):
-	return [{'url' : g_blog.baseurl, 'blogid' : '001', 'blogName' : g_blog.title}]
+	return [{'url' : g_blog.baseurl, 'blogid' : '001','isAdmin':True, 'blogName' : g_blog.title}]
+
+@checkauth(pos=2)
+def blogger_deletePost(appkey, postid, publish=False):
+	post=Entry.get_by_id(int(postid))
+	post.delete()
+	return True
+
+@checkauth()
+def blogger_getUserInfo(appkey):
+	for user in User.all():
+		if user.isadmin:
+			return {'email':user.email,'firstname':'','nickname':user.dispname,'userid':user.key().id(),
+		   'url':'','lastname':''}
+	return None
 
 #-------------------------------------------------------------------------------
 # metaWeblog
@@ -134,8 +151,15 @@ def metaWeblog_newPost(blogid, struct, publish):
 @checkauth()
 def metaWeblog_newMediaObject(postid,struct):
 	name=struct['name']
-	mtype=struct['type']
-	#logging.info( struct['bits'])
+
+	if struct.has_key('type'):
+		mtype=struct['type']
+	else:
+		st=name.split('.')
+		if len(st)>1:
+			mtype=st[-1]
+		else:
+			mtype=None
 	bits=db.Blob(str(struct['bits']))
 	media=Media(name=name,mtype=mtype,bits=bits)
 	media.put()
@@ -214,11 +238,7 @@ def metaWeblog_getRecentPosts(blogid, num):
 	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
 	return [entry_struct(entry) for entry in entries]
 
-@checkauth(pos=2)
-def blogger_deletePost(appkey, postid, publish):
-	post=Entry.get_by_id(int(postid))
-	post.delete()
-	return True
+
 
 #-------------------------------------------------------------------------------
 #  WordPress API
@@ -335,22 +355,58 @@ def wp_getPageList(blogid):
 	return []
 
 @checkauth()
-def mt_getPostCategories(blogid):
-	  post=Entry.get_by_id(int(blogid))
+def mt_getPostCategories(postid):
+	  post=Entry.get_by_id(int(postid))
 	  categories=post.categorie_keys
 	  cates=[]
-	  for cate in categories:
-			cates.append({  'categoryId' : cate.id_or_name(),
+	  for key in categories:
+			cate=Category(key)
+			cates.append({'categoryId' : key.id(),
 						'parentId':0,
-						'description':cate.name(),
-						'categoryName':cate.name(),
+						'description':cate.name,
+						'categoryName':cate.name,
 						'htmlUrl':'',
-						'rssUrl':''
+						'rssUrl':'',
+						'isPrimary':True
 						})
 	  return cates
 
-def mt_setPostCategories(*arg):
-	return True
+@checkauth()
+def mt_getCategoryList(blogid):
+	  categories=Category.all()
+	  cates=[]
+	  for cate in categories:
+			cates.append({  'categoryId' : cate.key().id(),
+						'categoryName':cate.name
+						})
+	  return cates
+
+@checkauth()
+def mt_setPostCategories(postid,cates):
+	try:
+		entry=Entry.get_by_id(int(postid))
+		newcates=[]
+
+		for cate in cates:
+			if cate.has_key('categoryId'):
+				c=Category.get_by_id(cate['categoryId'])
+		  		if c:
+					newcates.append(c.key())
+		entry.categorie_keys=newcates
+		entry.put()
+		return True
+	except:
+		return False
+
+@checkauth()
+def mt_publishPost(postid):
+	try:
+		entry=Entry.get_by_id(int(postid))
+		if not entry.published:
+			entry.publish()
+		return True
+	except:
+		return False
 
 #------------------------------------------------------------------------------
 #pingback
@@ -465,6 +521,7 @@ class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
 dispatcher = PlogXMLRPCDispatcher({
 	'blogger.getUsersBlogs' : blogger_getUsersBlogs,
 	'blogger.deletePost' : blogger_deletePost,
+	'blogger.getUserInfo': blogger_getUserInfo,
 
 	'metaWeblog.newPost' : metaWeblog_newPost,
 	'metaWeblog.editPost' : metaWeblog_editPost,
@@ -485,6 +542,8 @@ dispatcher = PlogXMLRPCDispatcher({
 
 	'mt.setPostCategories':mt_setPostCategories,
 	'mt.getPostCategories':mt_getPostCategories,
+	'mt.getCategoryList':mt_getCategoryList,
+	'mt.publishPost':mt_publishPost,
 
 	##pingback
 	'pingback.ping':pingback_ping,

@@ -339,7 +339,7 @@ class Entry(BaseModel):
 	readtimes = db.IntegerProperty(default=0)
 	title = db.StringProperty(multiline=False,default='')
 	date = db.DateTimeProperty(auto_now_add=True)
-	tags = db.StringListProperty()#old version used
+	tags = db.StringListProperty()
 	categorie_keys=db.ListProperty(db.Key)
 	slug = db.StringProperty(multiline=False,default='')
 	link= db.StringProperty(multiline=False,default='')

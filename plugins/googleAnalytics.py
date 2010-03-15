@@ -8,7 +8,7 @@ class googleAnalytics(Plugin):
 		self.uri="http://xuming.net"
 		self.description="Plugin for put google Analytics into micolog."
 		self.name="google Analytics"
-		self.version="0.5"
+		self.version="0.1"
 		self.register_filter('footer',self.filter)
 
 	def filter(self,content,*arg1,**arg2):
