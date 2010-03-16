@@ -228,7 +228,7 @@ class admin_import_next(BaseRequestHandler):
 							nicename=_cat['slug']
 							cat=Category.get_by_key_name('cat_'+nicename)
 							if not cat:
-								cat=Category(key_name='cat_'+nicename)
+								cat=Category()
 							cat.name=_cat['name']
 							cat.slug=nicename
 							cat.put()

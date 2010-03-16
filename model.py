@@ -263,8 +263,20 @@ class Category(db.Model):
 		g_blog.tigger_action("save_category",self)
 
 	def delete(self):
+		for entry in Entry.all().filter('categorie_keys =',self):
+			entry.categorie_keys.remove(self.key())
+			entry.put()
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_category",self)
+
+	def get_by_key_name(self,name):
+		cate=db.Model.get_by_key_name(self,name)
+		if not cate:
+			cate= Category.all().filter('slug =',name).get()
+		return cate
+
+
+
 
 
 
