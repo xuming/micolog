@@ -268,7 +268,7 @@ class admin_import_next(BaseRequestHandler):
 				##				for tag in _entry['tags']:
 				##					entry.tags.append(tag)
 							if _entry['published']:
-								entry.publish(True)
+								entry.save(True)
 							else:
 								entry.save()
 							for com in _entry['comments']:
@@ -486,7 +486,7 @@ class admin_entry(BaseRequestHandler):
 		tags=self.param("tags")
 		cats=self.request.get_all('cats')
 		key=self.param('key')
-		published=self.param('publish')
+		published=self.parambool('publish')
 		allow_comment=self.parambool('allow_comment')
 		allow_trackback=self.parambool('allow_trackback')
 		entry_slug=self.param('slug')
@@ -541,12 +541,8 @@ class admin_entry(BaseRequestHandler):
 						if c:
 							newcates.append(c[0].key())
 				entry.categorie_keys=newcates;
-				if published:
-					entry.publish()
-					entry.update_archive()
-				else:
-					entry.published=False
-					entry.save()
+
+				entry.save(published)
 				vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
 				self.render2('views/admin/entry.html',vals)
 			elif action=='edit':
@@ -575,11 +571,8 @@ class admin_entry(BaseRequestHandler):
 					entry.allow_comment=allow_comment
 					entry.allow_trackback=allow_trackback
 
-					if published:
-						entry.publish()
-					else:
-						entry.published=False
-						entry.save()
+					entry.save(published)
+
 					vals.update({'result':True,'msg':'Saved ok','entry':entry})
 					self.render2('views/admin/entry.html',vals)
 

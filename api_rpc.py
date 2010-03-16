@@ -138,7 +138,7 @@ def metaWeblog_newPost(blogid, struct, publish):
 		entry.author_name=g_blog.author
 
 	if publish:
-		entry.publish(True)
+		entry.save(True)
 
 		if struct.has_key('mt_tb_ping_urls'):
 			for url in struct['mt_tb_ping_urls']:
@@ -207,7 +207,7 @@ def metaWeblog_editPost(postid, struct, publish):
 			entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
 	entry.categorie_keys=newcates
 	if publish:
-		entry.publish(True)
+		entry.save(True)
 	else:
 		entry.save()
 
@@ -283,7 +283,7 @@ def wp_newPage(blogid,struct,publish):
 
 		entry.entrytype='page'
 		if publish:
-			entry.publish(True)
+			entry.save(True)
 		else:
 			entry.save()
 
@@ -328,10 +328,7 @@ def wp_editPage(blogid,pageid,struct,publish):
 	entry.content = struct['description']
 	if struct.has_key('mt_text_more'):
 		entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
-	if publish:
-		entry.publish(True)
-	else:
-		entry.save()
+	entry.save(True)
 
 	return True
 
@@ -403,8 +400,7 @@ def mt_setPostCategories(postid,cates):
 def mt_publishPost(postid):
 	try:
 		entry=Entry.get_by_id(int(postid))
-		if not entry.published:
-			entry.publish()
+		entry.save(True)
 		return True
 	except:
 		return False

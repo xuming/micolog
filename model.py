@@ -476,7 +476,7 @@ class Entry(BaseModel):
 			comment.delete()
 		self.commentcount = 0
 
-	def update_archive(self):
+	def update_archive(self,cnt=1):
 		"""Checks to see if there is a month-year entry for the
 		month of current blog, if not creates it and increments count"""
 		my = self.date.strftime('%B %Y') # September-2008
@@ -490,29 +490,23 @@ class Entry(BaseModel):
 				archive.put()
 			else:
 				# ratchet up the count
-				archive[0].entrycount += 1
+				archive[0].entrycount += cnt
 				archive[0].put()
+		g_blog.entrycount+=cnt
+		g_blog.put()
 
 
-	def save(self):
+	def save(self,is_publish=False):
 		"""
 		Use this instead of self.put(), as we do some other work here
+		@is_pub:Check if need publish id
 		"""
-		g_blog.tigger_action("pre_save_post",self)
-
+		g_blog.tigger_action("pre_save_post",self,is_publish)
 		my = self.date.strftime('%B %Y') # September 2008
 		self.monthyear = my
+		old_publish=self.published
 
-		self.put()
-		g_blog.tigger_action("save_post",self)
-		return
-
-	def publish(self,newval=True):
-		g_blog.tigger_action("pre_publish_post",self)
-		if newval:
-			if not self.is_saved():
-				self.save()
-
+		if is_publish:
 			if not self.is_wp:
 				self.post_id=self.key().id()
 
@@ -540,24 +534,81 @@ class Entry(BaseModel):
 				else:
 					self.link=g_blog.default_link_format%vals
 
+		self.published=is_publish
+		self.put()
 
+		if is_publish:
+			if g_blog.sitemap_ping:
+				Sitemap_NotifySearch()
 
-			if not self.published:
-				 g_blog.entrycount+=1
-			self.published=True
+		if old_publish and not is_publish:
+			self.update_archive(-1)
+		if not old_publish and is_publish:
+			self.update_archive(1)
 
-			g_blog.save()
-			self.save()
-		else:
-			self.published=false
-			if self.published:
-				g_blog.entrycount-=1
-			g_blog.save()
-			self.save()
 		self.removecache()
-		if g_blog.sitemap_ping:
-			Sitemap_NotifySearch()
-		g_blog.tigger_action("publish_post",self)
+
+		self.put()
+		g_blog.tigger_action("save_post",self,is_publish)
+
+
+##	def publish(self,newval=True):
+##		g_blog.tigger_action("pre_publish_post",self)
+##		update_ar=0
+##		if newval:
+##			if not self.is_saved():
+##				self.save()
+##
+##			if not self.is_wp:
+##				self.post_id=self.key().id()
+##
+##			#fix for old version
+##			if not self.postname:
+##				self.setpostname(self.slug)
+##
+##
+##			vals={'year':self.date.year,'month':str(self.date.month).zfill(2),'day':self.date.day,
+##				'postname':self.postname,'post_id':self.post_id}
+##
+##
+##			if self.entrytype=='page':
+##				if self.slug:
+##					self.link=self.postname
+##				else:
+##					#use external page address as link
+##					if self.is_external_page:
+##					   self.link=self.external_page_address
+##					else:
+##					   self.link=g_blog.default_link_format%vals
+##			else:
+##				if g_blog.link_format and self.postname:
+##					self.link=g_blog.link_format.strip()%vals
+##				else:
+##					self.link=g_blog.default_link_format%vals
+##
+##
+##
+##			if not self.published:
+##				 g_blog.entrycount+=1
+##				 update_ar=1
+##			self.published=True
+##			g_blog.save()
+##			self.save()
+##		else:
+##			self.published=false
+##			if self.published:
+##				g_blog.entrycount-=1
+##				update_ar=-1
+##
+##			g_blog.save()
+##			self.save()
+##
+##		if  update_ar!=0:
+##			self.update_archive(update_ar)
+##		self.removecache()
+##		if g_blog.sitemap_ping:
+##			Sitemap_NotifySearch()
+##		g_blog.tigger_action("publish_post",self)
 
 	def removecache(self):
 		memcache.delete('/')
@@ -597,9 +648,11 @@ class Entry(BaseModel):
 		pass
 
 	def delete(self):
-	   g_blog.tigger_action("pre_delete_post",self)
-	   db.Model.delete(self)
-	   g_blog.tigger_action("delete_post",self)
+		g_blog.tigger_action("pre_delete_post",self)
+		if self.published:
+			self.update_archive(-1)
+		db.Model.delete(self)
+		g_blog.tigger_action("delete_post",self)
 
 
 class User(db.Model):
@@ -815,8 +868,7 @@ def InitBlogData():
 
 	entry=Entry(title=_("Hello world!").decode('utf8'))
 	entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
-	entry.publish()
-	entry.update_archive()
+	entry.save(True)
 	link=Link(href='http://xuming.net',linktext=_("Xuming's blog").decode('utf8'))
 	link.put()
 	return g_blog
