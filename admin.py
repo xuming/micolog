@@ -226,7 +226,7 @@ class admin_import_next(BaseRequestHandler):
 
 							_cat=import_data[1]
 							nicename=_cat['slug']
-							cat=Category.get_by_key_name('cat_'+nicename)
+							cat=Category.get_by_key_name(nicename)
 							if not cat:
 								cat=Category()
 							cat.name=_cat['name']
@@ -794,7 +794,7 @@ class admin_category(BaseRequestHandler):
 			self.render2('views/admin/category.html',vals)
 		else:
 			if action=='add':
-			   cat= Category(name=name,slug=slug	)
+			   cat= Category(name=name,slug=slug)
 			   cat.put()
 			   vals.update({'result':True,'msg':'Saved ok'})
 			   self.render2('views/admin/category.html',vals)

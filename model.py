@@ -8,7 +8,7 @@ from google.appengine.api import mail
 from google.appengine.api import urlfetch
 from datetime import datetime
 import urllib, hashlib,urlparse
-import zipfile,re,pickle
+import zipfile,re,pickle,uuid
 logging.info('module base reloaded')
 
 rootpath=os.path.dirname(__file__)
@@ -248,6 +248,7 @@ class Blog(db.Model):
 
 
 class Category(db.Model):
+	uid=db.IntegerProperty()
 	name=db.StringProperty(multiline=False)
 	slug=db.StringProperty(multiline=False)
 	@property
@@ -269,16 +270,33 @@ class Category(db.Model):
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_category",self)
 
-	def get_by_key_name(self,name):
-		cate=db.Model.get_by_key_name(self,name)
-		if not cate:
-			cate= Category.all().filter('slug =',name).get()
-		return cate
+	def ID(self):
+		id=self.key().id()
+		if id:
+			return id
+		elif self.uid :
+			return self.uid
+		else:
+			#旧版本Category没有ID,为了与wordpress兼容
+			from random import randint
+			uid=randint(0,99999999)
+			cate=Category.all().filter('uid =',uid).get()
+			while cate:
+				uid=randint(0,99999999)
+				cate=Category.all().filter('uid =',uid).get()
+			self.uid=uid
+			print uid
+			self.put()
+			return uid
 
-
-
-
-
+	@classmethod
+	def get_from_id(cls,id):
+		cate=Category.get_by_id(id)
+		if cate:
+			return cate
+		else:
+			cate=Category.all().filter('uid =',id).get()
+			return cate
 
 class Archive(db.Model):
 	monthyear = db.StringProperty(multiline=False)

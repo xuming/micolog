@@ -64,6 +64,18 @@ def entry_struct(entry):
 		struct['dateCreated'] = format_date(entry.date)
 	return struct
 
+def entry_title_struct(entry):
+	if not entry:
+		 raise Fault(404, "Post does not exist")
+	struct = {
+		'postid': entry.key().id(),
+		'title': entry.title,
+		'userid': 1,
+		}
+	if entry.date:
+		struct['dateCreated'] = format_date(entry.date)
+	return struct
+
 class Logger(db.Model):
 	request = db.TextProperty()
 	response = db.TextProperty()
@@ -219,7 +231,7 @@ def metaWeblog_getCategories(blogid):
 	categories =Category.all()
 	cates=[]
 	for cate in categories:
-		cates.append({  'categoryId' : cate.key().id_or_name(),
+		cates.append({  'categoryId' : cate.ID(),
 						'parentId':0,
 						'description':cate.name,
 						'categoryName':cate.name,
@@ -243,6 +255,11 @@ def metaWeblog_getRecentPosts(blogid, num):
 #-------------------------------------------------------------------------------
 #  WordPress API
 #-------------------------------------------------------------------------------
+@checkauth()
+def wp_getUsersBlogs(pos=0):
+	return [{'url' : g_blog.baseurl, 'blogid' : '001','isAdmin':True, 'blogName' : g_blog.title,'xmlrpc_url':g_blog.baseurl+"/rpc"}]
+
+
 @checkauth()
 def wp_newCategory(blogid,struct):
 	name=struct['name']
@@ -359,7 +376,7 @@ def mt_getPostCategories(postid):
 	  cates=[]
 	  for key in categories:
 			cate=Category(key)
-			cates.append({'categoryId' : key.id(),
+			cates.append({'categoryId' : cate.ID(),
 						'parentId':0,
 						'description':cate.name,
 						'categoryName':cate.name,
@@ -374,7 +391,7 @@ def mt_getCategoryList(blogid):
 	  categories=Category.all()
 	  cates=[]
 	  for cate in categories:
-			cates.append({  'categoryId' : cate.key().id(),
+			cates.append({  'categoryId' : cate.ID(),
 						'categoryName':cate.name
 						})
 	  return cates
@@ -387,8 +404,9 @@ def mt_setPostCategories(postid,cates):
 
 		for cate in cates:
 			if cate.has_key('categoryId'):
-				c=Category.get_by_id(cate['categoryId'])
-		  		if c:
+				id=int(cate['categoryId'])
+				c=Category.get_from_id(cate['categoryId'])
+				if c:
 					newcates.append(c.key())
 		entry.categorie_keys=newcates
 		entry.put()
@@ -404,6 +422,11 @@ def mt_publishPost(postid):
 		return True
 	except:
 		return False
+
+@checkauth()
+def mt_getRecentPostTitles(blogid,num):
+	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
+ 	return [entry_title_struct(entry) for entry in entries]
 
 #------------------------------------------------------------------------------
 #pingback
@@ -527,6 +550,7 @@ dispatcher = PlogXMLRPCDispatcher({
 	'metaWeblog.getRecentPosts' : metaWeblog_getRecentPosts,
 	'metaWeblog.newMediaObject':metaWeblog_newMediaObject,
 
+	'wp.getUsersBlogs':wp_getUsersBlogs,
 	'wp.getCategories':metaWeblog_getCategories,
 	'wp.newCategory':wp_newCategory,
 	'wp.newPage':wp_newPage,
@@ -541,6 +565,7 @@ dispatcher = PlogXMLRPCDispatcher({
 	'mt.getPostCategories':mt_getPostCategories,
 	'mt.getCategoryList':mt_getCategoryList,
 	'mt.publishPost':mt_publishPost,
+	'mt.getRecentPostTitles':mt_getRecentPostTitles,
 
 	##pingback
 	'pingback.ping':pingback_ping,
@@ -592,6 +617,7 @@ def main():
 	application = webapp.WSGIApplication(
 			[
 				('/rpc', CallApi),
+				('/xmlrpc\.php',CallApi),
 				('/rpc/view', View),
 				('/rpc/dellog', DeleteLog),
 

@@ -19,7 +19,7 @@ handlers:
 - url: /static
   static_dir: static
 
-- url: /rpc|/rpc/.*
+- url: /rpc|/xmlrpc\.php|/rpc/.*
   script: api_rpc.py
 
 - url: /themes/.*
