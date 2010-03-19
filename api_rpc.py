@@ -21,11 +21,12 @@ def checkauth(pos=1):
 
 			username = args[pos+0]
 			password = args[pos+1]
-			args = args[0:pos]+args[pos+2:]
+
 			if not (username and password and g_blog.rpcuser and g_blog.rpcpassword
 					and (g_blog.rpcuser==username)
 					and (g_blog.rpcpassword==password)):
 				 raise ValueError("Authentication Failure")
+			args = args[0:pos]+args[pos+2:]
 			return method(*args, **kwargs)
 
 		return _wrapper
@@ -88,7 +89,7 @@ class Logger(db.Model):
 
 @checkauth()
 def blogger_getUsersBlogs(discard):
-	return [{'url' : g_blog.baseurl, 'blogid' : '001','isAdmin':True, 'blogName' : g_blog.title}]
+	return [{'url' : g_blog.baseurl, 'blogid' : '1','isAdmin':True, 'blogName' : g_blog.title,'xmlrpc':g_blog.baseurl+"/rpc"}]
 
 @checkauth(pos=2)
 def blogger_deletePost(appkey, postid, publish=False):
@@ -255,9 +256,52 @@ def metaWeblog_getRecentPosts(blogid, num):
 #-------------------------------------------------------------------------------
 #  WordPress API
 #-------------------------------------------------------------------------------
+@checkauth(pos=0)
+def wp_getUsersBlogs():
+	#return [{'url' : g_blog.baseurl, 'blog_id' : 1,'is_admin':True, 'blog_name' : g_blog.title,'xmlrpc_url':g_blog.baseurl+"/xmlrpc.php"}]
+    return [{'url' : g_blog.baseurl, 'blogid' : '1','isAdmin':True, 'blogName' : g_blog.title,'xmlrpc':g_blog.baseurl+"/rpc"}]
+
 @checkauth()
-def wp_getUsersBlogs(pos=0):
-	return [{'url' : g_blog.baseurl, 'blogid' : '001','isAdmin':True, 'blogName' : g_blog.title,'xmlrpc_url':g_blog.baseurl+"/rpc"}]
+def wp_getTags(blog_id):
+	def func(blog_id):
+		for tag in Tag.all():
+			yield {'tag_ID':0,'name':tag.tag,'count':tag.tagcount,'slug':tag.tag,'html_url':'','rss_url':''}
+	return list(func(blog_id))
+
+@checkauth()
+def wp_getCommentCount(blog_id,postid):
+	entry = Entry.get_by_id(postid)
+	if entry:
+		return [{'approved':entry.commentcount,'awaiting_moderation':0,'spam':0,'total_comments':entry.commentcount}]
+
+@checkauth()
+def wp_getPostStatusList(blogid):
+	return ['draft','publish']
+
+@checkauth()
+def wp_getPageStatusList(blogid):
+	return ['draft','publish']
+
+@checkauth()
+def wp_getPageTemplates(blogid):
+	return []
+
+@checkauth()
+def wp_setOptions(blogid,options):
+	def func(blogid,options):
+		for option in options:
+			if hasattr(blog,option['name']):
+				setattr(blog,option['name'],option['value'])
+				yield {'option':option['name'],'value':option['value']}
+	return list(func(blogid,options))
+
+@checkauth()
+def wp_getOptions(blogid,options):
+	def func(blogid,options):
+		for option in options:
+			if hasattr(blog,option):
+				yield {'option':option,'value':getattr(blog,option)}
+	return list(func(blogid,options))
 
 
 @checkauth()
@@ -366,16 +410,125 @@ def wp_getAuthors(blogid):
 	return ulist
 
 @checkauth()
+def wp_deleteComment(blogid,commentid):
+	try:
+		comment=Comment.get_by_id(commentid)
+		if comment:
+			comment.delit()
+		return True
+
+	except:
+		return False
+@checkauth()
+def wp_editComment(blogid,commentid,comment):
+	try:
+		comment=Comment.get_by_id(commentid)
+		if comment:
+			#comment.date= format_date(datetime.now())
+			comment.author=comment['author']
+			comment.weburl=comment['author_url']
+			comment.email=comment['author_email']
+			comment.content=comment['content']
+			comment.status=comment['status']
+			comment.save()
+			return True
+	except:
+		return False
+
+@checkauth()
+def wp_newComment(blogid,postid,comment):
+	post=Entry.get_by_id(postid)
+	if not post:
+		raise Fault(404, "Post does not exist")
+	comment=Comment(entry=post,content=comment['content'],
+	                author=comment['author'],
+	                weburl=comment['author_url'],
+	                email=comment['author_email'])
+	comment.save()
+	return comment.key().id()
+
+@checkauth()
+def wp_getCommentStatusList(blogid):
+	return {'hold':0,'approve':Comment.all().count(),'spam':0}
+
+@checkauth()
 def wp_getPageList(blogid):
-	return []
+	def func(blogid):
+		entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
+		for entry in Entries:
+			yield {'page_id':entry.key().id(),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date)}
+	return list(func(blogid))
+
+@checkauth()
+def wp_deleteCategory(blogid,cateid):
+	try:
+		cate=Category.get_from_id(cateid)
+		cate.delete()
+		return True
+	except:
+		return False
+@checkauth()
+def	wp_suggestCategories(blogid,category,max_result):
+	categories=Category.all()
+  	cates=[]
+  	for cate in categories:
+		cates.append({  'categoryId' : cate.ID(),
+					'categoryName':cate.name
+					})
+  	return cates[:max_result]
+
+@checkauth()
+def wp_getComment(blogid,commentid):
+	comment=Comment.get_by_id(commentid)
+	return {
+ 				'dateCreated':format_date(comment.date),
+ 				'user_id':0,
+				'comment_id':comment.key().id(),
+				'parent':'',
+				'status':'approve',
+				'content':unicode(comment.content),
+				'link':comment.entry.link+"#comment-"+str(comment.key().id()),
+				'post_id':comment.entry.key().id(),
+				'post_title':comment.entry.title,
+				'author':comment.author,
+				'author_url':comment.weburl,
+				'author_email':str(comment.email),
+				'author_ip':comment.ip
+			}
+
+@checkauth()
+def wp_getComments(blogid,data):
+	def func(blogid,data):
+		postid=data['post_id']
+		offset=int(data['offset'])
+		number=int(data['number'])
+		post=Entry.get_by_id(postid)
+		if post:
+			for comment in post.comments().fetch(number,offset):
+				yield {
+			 				'dateCreated':format_date(comment.date),
+			 				'user_id':0,
+							'comment_id':comment.key().id(),
+							'parent':'',
+							'status':'approve',
+							'content':unicode(comment.content),
+							'link':comment.entry.link+"#comment-"+str(comment.key().id()),
+							'post_id':comment.entry.key().id(),
+							'post_title':comment.entry.title,
+							'author':comment.author,
+							'author_url':comment.weburl,
+							'author_email':str(comment.email),
+							'author_ip':comment.ip
+						}
+	return list(func(blogid,data))
 
 @checkauth()
 def mt_getPostCategories(postid):
 	  post=Entry.get_by_id(int(postid))
-	  categories=post.categorie_keys
+	  categories=post.categories
 	  cates=[]
-	  for key in categories:
-			cate=Category(key)
+	  for cate in categories:
+			#cate=Category(key)
 			cates.append({'categoryId' : cate.ID(),
 						'parentId':0,
 						'description':cate.name,
@@ -391,7 +544,7 @@ def mt_getCategoryList(blogid):
 	  categories=Category.all()
 	  cates=[]
 	  for cate in categories:
-			cates.append({  'categoryId' : cate.ID(),
+			cates.append({  'categoryId' : str(cate.ID()),
 						'categoryName':cate.name
 						})
 	  return cates
@@ -551,6 +704,13 @@ dispatcher = PlogXMLRPCDispatcher({
 	'metaWeblog.newMediaObject':metaWeblog_newMediaObject,
 
 	'wp.getUsersBlogs':wp_getUsersBlogs,
+	'wp.getTags':wp_getTags,
+	'wp.getCommentCount':wp_getCommentCount,
+	'wp.getPostStatusList':wp_getPostStatusList,
+	'wp.getPageStatusList':wp_getPageStatusList,
+	'wp.getPageTemplates':wp_getPageTemplates,
+	'wp.getOptions':wp_getOptions,
+	'wp.setOptions':wp_setOptions,
 	'wp.getCategories':metaWeblog_getCategories,
 	'wp.newCategory':wp_newCategory,
 	'wp.newPage':wp_newPage,
@@ -560,6 +720,14 @@ dispatcher = PlogXMLRPCDispatcher({
 	'wp.getPageList':wp_getPageList,
 	'wp.deletePage':wp_deletePage,
 	'wp.getAuthors':wp_getAuthors,
+	'wp.deleteComment':wp_deleteComment,
+	'wp.editComment':wp_editComment,
+	'wp.newComment':wp_newComment,
+	'wp.getCommentStatusList':wp_getCommentStatusList,
+	'wp.deleteCategory':wp_deleteCategory,
+	'wp.suggestCategories':wp_suggestCategories,
+	'wp.getComment':wp_getComment,
+	'wp.getComments':wp_getComments,
 
 	'mt.setPostCategories':mt_setPostCategories,
 	'mt.getPostCategories':mt_getPostCategories,

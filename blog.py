@@ -231,8 +231,8 @@ class SinglePost(BasePublicPage):
 						'user_name':commentuser[0],
 						'user_email':commentuser[1],
 						'user_url':commentuser[2],
-						#'checknum1':random.randint(1,10),
-						#'checknum2':random.randint(1,10),
+						'checknum1':random.randint(1,10),
+						'checknum2':random.randint(1,10),
 						'comments_nav':comments_nav,
 						})
 
@@ -464,16 +464,17 @@ class Post_comment(BaseRequestHandler):
 			#if not (self.request.cookies.get('comment_user', '')):
 			try:
 				check_ret=True
-				if g_blog.comment_check_type>0:
-##					import app.gbtools as gb
-##					checknum=self.param('checknum')
-##					checkret=self.param('checkret')
-##					check_ret=eval(checknum)==int(gb.stringQ2B( checkret))
-##				elif g_blog.comment_check_type==2:
+				if g_blog.comment_check_type in (1,2)  :
 					checkret=self.param('checkret')
+					logging.info('______'+checkret)
 					check_ret=(int(checkret) == sess['code'])
-				if not check_ret:
+				elif  g_blog.comment_check_type ==3:
+					import app.gbtools as gb
+					checknum=self.param('checknum')
+					checkret=self.param('checkret')
+					check_ret=eval(checknum)==int(gb.stringQ2B( checkret))
 
+				if not check_ret:
 					if useajax:
 						self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
 					else:

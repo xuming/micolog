@@ -20,7 +20,7 @@
                 <h4>相关阅读：</h4>
                   <ul>
                 {%for post in entry.relateposts%}
-                  <li><a href="/{{post.link|escape}}">{{post.title|escape}}</a></li>
+                  <li><a href="{{blog.baseurl}}/{{post.link|escape}}">{{post.title|escape}}</a></li>
                 {%endfor%}
                 </ul>
                 {%endif%}

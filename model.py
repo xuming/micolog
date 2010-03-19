@@ -166,8 +166,8 @@ class Blog(db.Model):
 	comments_order=db.IntegerProperty(default=0)
 	#每页评论数
 	comments_per_page=db.IntegerProperty(default=20)
-	#comment check type 0-No 1-算术 2-验证码
-	comment_check_type=db.IntegerProperty(default=1)
+	#comment check type 0-No 1-算术 2-验证码 3-客户端计算
+	comment_check_type=db.IntegerProperty(default=3)
 
 	blognotice=db.TextProperty(default='')
 
@@ -271,10 +271,14 @@ class Category(db.Model):
 		g_blog.tigger_action("delete_category",self)
 
 	def ID(self):
-		id=self.key().id()
-		if id:
-			return id
-		elif self.uid :
+		try:
+			id=self.key().id()
+			if id:
+				return id
+		except:
+			pass
+
+		if self.uid :
 			return self.uid
 		else:
 			#旧版本Category没有ID,为了与wordpress兼容
@@ -526,6 +530,7 @@ class Entry(BaseModel):
 
 		if is_publish:
 			if not self.is_wp:
+				self.put()
 				self.post_id=self.key().id()
 
 			#fix for old version
