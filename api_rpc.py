@@ -46,20 +46,20 @@ def entry_struct(entry):
 
 
 	struct = {
-		'postid': entry.key().id(),
+		'postid': str(entry.key().id()),
 		'title': entry.title,
 		'link': entry.fullurl(),
 		'permaLink': entry.fullurl(),
 		'description': unicode(entry.content),
 		'categories': categories,
-		'userid': 1,
+		'userid': '1',
 		'mt_keywords':','.join(entry.tags),
 		'wp_slug':entry.slug,
 		'wp_page_order':entry.menu_order,
 		'mt_excerpt': '',
 		'mt_text_more': '',
-		'mt_allow_comments': entry.allow_comment and 1 or 0,
-		'mt_allow_pings': entry.allow_trackback and 1 or 0
+		'mt_allow_comments': str(entry.allow_comment and 1 or 0),
+		'mt_allow_pings': str(entry.allow_trackback and 1 or 0)
 		}
 	if entry.date:
 		struct['dateCreated'] = format_date(entry.date)
@@ -69,9 +69,9 @@ def entry_title_struct(entry):
 	if not entry:
 		 raise Fault(404, "Post does not exist")
 	struct = {
-		'postid': entry.key().id(),
+		'postid': str(entry.key().id()),
 		'title': entry.title,
-		'userid': 1,
+		'userid': '1',
 		}
 	if entry.date:
 		struct['dateCreated'] = format_date(entry.date)
@@ -101,7 +101,7 @@ def blogger_deletePost(appkey, postid, publish=False):
 def blogger_getUserInfo(appkey):
 	for user in User.all():
 		if user.isadmin:
-			return {'email':user.email,'firstname':'','nickname':user.dispname,'userid':user.key().id(),
+			return {'email':user.email,'firstname':'','nickname':user.dispname,'userid':str(user.key().id()),
 		   'url':'','lastname':''}
 	return None
 
@@ -232,8 +232,8 @@ def metaWeblog_getCategories(blogid):
 	categories =Category.all()
 	cates=[]
 	for cate in categories:
-		cates.append({  'categoryId' : cate.ID(),
-						'parentId':0,
+		cates.append({  'categoryId' : str(cate.ID()),
+						'parentId':'0',
 						'description':cate.name,
 						'categoryName':cate.name,
 						'htmlUrl':'',
@@ -265,7 +265,7 @@ def wp_getUsersBlogs():
 def wp_getTags(blog_id):
 	def func(blog_id):
 		for tag in Tag.all():
-			yield {'tag_ID':0,'name':tag.tag,'count':tag.tagcount,'slug':tag.tag,'html_url':'','rss_url':''}
+			yield {'tag_ID':'0','name':tag.tag,'count':tag.tagcount,'slug':tag.tag,'html_url':'','rss_url':''}
 	return list(func(blog_id))
 
 @checkauth()
@@ -456,7 +456,7 @@ def wp_getPageList(blogid):
 	def func(blogid):
 		entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
 		for entry in Entries:
-			yield {'page_id':entry.key().id(),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date)}
+			yield {'page_id':str(entry.key().id()),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date)}
 	return list(func(blogid))
 
 @checkauth()
@@ -472,7 +472,7 @@ def	wp_suggestCategories(blogid,category,max_result):
 	categories=Category.all()
   	cates=[]
   	for cate in categories:
-		cates.append({  'categoryId' : cate.ID(),
+		cates.append({  'categoryId' : str(cate.ID()),
 					'categoryName':cate.name
 					})
   	return cates[:max_result]
@@ -482,8 +482,8 @@ def wp_getComment(blogid,commentid):
 	comment=Comment.get_by_id(commentid)
 	return {
  				'dateCreated':format_date(comment.date),
- 				'user_id':0,
-				'comment_id':comment.key().id(),
+ 				'user_id':'0',
+				'comment_id':str(comment.key().id()),
 				'parent':'',
 				'status':'approve',
 				'content':unicode(comment.content),
@@ -507,8 +507,8 @@ def wp_getComments(blogid,data):
 			for comment in post.comments().fetch(number,offset):
 				yield {
 			 				'dateCreated':format_date(comment.date),
-			 				'user_id':0,
-							'comment_id':comment.key().id(),
+			 				'user_id':'0',
+							'comment_id':str(comment.key().id()),
 							'parent':'',
 							'status':'approve',
 							'content':unicode(comment.content),
@@ -529,8 +529,8 @@ def mt_getPostCategories(postid):
 	  cates=[]
 	  for cate in categories:
 			#cate=Category(key)
-			cates.append({'categoryId' : cate.ID(),
-						'parentId':0,
+			cates.append({'categoryId' : str(cate.ID()),
+						'parentId':'0',
 						'description':cate.name,
 						'categoryName':cate.name,
 						'htmlUrl':'',
