@@ -7,12 +7,12 @@ $(function() {
 
 function get_next()
 {
-  $.getJSON("/admin/import_next", next_result);
+  $.getJSON("/e/wp_import", next_result);
 }
  function stop()
  {
     $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Stop importing now...</h3>' });
- 	$.getJSON("/admin/do/stop_import", function(json){
+ 	$.getJSON("/e/wp_import?action=stop", function(json){
  		   $.unblockUI();
  		   $('.blockUI').css('cursor','');
             $('#importing').hide();

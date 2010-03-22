@@ -172,9 +172,6 @@ class admin_do_action(BaseRequestHandler):
 			entry.update_archive()
 		self.write('"All entries have been updated."')
 
-	def action_stop_import(self):
-		memcache.delete("imt")
-		self.write('"ok"')
 
 	def action_trackback_ping(self):
 		tbUrl=self.param('tbUrl')
@@ -213,100 +210,6 @@ class admin_do_action(BaseRequestHandler):
 		except:
 			raise PingbackError(32)
 
-class admin_import_next(BaseRequestHandler):
-	def post(self):
-		try:
-				#global imt
-				imt=memcache.get("imt")
-				import_data=imt.pop()
-				memcache.set('imt',imt)
-				if import_data:
-					try:
-						if import_data[0]=='cat':
-
-							_cat=import_data[1]
-							nicename=_cat['slug']
-							cat=Category.get_by_key_name(nicename)
-							if not cat:
-								cat=Category()
-							cat.name=_cat['name']
-							cat.slug=nicename
-							cat.put()
-						elif import_data[0]=='entry':
-							_entry=import_data[1]
-							logging.debug('importing:'+_entry['title'])
-							hashkey=str(hash(_entry['title']))
-							entry=Entry.get_by_key_name(hashkey)
-							if not entry:
-								entry=Entry(key_name=hashkey)
-
-							entry.title=_entry['title']
-							entry.author=self.login_user
-							entry.is_wp=True
-						   #entry.date=datetime.strptime( _entry['pubDate'],"%a, %d %b %Y %H:%M:%S +0000")
-							try:
-								entry.date=datetime.strptime( _entry['pubDate'][:-6],"%a, %d %b %Y %H:%M:%S")
-							except:
-								try:
-									entry.date=datetime.strptime( _entry['pubDate'][0:19],"%Y-%m-%d %H:%M:%S")
-								except:
-									entry.date=datetime.now()
-							entry.entrytype=_entry['post_type']
-							entry.content=_entry['content']
-
-							entry.excerpt=_entry['excerpt']
-							entry.post_id=_entry['post_id']
-							entry.slug=_entry['post_name']
-							entry.entry_parent=_entry['post_parent']
-							entry.menu_order=_entry['menu_order']
-
-							for cat in _entry['categories']:
-								c=Category.get_by_key_name('cat_'+cat['slug'])
-								if c:
-									entry.categorie_keys.append(c.key())
-							entry.settags(','.join(_entry['tags']))
-				##				for tag in _entry['tags']:
-				##					entry.tags.append(tag)
-							if _entry['published']:
-								entry.save(True)
-							else:
-								entry.save()
-							for com in _entry['comments']:
-									try:
-										date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
-									except:
-										date=datetime.now()
-									comment=Comment(author=com['author'],
-													content=com['content'],
-													entry=entry,
-													date=date
-													)
-									try:
-										comment.email=com['email']
-										comment.weburl=com['weburl']
-									except:
-										pass
-									comment.save()
-					finally:
-						queue=taskqueue.Queue("import")
-						queue.add(taskqueue.Task( url="/admin/import_next"))
-		except:
-			logging.info("import error")
-
-	@requires_admin
-	def get(self,slug=None):
-		imt=memcache.get('imt')
-		if imt and imt.cur_do:
-			process=100-math.ceil(imt.count()*100/imt.total)
-			if imt.cur_do[0]=='cat':
-				msg="importing category '%s'"%imt.cur_do[1]['name']
-			elif imt.cur_do[0]=='entry':
-				msg="importing entry '%s'"%imt.cur_do[1]['title']
-			else:
-				msg="start importing..."
-			self.write(simplejson.dumps((process,msg,not process==100)))
-		else:
-			self.write(simplejson.dumps((-1,"Have no data to import!",False)))
 
 class admin_tools(BaseRequestHandler):
 	def __init__(self):
@@ -1083,7 +986,6 @@ def main():
 					 ('/admin/plugins/(\w+)',admin_plugins_action),
 					 ('/admin/sitemap',admin_sitemap),
 					 ('/admin/export/micolog.xml',WpHandler),
-					 ('/admin/import_next',admin_import_next),
 					 ('/admin/do/(\w+)',admin_do_action),
 					 ('/admin/lang',setlanguage),
 
