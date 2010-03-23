@@ -34,8 +34,8 @@ def checkauth(pos=1):
 
 def format_date(d):
 	if not d: return None
-	#return xmlrpclib.DateTime(d.isoformat())
-    	return xmlrpclib.DateTime(d)
+	return xmlrpclib.DateTime(d.isoformat())
+    #	return xmlrpclib.DateTime(d)
 
 def entry_struct(entry):
 	if not entry:
@@ -138,6 +138,12 @@ def metaWeblog_newPost(blogid, struct, publish):
 
 	if struct.has_key('mt_excerpt'):
 		entry.excerpt=struct['mt_excerpt']
+
+	if struct.has_key('dateCreated'): #如果有日期属性
+		try:
+			entry.date=xmlrpclib.datetime.datetime.strptime(str(post['dateCreated']), "%Y%m%dT%H:%M:%S")
+		except:
+			pass
 
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
