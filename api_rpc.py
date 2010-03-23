@@ -5,7 +5,8 @@ from xmlrpclib import Fault
 import sys
 import cgi
 import base64
-from datetime import datetime
+#from datetime import datetime
+import app.mktimefix as datetime
 from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
 from functools import wraps
 from django.utils.html import strip_tags
@@ -34,8 +35,8 @@ def checkauth(pos=1):
 
 def format_date(d):
 	if not d: return None
-	return xmlrpclib.DateTime(d.isoformat())
-    #	return xmlrpclib.DateTime(d)
+	#return xmlrpclib.DateTime(d.isoformat())
+	return xmlrpclib.DateTime(d)
 
 def entry_struct(entry):
 	if not entry:
@@ -141,7 +142,7 @@ def metaWeblog_newPost(blogid, struct, publish):
 
 	if struct.has_key('dateCreated'): #如果有日期属性
 		try:
-			entry.date=xmlrpclib.datetime.datetime.strptime(str(post['dateCreated']), "%Y%m%dT%H:%M:%S")
+			entry.date=datetime.strptime(str(post['dateCreated']), "%Y%m%dT%H:%M:%S")
 		except:
 			pass
 

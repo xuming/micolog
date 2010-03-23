@@ -674,6 +674,7 @@ class Entry(BaseModel):
 		g_blog.tigger_action("pre_delete_post",self)
 		if self.published:
 			self.update_archive(-1)
+		self.delete_comments()
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_post",self)
 

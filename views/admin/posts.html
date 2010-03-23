@@ -40,7 +40,7 @@
             {%for entry in entries%}
 		<tr valign="middle" id="link-{{entry.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{entry.key.id}}" name="checks"/></th>
                            <td>{{entry.date.date}}</td>
-                           <td><strong><a class="row-title" title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key}}&amp;action=edit">{{entry.title|escape}}</a></strong><br/></td>
+                           <td><strong><a class="row-title" title='{{entry.title|escape}}' href="/{{entry.link}}" target="_blank">{{entry.title|escape}}</a></strong> <a class="row-title" style="color:red" title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key}}&amp;action=edit">[edit]</a><br/></td>
                            <td>{{entry.author_name}}</td>
                            <td class="num" scope="col">{{entry.commentcount}}</td>
                            <td>{%if entry.published%}{% trans "Published"%}{%else%}{%trans "Unpublished"%} {%endif%}</td>
