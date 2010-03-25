@@ -399,12 +399,22 @@ class Entry(BaseModel):
 	target=db.StringProperty(default="_self")
 	external_page_address=db.StringProperty()
 
+	#keep in top
+	sticky=db.BooleanProperty(default=False)
+
+
 	postname=''
 	_relatepost=None
 
 	@property
 	def content_excerpt(self):
 		return self.get_content_excerpt(_('..more').decode('utf8'))
+
+
+	def get_author_user(self):
+		if not self.author:
+			self.author=g_blog.owner
+		return User.all().filter('email =',self.author.email()).get()
 
 	def get_content_excerpt(self,more='..more'):
 		if g_blog.show_excerpt:
@@ -451,6 +461,10 @@ class Entry(BaseModel):
 			return db.get(self.categorie_keys)
 		except:
 			return []
+
+	@property
+	def post_status(self):
+		return  self.published and 'publish' or 'draft'
 
 	def settags(self,values):
 		if not values:return

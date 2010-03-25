@@ -508,7 +508,7 @@ class Post_comment(BaseRequestHandler):
 			   try:
 					comment.weburl=url
 			   except:
-				   comment.weburl='http://'+url
+				   comment.weburl=None
 
 			#name=name.decode('utf8').encode('gb2312')
 
@@ -582,7 +582,7 @@ class do_action(BaseRequestHandler):
 		else:
 			self.write(simplejson.dumps({'islogin':False}))
 
-	@hostonly
+	#@hostonly
 	@cache()
 	def action_proxy(self):
 		result=urlfetch.fetch(self.param("url"), headers=self.request.headers)

@@ -38,7 +38,7 @@ def format_date(d):
 	#return xmlrpclib.DateTime(d.isoformat())
 	return xmlrpclib.DateTime(d)
 
-def entry_struct(entry):
+def post_struct(entry):
 	if not entry:
 		 raise Fault(404, "Post does not exist")
 	categories=[]
@@ -53,26 +53,72 @@ def entry_struct(entry):
 		'permaLink': entry.fullurl(),
 		'description': unicode(entry.content),
 		'categories': categories,
-		'userid': 1,
+		'userid': '1',
 		'mt_keywords':','.join(entry.tags),
-		'wp_slug':entry.slug,
-		'wp_page_order':entry.menu_order,
 		'mt_excerpt': '',
 		'mt_text_more': '',
 		'mt_allow_comments': entry.allow_comment and 1 or 0,
-		'mt_allow_pings': entry.allow_trackback and 1 or 0
+		'mt_allow_pings': entry.allow_trackback and 1 or 0,
+		'custom_fields':[],
+		'post_status':entry.post_status,
+		'sticky':entry.sticky,
+		'wp_author_display_name': entry.get_author_user().dispname,
+ 		'wp_author_id': str(entry.get_author_user().key().id()),
+ 		'wp_password': entry.password,
+ 		'wp_slug':entry.slug
+		}
+	if entry.date:
+		t=timedelta(seconds=3600*g_blog.timedelta)
+		struct['dateCreated'] = format_date(entry.date+t)
+		struct['date_created_gmt'] = format_date(entry.date)
+
+	return struct
+
+def page_struct(entry):
+	if not entry:
+		 raise Fault(404, "Post does not exist")
+	categories=[]
+	if entry.categorie_keys:
+		categories =[cate.name for cate in  entry.categories]
+
+
+	struct = {
+		'page_id': entry.key().id(),
+		'title': entry.title,
+		'link': entry.fullurl(),
+		'permaLink': entry.fullurl(),
+		'description': unicode(entry.content),
+		'categories': categories,
+		'userid': '1',
+		'mt_allow_comments': entry.allow_comment and 1 or 0,
+		'mt_allow_pings': entry.allow_trackback and 1 or 0,
+		'custom_fields':[],
+		'page_status':entry.post_status,
+		'sticky':entry.sticky,
+		'wp_author_display_name': entry.get_author_user().dispname,
+ 		'wp_author_id': str(entry.get_author_user().key().id()),
+ 		'wp_password': entry.password,
+ 		'wp_slug':entry.slug,
+ 		'text_more': '',
+ 		'wp_author': 'admin',
+		'wp_page_order': entry.menu_order,
+ 		'wp_page_parent_id': 0,
+ 		'wp_page_parent_title': '',
+ 		'wp_page_template': 'default',
 		}
 	if entry.date:
 		struct['dateCreated'] = format_date(entry.date)
+		struct['date_created_gmt'] = format_date(entry.date)
+
 	return struct
 
 def entry_title_struct(entry):
 	if not entry:
 		 raise Fault(404, "Post does not exist")
 	struct = {
-		'postid': entry.key().id(),
+		'postid': str(entry.key().id()),
 		'title': entry.title,
-		'userid': 1,
+		'userid': '1',
 		}
 	if entry.date:
 		struct['dateCreated'] = format_date(entry.date)
@@ -102,7 +148,7 @@ def blogger_deletePost(appkey, postid, publish=False):
 def blogger_getUserInfo(appkey):
 	for user in User.all():
 		if user.isadmin:
-			return {'email':user.email,'firstname':'','nickname':user.dispname,'userid':user.key().id(),
+			return {'email':user.email,'firstname':'','nickname':user.dispname,'userid':str(user.key().id()),
 		   'url':'','lastname':''}
 	return None
 
@@ -140,17 +186,23 @@ def metaWeblog_newPost(blogid, struct, publish):
 	if struct.has_key('mt_excerpt'):
 		entry.excerpt=struct['mt_excerpt']
 
-	if struct.has_key('dateCreated'): #如果有日期属性
-		try:
-			entry.date=datetime.strptime(str(post['dateCreated']), "%Y%m%dT%H:%M:%S")
-		except:
-			pass
+	try:
+		if struct.has_key('date_created_gmt'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+		elif struct.has_key('dateCreated'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+	except:
+		pass
 
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 
+	if struct.has_key('sticky'):
+		entry.sticky=struct['sticky']
+
+
 	if struct.has_key('wp_author_id'):
-		author=User.all().filter('email =',struct['wp_author_id']).get()
+		author=User.get_by_id(int(struct['wp_author_id']))
 		entry.author=author.user
 		entry.author_name=author.dispname
 	else:
@@ -168,8 +220,9 @@ def metaWeblog_newPost(blogid, struct, publish):
 		entry.save()
 	postid =entry.key().id()
 	return str(postid)
+
 @checkauth()
-def metaWeblog_newMediaObject(postid,struct):
+def metaWeblog_newMediaObject(blogid,struct):
 	name=struct['name']
 
 	if struct.has_key('type'):
@@ -208,11 +261,22 @@ def metaWeblog_editPost(postid, struct, publish):
 	if struct.has_key('mt_excerpt'):
 		entry.excerpt=struct['mt_excerpt']
 
+	try:
+		if struct.has_key('date_created_gmt'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+		elif struct.has_key('dateCreated'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+	except:
+		pass
+
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 
+	if struct.has_key('sticky'):
+		entry.sticky=struct['sticky']
+
 	if struct.has_key('wp_author_id'):
-		author=User.all().filter('email =',struct['wp_author_id']).get()
+		author=User.get_by_id(int(struct['wp_author_id']))
 		entry.author=author.user
 		entry.author_name=author.dispname
 	else:
@@ -239,8 +303,9 @@ def metaWeblog_getCategories(blogid):
 	categories =Category.all()
 	cates=[]
 	for cate in categories:
-		cates.append({  'categoryId' : cate.ID(),
-						'parentId':0,
+		cates.append({  'categoryDescription':'',
+						'categoryId' : str(cate.ID()),
+						'parentId':'0',
 						'description':cate.name,
 						'categoryName':cate.name,
 						'htmlUrl':'',
@@ -251,12 +316,12 @@ def metaWeblog_getCategories(blogid):
 @checkauth()
 def metaWeblog_getPost(postid):
 	entry = Entry.get_by_id(int(postid))
-	return entry_struct(entry)
+	return post_struct(entry)
 
 @checkauth()
 def metaWeblog_getRecentPosts(blogid, num):
 	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
-	return [entry_struct(entry) for entry in entries]
+	return [post_struct(entry) for entry in entries]
 
 
 
@@ -272,44 +337,48 @@ def wp_getUsersBlogs():
 def wp_getTags(blog_id):
 	def func(blog_id):
 		for tag in Tag.all():
-			yield {'tag_ID':0,'name':tag.tag,'count':tag.tagcount,'slug':tag.tag,'html_url':'','rss_url':''}
+			yield {'tag_ID':'0','name':tag.tag,'count':str(tag.tagcount),'slug':tag.tag,'html_url':'','rss_url':''}
 	return list(func(blog_id))
 
 @checkauth()
 def wp_getCommentCount(blog_id,postid):
 	entry = Entry.get_by_id(postid)
 	if entry:
-		return [{'approved':entry.commentcount,'awaiting_moderation':0,'spam':0,'total_comments':entry.commentcount}]
+		return {'approved':entry.commentcount,'awaiting_moderation':0,'spam':0,'total_comments':entry.commentcount}
 
 @checkauth()
 def wp_getPostStatusList(blogid):
-	return ['draft','publish']
+	return {'draft': 'Draft',
+ 			'pending': 'Pending Review',
+ 			'private': 'Private',
+ 			'publish': 'Published'}
 
 @checkauth()
 def wp_getPageStatusList(blogid):
-	return ['draft','publish']
+	return {'draft': 'Draft', 'private': 'Private', 'publish': 'Published'}
 
 @checkauth()
 def wp_getPageTemplates(blogid):
-	return []
+	return {}
 
 @checkauth()
 def wp_setOptions(blogid,options):
-	def func(blogid,options):
-		for option in options:
-			if hasattr(blog,option['name']):
-				setattr(blog,option['name'],option['value'])
-				yield {'option':option['name'],'value':option['value']}
-	return list(func(blogid,options))
+	for name,value in options,options.values():
+		if hasattr(g_blog,name):
+			setattr(g_blog,name,value)
+	return options
 
 @checkauth()
 def wp_getOptions(blogid,options):
-	def func(blogid,options):
+	#todo:Options is None ,return all attrbutes
+	mdict={}
+	if options:
 		for option in options:
-			if hasattr(blog,option):
-				yield {'option':option,'value':getattr(blog,option)}
-	return list(func(blogid,options))
-
+			if hasattr(g_blog,option):
+				mdict[option]={'desc':option,
+								'readonly:':False,
+								'value':getattr(g_blog,option)}
+	return mdict
 
 @checkauth()
 def wp_newCategory(blogid,struct):
@@ -317,12 +386,12 @@ def wp_newCategory(blogid,struct):
 
 	category=Category.all().filter('name =',name).fetch(1)
 	if category and len(category):
-		return category[0].slug
+		return category[0].ID()
 	else:
 		#category=Category(key_name=urlencode(name), name=name,slug=urlencode(name))
 		category=Category(name=name,slug=name)
 		category.put()
-		return category.slug
+		return category.ID()
 
 
 @checkauth()
@@ -334,6 +403,14 @@ def wp_newPage(blogid,struct,publish):
 		if struct.has_key('mt_text_more'):
 			entry.content=entry.content+"<!--more-->"+struct['mt_text_more']
 
+		try:
+			if struct.has_key('date_created_gmt'): #如果有日期属性
+				entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+			elif struct.has_key('dateCreated'): #如果有日期属性
+				entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+		except:
+			pass
+
 		if struct.has_key('wp_slug'):
 			entry.slug=struct['wp_slug']
 		if struct.has_key('wp_page_order'):
@@ -342,7 +419,7 @@ def wp_newPage(blogid,struct,publish):
 			entry.password=struct['wp_password']
 
 		if struct.has_key('wp_author_id'):
-			author=User.all().filter('email =',struct['wp_author_id']).get()
+			author=User.get_by_id(int(struct['wp_author_id']))
 			entry.author=author.user
 			entry.author_name=author.dispname
 		else:
@@ -362,12 +439,12 @@ def wp_newPage(blogid,struct,publish):
 @checkauth(2)
 def wp_getPage(blogid,pageid):
 	entry = Entry.get_by_id(int(pageid))
-	return entry_struct(entry)
+	return page_struct(entry)
 
 @checkauth()
-def wp_getPages(blogid,num):
+def wp_getPages(blogid,num=20):
 	entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
-	return [entry_struct(entry) for entry in entries]
+	return [page_struct(entry) for entry in entries]
 
 @checkauth(2)
 def wp_editPage(blogid,pageid,struct,publish):
@@ -382,11 +459,18 @@ def wp_editPage(blogid,pageid,struct,publish):
 
 	if struct.has_key('wp_page_order'):
 		entry.menu_order=int(struct['wp_page_order'])
+	try:
+		if struct.has_key('date_created_gmt'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+		elif struct.has_key('dateCreated'): #如果有日期属性
+			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+	except:
+		pass
 
 	if struct.has_key('wp_password'):
 		entry.password=struct['wp_password']
 	if struct.has_key('wp_author_id'):
-		author=User.all().filter('email =',struct['wp_author_id']).get()
+		author=User.get_by_id(int(struct['wp_author_id']))
 		entry.author=author.user
 		entry.author_name=author.dispname
 	else:
@@ -412,14 +496,14 @@ def wp_getAuthors(blogid):
 	ulist=[]
 	i=1
 	for user in User.all():
-		ulist.append({'user_id':user.email,'user_login':'','display_name':user.dispname})
+		ulist.append({'user_id':str(user.key().id()),'user_login':'admin','display_name':user.dispname})
 		i=i+1
 	return ulist
 
 @checkauth()
 def wp_deleteComment(blogid,commentid):
 	try:
-		comment=Comment.get_by_id(commentid)
+		comment=Comment.get_by_id(int(commentid))
 		if comment:
 			comment.delit()
 		return True
@@ -427,30 +511,43 @@ def wp_deleteComment(blogid,commentid):
 	except:
 		return False
 @checkauth()
-def wp_editComment(blogid,commentid,comment):
+def wp_editComment(blogid,commentid,struct):
 	try:
-		comment=Comment.get_by_id(commentid)
+		comment=Comment.get_by_id(int(commentid))
 		if comment:
+			url=struct['author_url']
+			if url:
+		   		try:
+					comment.weburl=url
+		   		except:
+			   		comment.weburl=None
 			#comment.date= format_date(datetime.now())
-			comment.author=comment['author']
-			comment.weburl=comment['author_url']
-			comment.email=comment['author_email']
-			comment.content=comment['content']
-			comment.status=comment['status']
+			comment.author=struct['author']
+			#comment.weburl=struct['author_url']
+			comment.email=struct['author_email']
+			comment.content=struct['content']
+			#comment.status=struct['status']
 			comment.save()
 			return True
 	except:
+		raise
 		return False
 
 @checkauth()
-def wp_newComment(blogid,postid,comment):
+def wp_newComment(blogid,postid,struct):
 	post=Entry.get_by_id(postid)
 	if not post:
 		raise Fault(404, "Post does not exist")
-	comment=Comment(entry=post,content=comment['content'],
-	                author=comment['author'],
-	                weburl=comment['author_url'],
-	                email=comment['author_email'])
+	comment=Comment(entry=post,content=struct['content'],
+	                author=struct['author'],
+	                email=struct['author_email'])
+	url=struct['author_url']
+	if url:
+	   try:
+			comment.weburl=url
+	   except:
+		   comment.weburl=None
+
 	comment.save()
 	return comment.key().id()
 
@@ -459,17 +556,17 @@ def wp_getCommentStatusList(blogid):
 	return {'hold':0,'approve':Comment.all().count(),'spam':0}
 
 @checkauth()
-def wp_getPageList(blogid):
+def wp_getPageList(blogid,num=20):
 	def func(blogid):
 		entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
-		for entry in Entries:
-			yield {'page_id':entry.key().id(),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date)}
+		for entry in entries:
+			yield {'page_id':str(entry.key().id()),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date),'date_created_gmt': format_date(entry.date)}
 	return list(func(blogid))
 
 @checkauth()
 def wp_deleteCategory(blogid,cateid):
 	try:
-		cate=Category.get_from_id(cateid)
+		cate=Category.get_from_id(int(cateid))
 		cate.delete()
 		return True
 	except:
@@ -479,55 +576,71 @@ def	wp_suggestCategories(blogid,category,max_result):
 	categories=Category.all()
   	cates=[]
   	for cate in categories:
-		cates.append({  'categoryId' : cate.ID(),
+		cates.append({  'categoryId' : str(cate.ID()),
 					'categoryName':cate.name
 					})
   	return cates[:max_result]
 
 @checkauth()
 def wp_getComment(blogid,commentid):
-	comment=Comment.get_by_id(commentid)
+	comment=Comment.get_by_id(int(commentid))
 	return {
- 				'dateCreated':format_date(comment.date),
- 				'user_id':0,
-				'comment_id':comment.key().id(),
-				'parent':'',
-				'status':'approve',
-				'content':unicode(comment.content),
-				'link':comment.entry.link+"#comment-"+str(comment.key().id()),
-				'post_id':comment.entry.key().id(),
-				'post_title':comment.entry.title,
-				'author':comment.author,
-				'author_url':comment.weburl,
-				'author_email':str(comment.email),
-				'author_ip':comment.ip
+ 					'dateCreated':format_date(comment.date),
+			 				'date_created_gmt':format_date(comment.date),
+			 				'user_id':'0',
+							'comment_id':str(comment.key().id()),
+							'parent':'',
+							'status':'approve',
+							'content':unicode(comment.content),
+							'link':comment.entry.link+"#comment-"+str(comment.key().id()),
+							'post_id':str(comment.entry.key().id()),
+							'post_title':comment.entry.title,
+							'author':comment.author,
+							'author_url':str(comment.weburl),
+							'author_email':str(comment.email),
+							'author_ip':comment.ip,
+							'type':''
 			}
 
 @checkauth()
 def wp_getComments(blogid,data):
 	def func(blogid,data):
-		postid=data['post_id']
-		offset=int(data['offset'])
 		number=int(data['number'])
-		post=Entry.get_by_id(postid)
-		if post:
-			for comment in post.comments().fetch(number,offset):
-				yield {
-			 				'dateCreated':format_date(comment.date),
-			 				'user_id':0,
-							'comment_id':comment.key().id(),
-							'parent':'',
-							'status':'approve',
-							'content':unicode(comment.content),
-							'link':comment.entry.link+"#comment-"+str(comment.key().id()),
-							'post_id':comment.entry.key().id(),
-							'post_title':comment.entry.title,
-							'author':comment.author,
-							'author_url':comment.weburl,
-							'author_email':str(comment.email),
-							'author_ip':comment.ip
-						}
+		try:
+			offset=int(data['offset'])
+		except:
+			offset=0
+
+		comments=[]
+
+		if data['post_id']:
+			postid=int(data['post_id'])
+			post=Entry.get_by_id(postid)
+			if post:
+				comments=post.comments()
+		else:
+			comments=Comment.all()
+
+		for comment in comments.fetch(number,offset):
+			yield {
+		 				'dateCreated':format_date(comment.date),
+		 				'date_created_gmt':format_date(comment.date),
+		 				'user_id':'0',
+						'comment_id':str(comment.key().id()),
+						'parent':'',
+						'status':'approve',
+						'content':unicode(comment.content),
+						'link':comment.entry.link+"#comment-"+str(comment.key().id()),
+						'post_id':str(comment.entry.key().id()),
+						'post_title':comment.entry.title,
+						'author':comment.author,
+						'author_url':str(comment.weburl),
+						'author_email':str(comment.email),
+						'author_ip':comment.ip,
+						'type':''
+					}
 	return list(func(blogid,data))
+
 
 @checkauth()
 def mt_getPostCategories(postid):
@@ -536,12 +649,8 @@ def mt_getPostCategories(postid):
 	  cates=[]
 	  for cate in categories:
 			#cate=Category(key)
-			cates.append({'categoryId' : cate.ID(),
-						'parentId':0,
-						'description':cate.name,
+			cates.append({'categoryId' : str(cate.ID()),
 						'categoryName':cate.name,
-						'htmlUrl':'',
-						'rssUrl':'',
 						'isPrimary':True
 						})
 	  return cates
@@ -565,7 +674,7 @@ def mt_setPostCategories(postid,cates):
 		for cate in cates:
 			if cate.has_key('categoryId'):
 				id=int(cate['categoryId'])
-				c=Category.get_from_id(cate['categoryId'])
+				c=Category.get_from_id(int(cate['categoryId']))
 				if c:
 					newcates.append(c.key())
 		entry.categorie_keys=newcates
@@ -579,9 +688,9 @@ def mt_publishPost(postid):
 	try:
 		entry=Entry.get_by_id(int(postid))
 		entry.save(True)
-		return True
+		return entry.key().id()
 	except:
-		return False
+		return 0
 
 @checkauth()
 def mt_getRecentPostTitles(blogid,num):
@@ -735,6 +844,7 @@ dispatcher = PlogXMLRPCDispatcher({
 	'wp.suggestCategories':wp_suggestCategories,
 	'wp.getComment':wp_getComment,
 	'wp.getComments':wp_getComments,
+	'wp.uploadFile':metaWeblog_newMediaObject,
 
 	'mt.setPostCategories':mt_setPostCategories,
 	'mt.getPostCategories':mt_getPostCategories,

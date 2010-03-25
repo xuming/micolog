@@ -64,19 +64,7 @@ class setlanguage(BaseRequestHandler):
 
 			#self.response.headers.add_header('Set-Cookie', cookiestr)
 
-class admin_do_import(BaseRequestHandler):
-	@requires_admin
-	def get(self,slug=None):
-		try:
-			func=getattr(self,'action_'+slug)
-			if func and callable(func):
-				func()
-			else:
-				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-		except:
-			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
-	def action_wordpress(self):
-		self.write("wordpress")
+
 
 class admin_do_action(BaseRequestHandler):
 	@requires_admin
@@ -209,6 +197,8 @@ class admin_do_action(BaseRequestHandler):
 			raise PingbackError(e.faultCode)
 		except:
 			raise PingbackError(32)
+
+
 
 
 class admin_tools(BaseRequestHandler):
@@ -396,6 +386,8 @@ class admin_entry(BaseRequestHandler):
 		entry_parent=self.paramint('entry_parent')
 		menu_order=self.paramint('menu_order')
 		entry_excerpt=self.param('excerpt')
+		password=self.param('password')
+		sticky=self.parambool('sticky')
 
 		is_external_page=self.parambool('is_external_page')
 		target=self.param('target')
@@ -415,7 +407,9 @@ class admin_entry(BaseRequestHandler):
 						'menu_order':menu_order,
 						'is_external_page':is_external_page,
 						'target':target,
-						'external_page_address':external_page_address}
+						'external_page_address':external_page_address,
+						'password':password,
+						'sticky':sticky}
 			  }
 		if not (title and (content or (is_external_page and external_page_address))):
 			vals.update({'result':False, 'msg':'Please input title and content or external_page_address.'})
@@ -437,6 +431,8 @@ class admin_entry(BaseRequestHandler):
 				entry.allow_trackback=allow_trackback
 				entry.author=self.author.user
 				entry.author_name=self.author.dispname
+				entry.password=password
+				entry.sticky=sticky
 				if cats:
 
 				   for cate in cats:
@@ -463,6 +459,8 @@ class admin_entry(BaseRequestHandler):
 					entry.settags(tags)
 					entry.author=self.author.user
 					entry.author_name=self.author.dispname
+					entry.password=password
+					entry.sticky=sticky
 					newcates=[]
 					if cats:
 
@@ -980,7 +978,6 @@ def main():
 					 ('/admin/authors',admin_authors),
 					 ('/admin/author',admin_author),
 					 ('/admin/import',admin_import),
-					 ('/admin/import/(\w+)',admin_do_import),
 					 ('/admin/tools',admin_tools),
 					 ('/admin/plugins',admin_plugins),
 					 ('/admin/plugins/(\w+)',admin_plugins_action),
