@@ -37,6 +37,9 @@ class wordpress(Plugin_importbase):
 			return self.error("Import Error:<p  style='color:red;font-size:11px;font-weight:normal'>%s</p>"%e.message)
 
 	def wp_import(self,page=None,*arg1,**arg2):
+		if not page.is_login:
+			page.redirect(users.create_login_url(page.request.uri))
+
 		if page.request.method=='GET':
 			action=page.param('action')
 
