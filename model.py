@@ -373,6 +373,7 @@ class Entry(BaseModel):
 	readtimes = db.IntegerProperty(default=0)
 	title = db.StringProperty(multiline=False,default='')
 	date = db.DateTimeProperty(auto_now_add=True)
+	mod_date = db.DateTimeProperty(auto_now_add=True)
 	tags = db.StringListProperty()
 	categorie_keys=db.ListProperty(db.Key)
 	slug = db.StringProperty(multiline=False,default='')
@@ -467,12 +468,11 @@ class Entry(BaseModel):
 		return  self.published and 'publish' or 'draft'
 
 	def settags(self,values):
-		if not values:return
+		if not values:tags=[]
 		if type(values)==type([]):
 			tags=values
 		else:
 			tags=values.split(',')
-		logging.info('tags:   ok')
 
 
 
@@ -541,6 +541,7 @@ class Entry(BaseModel):
 		my = self.date.strftime('%B %Y') # September 2008
 		self.monthyear = my
 		old_publish=self.published
+		self.mod_date=datetime.now()
 
 		if is_publish:
 			if not self.is_wp:
@@ -669,7 +670,7 @@ class Entry(BaseModel):
 			return self._relatepost
 		else:
 			if self.tags:
-				self._relatepost= Entry.gql("WHERE tags IN :1 and post_id!=:2 order by post_id desc ",self.tags,self.post_id).fetch(5)
+				self._relatepost= Entry.gql("WHERE published=True and tags IN :1 and post_id!=:2 order by post_id desc ",self.tags,self.post_id).fetch(5)
 			else:
 				self._relatepost= []
 			return self._relatepost

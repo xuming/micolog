@@ -83,6 +83,12 @@ class BasePublicPage(BaseRequestHandler):
 				ret+='<li class="%s"><a href="/%s" target="%s">%s</a></li>'%( current,page.link, page.target,page.title)
 		return ret
 
+	def sticky_entrys(self):
+		return Entry.all().filter('entrytype =','post')\
+			.filter('published =',True)\
+			.filter('sticky =',True)\
+			.order('-date')
+
 class MainPage(BasePublicPage):
 	def get(self,page=1):
 		postid=self.param('p')
@@ -422,7 +428,7 @@ class SitemapHandler(BaseRequestHandler):
 
 		for item in entries:
 			loc = "%s/%s" % (g_blog.baseurl, item.link)
-			addurl(loc,item.date,'never',0.6)
+			addurl(loc,item.mod_date or item.date,'never',0.6)
 
 		if g_blog.sitemap_include_category:
 			cats=Category.all()
@@ -699,7 +705,7 @@ def main():
 			('/([\\w\\-\\./%]+)', SinglePost),
 			('.*',Error404),
 			]
-	application = webapp.WSGIApplication(urls,debug=True)
+	application = webapp.WSGIApplication(urls,debug=False)
 	g_blog.application=application
 	g_blog.plugins.register_ziplist(application)
 	wsgiref.handlers.CGIHandler().run(application)

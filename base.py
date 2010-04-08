@@ -98,8 +98,6 @@ def cache(key="",time=3600):
 
 			if html:
 				 logging.info('cache:'+skey)
-				 logging.debug(html[2])
-				 logging.debug(html[3])
 				 response.last_modified =html[1]
 				 ilen=len(html)
 				 if ilen>=3:
