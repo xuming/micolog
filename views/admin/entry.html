@@ -49,7 +49,7 @@
 <script type="text/javascript" src="/tinymce/jquery.tinymce.js"></script>
 
 <script type="text/javascript">
-	$(function() {
+    $('#content').ready(function() {
         $('.editor-toolbar').show();
 		$('#edButtonHTML').click(function(){switchEditors.go('content','html');});
 		$('#edButtonPreview').click(function(){switchEditors.go('content','tinymce');});
