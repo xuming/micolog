@@ -14,8 +14,8 @@ from django.utils.translation import  activate
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 settings._target = None
-from model import g_blog,User
-activate(g_blog.language)
+#from model import g_blog,User
+#activate(g_blog.language)
 from google.appengine.api.labs import taskqueue
 import wsgiref.handlers
 from mimetypes import types_map
@@ -85,6 +85,7 @@ def format_date(dt):
 def cache(key="",time=3600):
 	def _decorate(method):
 		def _wrapper(*args, **kwargs):
+			from model import g_blog
 			if not g_blog.enable_memcache:
 				method(*args, **kwargs)
 				return
@@ -221,12 +222,11 @@ class Pager(object):
 class BaseRequestHandler(webapp.RequestHandler):
 	def __init__(self):
 		self.current='home'
-		pass
 
 	def initialize(self, request, response):
 		webapp.RequestHandler.initialize(self, request, response)
 		os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-
+		from model import g_blog,User
 		self.blog = g_blog
 		self.login_user = users.get_current_user()
 		self.is_login = (self.login_user != None)

@@ -40,7 +40,7 @@ class Plugins:
 		self._filter_plugins={}
 		self._action_plugins={}
 		self._urlmap={}
-		self._ziplist={}
+		self._handlerlist={}
 		pi=PluginIterator()
 		self.active_list=OptionSet.getValue("PluginActive",[])
 		for v,m in pi:
@@ -55,8 +55,8 @@ class Plugins:
 			except:
 				pass
 
-	def add_urlzip(self,plugin,application):
-		for regexp,handler in plugin._ziplist.items():
+	def add_urlhandler(self,plugin,application):
+		for regexp,handler in plugin._handlerlist.items():
 			try:
 				application._handler_map[handler.__name__] = handler
 				if not regexp.startswith('^'):
@@ -72,8 +72,8 @@ class Plugins:
 			except:
 				pass
 
-	def remove_urlzip(self,plugin,application):
-		for regexp,handler in plugin._ziplist.items():
+	def remove_urlhandler(self,plugin,application):
+		for regexp,handler in plugin._handlerlist.items():
 			try:
 				if application._handler_map.has_key(handler.__name__):
 					del application._handler_map[handler.__name__]
@@ -89,10 +89,10 @@ class Plugins:
 			except:
 				pass
 
-	def register_ziplist(self,application):
+	def register_handlerlist(self,application):
 		for name,item in self.list.items():
-			if item.active and item._ziplist:
-				self.add_urlzip(item,application)
+			if item.active and item._handlerlist:
+				self.add_urlhandler(item,application)
 
 
 	def reload(self):
@@ -126,7 +126,7 @@ class Plugins:
 						if not v in self._action_plugins[k]:
 							self._action_plugins[k].append(v)
 				if self.blog.application:
-					self.add_urlzip(plugin,self.blog.application)
+					self.add_urlhandler(plugin,self.blog.application)
 
 		else:
 			plugin=self.getPluginByName(iname)
@@ -146,7 +146,7 @@ class Plugins:
 						if v in self._action_plugins[k]:
 							self._action_plugins[k].remove(v)
 				if self.blog.application:
-					self.remove_urlzip(plugin,self.blog.application)
+					self.remove_urlhandler(plugin,self.blog.application)
 		self._urlmap={}
 
 
@@ -199,13 +199,13 @@ class Plugins:
 		else:
 			return None
 
-	def get_ziplist(self):
-		if not self._ziplist:
+	def get_handlerlist(self):
+		if not self._handlerlist:
 			for item in self:
 				if item.active:
-					self._ziplist.update(item._ziplist)
-		if self._ziplist.has_key(url):
-			return self._ziplist[url]
+					self._handlerlist.update(item._handlerlist)
+		if self._handlerlist.has_key(url):
+			return self._handlerlist[url]
 		else:
 			return {}
 
@@ -241,7 +241,8 @@ class Plugin:
 		self._filter={}
 		self._action={}
 		self._urlmap={}
-		self._ziplist={}
+		self._handlerlist={}
+		self._urlhandler={}
 
 	def get(self,page):
 		return "<h3>%s</h3><p>%s</p>"%(self.name,self.description)
@@ -267,9 +268,12 @@ class Plugin:
 	def register_urlmap(self,url,func):
 		self._urlmap[url]=func
 
+	def register_urlhandler(self,url,handler):
+		self._handlerlist[url]=handler
+
 	def register_urlzip(self,name,zipfile):
 		zipfile=os.path.join(self.dir,zipfile)
-		self._ziplist[name]=zipserve.make_zip_handler(zipfile)
+		self._handlerlist[name]=zipserve.make_zip_handler(zipfile)
 
 
 class Plugin_importbase(Plugin):

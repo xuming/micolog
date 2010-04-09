@@ -24,8 +24,9 @@ from django.template.loader import *
 from app.safecode import Image
 from app.gmemsess import Session
 
-from model import *
 from base import *
+from model import *
+
 
 ##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 ##from django.utils.translation import  activate
@@ -707,7 +708,7 @@ def main():
 			]
 	application = webapp.WSGIApplication(urls,debug=False)
 	g_blog.application=application
-	g_blog.plugins.register_ziplist(application)
+	g_blog.plugins.register_handlerlist(application)
 	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":

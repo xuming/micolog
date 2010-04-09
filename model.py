@@ -9,6 +9,7 @@ from google.appengine.api import urlfetch
 from datetime import datetime
 import urllib, hashlib,urlparse
 import zipfile,re,pickle,uuid
+#from base import *
 logging.info('module base reloaded')
 
 rootpath=os.path.dirname(__file__)
@@ -930,6 +931,12 @@ def gblog_init():
 
 
 g_blog=gblog_init()
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.utils.translation import  activate
+from django.conf import settings
+settings._target = None
+activate(g_blog.language)
 
 if __name__=='__main__':
 	lk = Link()
