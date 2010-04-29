@@ -1,1 +1,1 @@
-dev_appserver.py ..\micolog --debug
+dev_appserver.py . --debug

@@ -117,12 +117,12 @@ var switchEditors = {
 			this.mode = 'tinymce';
 			H.className = 'active';
 			P.className = '';
-
+			
 			if ( ed && !ed.isHidden() ) {
 				ta.style.height = ed.getContentAreaContainer().offsetHeight + 24 + 'px';
 				ed.hide();
 			}
-            ta.value = this.pre_wpautop(ta.value);
+			ta.value = this.pre_wpautop($(ta).val());
 			qt.style.display = 'block';
 		}
 		return false;
@@ -191,5 +191,17 @@ var switchEditors = {
 		o.data = t._wp_Autop(o.data);
 		jQuery('body').trigger('afterWpautop', [o]);
 		return o.data;
-	}
+	},
+	pre_save : function(se,ed,o){
+			if ( typeof(se) == 'object' ) {
+					//Wp默认存quicktag的格式，Micolog默认存储html格式，所以这里进行了修改
+					if ( ed.isHidden() )
+                     o.content = se.wpautop(o.element.value);
+						//o.content = o.element.value;
+					else
+						o.content = $(o.element).val();//switchEditors.pre_wpautop(o.content);
+
+				}
+			
+	 }
 };

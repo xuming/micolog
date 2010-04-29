@@ -5,14 +5,20 @@ $(function() {
     get_next();
 });
 
+$(document).ajaxError(function(){
+ $.unblockUI();
+ $('.blockUI').css('cursor','');
+ $('#importing').hide();
+ $('#wp_import').show();
+});
 function get_next()
 {
-  $.getJSON("/e/wp_import", next_result);
+  $.getJSON("/admin/wp_import", next_result);
 }
  function stop()
  {
     $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Stop importing now...</h3>' });
- 	$.getJSON("/e/wp_import?action=stop", function(json){
+ 	$.getJSON("/admin/wp_import?action=stop", function(json){
  		   $.unblockUI();
  		   $('.blockUI').css('cursor','');
             $('#importing').hide();
@@ -61,6 +67,7 @@ function next_result(json)
 
 	</table>
     <p>
+
 	<input type="submit" value="{% trans "Import"%}"/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
     </p>
 </div>

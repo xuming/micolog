@@ -167,7 +167,12 @@
 {%endifequal%}
 <p class="submit">
 <input type="submit" tabindex="4" value="{% trans "Save" %}" name="save" class="button button-highlighted"/>
-  <input type="checkbox" style="margin-left:10px;" tabindex="4" id="publish"  name="publish" class="button button-highlighted" {%if entry.published%}checked="checked"{%endif%} /><label for="publish">{% trans "Published" %}</label>
+{%if entry.published%}
+<input type="submit" tabindex="4" value="{% trans "UnPublish" %}" name="unpublish" class="button button-highlighted"/>
+{%else%}
+<input type="submit" tabindex="4" value="{% trans "Publish" %}" name="publish" class="button button-highlighted"/>
+{%endif%}
+<input type="hidden" value="{{entry.published}}" name="published" />
 
 </p>
 <div class="inside">

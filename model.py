@@ -235,6 +235,9 @@ class Blog(db.Model):
 	def cur_language(self):
 		return self.get_langs().getlang(self.language)
 
+	def rootpath(self):
+		return rootpath
+
 	@vcache("blog.hotposts")
 	def hotposts(self):
 		return Entry.all().filter('entrytype =','post').filter("published =", True).order('-readtimes').fetch(8)
@@ -591,63 +594,7 @@ class Entry(BaseModel):
 		g_blog.tigger_action("save_post",self,is_publish)
 
 
-##	def publish(self,newval=True):
-##		g_blog.tigger_action("pre_publish_post",self)
-##		update_ar=0
-##		if newval:
-##			if not self.is_saved():
-##				self.save()
-##
-##			if not self.is_wp:
-##				self.post_id=self.key().id()
-##
-##			#fix for old version
-##			if not self.postname:
-##				self.setpostname(self.slug)
-##
-##
-##			vals={'year':self.date.year,'month':str(self.date.month).zfill(2),'day':self.date.day,
-##				'postname':self.postname,'post_id':self.post_id}
-##
-##
-##			if self.entrytype=='page':
-##				if self.slug:
-##					self.link=self.postname
-##				else:
-##					#use external page address as link
-##					if self.is_external_page:
-##					   self.link=self.external_page_address
-##					else:
-##					   self.link=g_blog.default_link_format%vals
-##			else:
-##				if g_blog.link_format and self.postname:
-##					self.link=g_blog.link_format.strip()%vals
-##				else:
-##					self.link=g_blog.default_link_format%vals
-##
-##
-##
-##			if not self.published:
-##				 g_blog.entrycount+=1
-##				 update_ar=1
-##			self.published=True
-##			g_blog.save()
-##			self.save()
-##		else:
-##			self.published=false
-##			if self.published:
-##				g_blog.entrycount-=1
-##				update_ar=-1
-##
-##			g_blog.save()
-##			self.save()
-##
-##		if  update_ar!=0:
-##			self.update_archive(update_ar)
-##		self.removecache()
-##		if g_blog.sitemap_ping:
-##			Sitemap_NotifySearch()
-##		g_blog.tigger_action("publish_post",self)
+
 
 	def removecache(self):
 		memcache.delete('/')
@@ -773,23 +720,24 @@ Comment:
 You can see all comments on this post here:
 %s
 ''')
+
 		sbody=sbody.decode('utf-8')
 
-		bbody=_('''Hi~ New reference on your comment for post "%s"
+		bbody='''Hi~ New reference on your comment for post "%s"
 Author : %s
 URL	: %s
 Comment:
 %s
 You can see all comments on this post here:
 %s
-''')
+'''
 		bbody=bbody.decode('utf-8')
 
 		if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
 			sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
 			g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
 			mail.send_mail_to_admins(g_blog.owner.email(),'Comments:'+self.entry.title, sbody,reply_to=self.email)
-			logging.info('send %s . entry: %s'%(g_blog.owner.email(),self.entry.title))
+			
 		#reply comment mail notify
 		refers = re.findall(r'@[\S]+-(\d+)[:]', self.content)
 		if len(refers)!=0:
@@ -820,6 +768,17 @@ You can see all comments on this post here:
 	def delete(self):
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_comment",self)
+		
+	def children(self):
+		children=[]
+		key=self.key()
+		comments=Comment.all().ancestor(self)
+		for c in comments:
+			if c.parent_key()==key:
+				children.append(c)
+		
+		return children
+	
 
 class Media(db.Model):
 	name =db.StringProperty()
@@ -855,11 +814,15 @@ class OptionSet(db.Model):
 		opt.value=pickle.dumps(value)
 		opt.put()
 
+	@classmethod
+	def remove(cls,name):
+		opt= OptionSet.get_by_key_name(name)
+		if opt:
+			opt.delete()
+
 NOTIFICATION_SITES = [
   ('http', 'www.google.com', 'webmasters/sitemaps/ping', {}, '', 'sitemap')
   ]
-
-
 
 
 def Sitemap_NotifySearch():
@@ -876,11 +839,6 @@ def Sitemap_NotifySearch():
 	  query_map[query_attr] = url
 	  query = urllib.urlencode(query_map)
 	  notify = urlparse.urlunsplit((ping[0], ping[1], ping[2], query, ping[4]))
-
-	  # Send the notification
-	  logging.info('Notifying search engines. %s'%ping[1])
-	  logging.info('url: %s'%notify)
-
 	  try:
 		urlfetch.fetch(notify)
 
@@ -929,18 +887,16 @@ def gblog_init():
 	g_blog.rootdir=os.path.dirname(__file__)
 	return g_blog
 
+try:
+	g_blog=gblog_init()
 
-g_blog=gblog_init()
+	os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+	from django.utils.translation import  activate
+	from django.conf import settings
+	settings._target = None
+	activate(g_blog.language)
+except:
+	pass
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from django.utils.translation import  activate
-from django.conf import settings
-settings._target = None
-activate(g_blog.language)
-
-if __name__=='__main__':
-	lk = Link()
-	lk.href = 'http://micolog.xuming.net'
-	print lk.get_icon_url()
 
 

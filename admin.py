@@ -18,7 +18,7 @@ from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 from google.appengine.api.labs import taskqueue
 from datetime import datetime ,timedelta
-import base64,random,math
+import base64,random,math,zipfile
 from django.utils import simplejson
 import pickle
 from base import *
@@ -75,9 +75,9 @@ class admin_do_action(BaseRequestHandler):
 			if func and callable(func):
 				func()
 			else:
-				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+				self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 		except:
-			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 
 	@requires_admin
 	def post(self,slug=None):
@@ -86,16 +86,16 @@ class admin_do_action(BaseRequestHandler):
 			if func and callable(func):
 				func()
 			else:
-				self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+				self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 		except:
-			 self.render2('views/admin/error.html',{'message':'This operate has not defined!'})
+			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 
 	def action_test(self):
 		self.write(os.environ)
 
 	def action_cacheclear(self):
 		memcache.flush_all()
-		self.write('"Cache cleared successful"')
+		self.write(_('"Cache cleared successful"'))
 
 	def action_updatecomments(self):
 		for entry in Entry.all():
@@ -103,7 +103,7 @@ class admin_do_action(BaseRequestHandler):
 			if cnt<>entry.commentcount:
 				entry.commentcount=cnt
 				entry.put()
-		self.write('"ok"')
+		self.write(_('"All comments updated"'))
 
 	def action_updatelink(self):
 		link_format=self.param('linkfmt')
@@ -124,9 +124,9 @@ class admin_do_action(BaseRequestHandler):
 				if entry.link<>newlink:
 					entry.link=newlink
 					entry.put()
-			self.write('"ok"')
+			self.write(_('"Link formated succeed"'))
 		else:
-			self.write('"Please input url format."')
+			self.write(_('"Please input url format."'))
 
 	def action_init_blog(self,slug=None):
 
@@ -137,7 +137,7 @@ class admin_do_action(BaseRequestHandler):
 			entry.delete()
 
 		g_blog.entrycount=0
-		self.write('"Init has succeed."')
+		self.write(_('"Init has succeed."'))
 
 	def action_update_tags(self,slug=None):
 		for tag in Tag.all():
@@ -150,7 +150,7 @@ class admin_do_action(BaseRequestHandler):
 					except:
 						traceback.print_exc()
 
-		self.write('"All tags for entry have been updated."')
+		self.write(_('"All tags for entry have been updated."'))
 
 
 	def action_update_archives(self,slug=None):
@@ -159,7 +159,7 @@ class admin_do_action(BaseRequestHandler):
 		entries=Entry.all()
 		for entry in entries:
 			entry.update_archive()
-		self.write('"All entries have been updated."')
+		self.write(_('"All entries have been updated."'))
 
 
 	def action_trackback_ping(self):
@@ -380,13 +380,19 @@ class admin_entry(BaseRequestHandler):
 		tags=self.param("tags")
 		cats=self.request.get_all('cats')
 		key=self.param('key')
-		published=self.parambool('publish')
+		if self.param('publish')!='':
+			published=True
+		elif self.param('unpublish')!='':
+			published=False
+		else:
+			published=self.param('published')=='True'
+			 
 		allow_comment=self.parambool('allow_comment')
 		allow_trackback=self.parambool('allow_trackback')
 		entry_slug=self.param('slug')
 		entry_parent=self.paramint('entry_parent')
 		menu_order=self.paramint('menu_order')
-		entry_excerpt=self.param('excerpt')
+		entry_excerpt=self.param('excerpt').replace('\n','<br>')
 		password=self.param('password')
 		sticky=self.parambool('sticky')
 
@@ -413,7 +419,7 @@ class admin_entry(BaseRequestHandler):
 						'sticky':sticky}
 			  }
 		if not (title and (content or (is_external_page and external_page_address))):
-			vals.update({'result':False, 'msg':'Please input title and content or external_page_address.'})
+			vals.update({'result':False, 'msg':_('Please input title and content or external_page_address.')})
 			self.render2('views/admin/entry.html',vals)
 		else:
 			if action=='add':
@@ -443,7 +449,12 @@ class admin_entry(BaseRequestHandler):
 				entry.categorie_keys=newcates;
 
 				entry.save(published)
-				vals.update({'action':'edit','result':True,'msg':'Saved ok','entry':entry})
+				if published:
+					smsg=_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')
+				else:
+					smsg=_('Saved ok.')
+				   
+				vals.update({'action':'edit','result':True,'msg':_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')%entry.link,'entry':entry})
 				self.render2('views/admin/entry.html',vals)
 			elif action=='edit':
 				try:
@@ -474,12 +485,15 @@ class admin_entry(BaseRequestHandler):
 					entry.allow_trackback=allow_trackback
 
 					entry.save(published)
-
-					vals.update({'result':True,'msg':'Saved ok','entry':entry})
+					if published:
+						smsg=_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')
+					else:
+						smsg=_('Saved ok.')
+					vals.update({'result':True,'msg':_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')%entry.link,'entry':entry})
 					self.render2('views/admin/entry.html',vals)
 
 				except:
-					vals.update({'result':False,'msg':'Error:Entry can''t been saved.'})
+					vals.update({'result':False,'msg':_('Error:Entry can''t been saved.')})
 					self.render2('views/admin/entry.html',vals)
 
 
@@ -641,7 +655,7 @@ class admin_link(BaseRequestHandler):
 
 		vals={'action':action,'postback':True,'current':'links'}
 		if not (name and url):
-			vals.update({'result':False,'msg':'Please input name and url.'})
+			vals.update({'result':False,'msg':_('Please input name and url.')})
 			self.render2('views/admin/link.html',vals)
 		else:
 			if action=='add':
@@ -661,7 +675,7 @@ class admin_link(BaseRequestHandler):
 					self.redirect('/admin/links')
 
 				except:
-					vals.update({'result':False,'msg':'Error:Link can''t been saved.'})
+					vals.update({'result':False,'msg':_('Error:Link can''t been saved.')})
 					self.render2('views/admin/link.html',vals)
 
 class admin_category(BaseRequestHandler):
@@ -692,13 +706,13 @@ class admin_category(BaseRequestHandler):
 
 		vals={'action':action,'postback':True}
 		if not (name and slug):
-			vals.update({'result':False,'msg':'Please input name and slug.'})
+			vals.update({'result':False,'msg':_('Please input name and slug.')})
 			self.render2('views/admin/category.html',vals)
 		else:
 			if action=='add':
 			   cat= Category(name=name,slug=slug)
 			   cat.put()
-			   vals.update({'result':True,'msg':'Saved ok'})
+			   vals.update({'result':True,'msg':_('Saved ok')})
 			   self.render2('views/admin/category.html',vals)
 			elif action=='edit':
 				try:
@@ -710,7 +724,7 @@ class admin_category(BaseRequestHandler):
 					self.redirect('/admin/categories')
 
 				except:
-					vals.update({'result':False,'msg':'Error:Category can''t been saved.'})
+					vals.update({'result':False,'msg':_('Error:Category can''t been saved.')})
 					self.render2('views/admin/category.html',vals)
 
 class admin_status(BaseRequestHandler):
@@ -778,7 +792,7 @@ class admin_author(BaseRequestHandler):
 
 		vals={'action':action,'postback':True}
 		if not (name and slug):
-			vals.update({'result':False,'msg':'Please input dispname and email.'})
+			vals.update({'result':False,'msg':_('Please input dispname and email.')})
 			self.render2('views/admin/author.html',vals)
 		else:
 			if action=='add':
@@ -800,7 +814,7 @@ class admin_author(BaseRequestHandler):
 					self.redirect('/admin/authors')
 
 				except:
-					vals.update({'result':False,'msg':'Error:Author can''t been saved.'})
+					vals.update({'result':False,'msg':_('Error:Author can''t been saved.')})
 					self.render2('views/admin/author.html',vals)
 class admin_plugins(BaseRequestHandler):
 	def __init__(self):
@@ -835,8 +849,7 @@ class admin_plugins_action(BaseRequestHandler):
 			return
 		plugins=self.blog.plugins.filter('active',True)
 		if not plugin.active:
-			pcontent=_('''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
-<input type="submit" value="Activate Now"/></form>''')%(plugin.name,plugin.iname,plugin.iname)
+			pcontent=_('''<div>Plugin '%(name)s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s"><input type="submit" value="Activate Now"/></form>''')%{'name':plugin.name,'iname':plugin.iname}
 			plugins.insert(0,plugin)
 		else:
 			pcontent=plugin.get(self)
@@ -857,8 +870,7 @@ class admin_plugins_action(BaseRequestHandler):
 			return
 		plugins=self.blog.plugins.filter('active',True)
 		if not plugin.active:
-			pcontent=_('''<div>Plugin '%s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%s&amp;return=/admin/plugins/%s">
-<input type="submit" value="Activate Now"/></form>''')%(plugin.name,plugin.iname,plugin.iname)
+			pcontent=_('''<div>Plugin '%(name)s' havn't actived!</div><br><form method="post" action="/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s"><input type="submit" value="Activate Now"/></form>''')%{'name':plugin.name,'iname':plugin.iname}
 			plugins.insert(0,plugin)
 		else:
 			pcontent=plugin.post(self)
@@ -962,6 +974,15 @@ class admin_main(BaseRequestHandler):
 		else:
 			self.redirect('/admin/entries/post')
 
+class admin_ThemeEdit(BaseRequestHandler):
+	@requires_admin
+	def get(self,slug):
+		zfile=zipfile.ZipFile(os.path.join(rootpath,"themes",slug+".zip"))
+		newfile=zipfile.ZipFile('')
+		for item  in zfile.infolist():
+			self.write(item.filename+"<br>")
+
+
 def main():
 	webapp.template.register_template_library('filter')
 	application = webapp.WSGIApplication(
@@ -986,6 +1007,7 @@ def main():
 					 ('/admin/export/micolog.xml',WpHandler),
 					 ('/admin/do/(\w+)',admin_do_action),
 					 ('/admin/lang',setlanguage),
+					 ('/admin/theme/edit/(\w+)',admin_ThemeEdit),
 
 					 ('/admin/upload', Upload),
 					 ('/admin/filemanager', FileManager),
@@ -994,6 +1016,8 @@ def main():
 
 					 ('.*',Error404),
 					 ],debug=True)
+	g_blog.application=application
+	g_blog.plugins.register_handlerlist(application)
 	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":

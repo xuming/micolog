@@ -889,16 +889,18 @@ font-size : 12px;
 text-align : center;
 border-left : 0;
 border-right : 0;
-margin : 5px 20px;
+margin : 5px auto;
 padding : 5px 0;
+width:972px;
 }
 #hiddenmessage .error {
 color : red;
 }
 #nav2 #dnav2{
 border-bottom:1px solid #DADADA;
-margin:0 20px;
+margin:0 auto;
 padding:0 0 12px;
+width:972px;
 
 }
 #nav2 a {
