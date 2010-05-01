@@ -549,7 +549,7 @@ class admin_categories(BaseRequestHandler):
 
 
 
-		cats=Category.all()
+		cats=Category.allTops()
 		entries,pager=Pager(query=cats,items_per_page=15).fetch(page_index)
 
 		self.render2('views/admin/categories.html',
@@ -685,47 +685,78 @@ class admin_category(BaseRequestHandler):
 	@requires_admin
 	def get(self,slug=None):
 		action=self.param("action")
+		key=self.param('key')
 		category=None
 		if action and  action=='edit':
 				try:
-					key=self.param('key')
+					
 					category=Category.get(key)
 
 				except:
 					pass
 		else:
 			action='add'
-		vals={'action':action,'category':category}
+		vals={'action':action,'category':category,'key':key,'categories':[c for c in Category.all() if not category or c.key()!=category.key()]}
 		self.render2('views/admin/category.html',vals)
 
 	@requires_admin
 	def post(self):
+		def check(cate):
+			parent=cate.parent_cat
+			skey=cate.key()
+			while parent:
+				if parent.key()==skey:
+					return False
+				parent=parent.parent_cat
+			return True
+		
 		action=self.param("action")
 		name=self.param("name")
 		slug=self.param("slug")
+		parentkey=self.param('parentkey')
+		key=self.param('key')
+					
 
 		vals={'action':action,'postback':True}
-		if not (name and slug):
-			vals.update({'result':False,'msg':_('Please input name and slug.')})
-			self.render2('views/admin/category.html',vals)
-		else:
-			if action=='add':
-			   cat= Category(name=name,slug=slug)
-			   cat.put()
-			   vals.update({'result':True,'msg':_('Saved ok')})
-			   self.render2('views/admin/category.html',vals)
-			elif action=='edit':
-				try:
-					key=self.param('key')
-					cat=Category.get(key)
-					cat.name=name
-					cat.slug=slug
+		
+		try:
+		
+				if action=='add':
+					cat= Category(name=name,slug=slug)
+					if not (name and slug):
+						raise Exception(_('Please input name and slug.'))
+					if parentkey:
+						cat.parent_cat=Category.get(parentkey)
+							
 					cat.put()
 					self.redirect('/admin/categories')
+					
+					#vals.update({'result':True,'msg':_('Saved ok')})
+					#self.render2('views/admin/category.html',vals)
+				elif action=='edit':
+						
+						cat=Category.get(key)
+						cat.name=name
+						cat.slug=slug
+						if not (name and slug):
+							raise Exception(_('Please input name and slug.'))
+						if parentkey:
+							cat.parent_cat=Category.get(parentkey)
+							if not check(cat):
+								raise Exception(_('A circle declaration found.'))
+						else:
+							cat.parent_cat=None
+						cat.put()
+						self.redirect('/admin/categories')
 
-				except:
-					vals.update({'result':False,'msg':_('Error:Category can''t been saved.')})
-					self.render2('views/admin/category.html',vals)
+		except Exception ,e :
+			if cat.is_saved():
+				cates=[c for c in Category.all() if c.key()!=cat.key()]
+			else:
+				cates= Category.all()
+			
+			vals.update({'result':False,'msg':e.message,'category':cat,'key':key,'categories':cates})
+			self.render2('views/admin/category.html',vals)
 
 class admin_status(BaseRequestHandler):
 	@requires_admin
@@ -985,6 +1016,8 @@ class admin_ThemeEdit(BaseRequestHandler):
 
 def main():
 	webapp.template.register_template_library('filter')
+	webapp.template.register_template_library('app.recurse')
+	
 	application = webapp.WSGIApplication(
 					[
 					('/admin/{0,1}',admin_main),

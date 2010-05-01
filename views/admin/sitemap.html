@@ -1,13 +1,10 @@
 ﻿{% load i18n %}
-{% extends "base.html" %}
-
-{% block nav2 %}
-<div id="dnav2">
- <a href="/admin/setup" >{%trans "Basic" %}</a>
- <a href="/admin/import">{%trans "Import/Export" %}</a>
- <a href="/admin/sitemap"  class="current">{%trans "Sitemap" %}</a>
- <a href="/admin/tools">{%trans "Tools" %}</a>
-</div>
+{% extends "setup_base.html" %}
+{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap" class="current">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
 {% endblock %}
 
 {% block content %}

@@ -132,7 +132,7 @@ class wordpress(Plugin_importbase):
 		self.uri="http://xuming.net"
 		self.description="Plugin for import wxr file."
 		self.name="Wordpress Import"
-		self.version="0.5"
+		self.version="0.7"
 		self.register_urlhandler('/admin/wp_import',waphandler)
 
 	def get(self,page):

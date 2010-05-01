@@ -194,13 +194,16 @@ class Pager(object):
 	def __init__(self, model=None,query=None, items_per_page=10):
 		if model:
 			self.query = model.all()
-		elif query:
+		else:
 			self.query=query
 
 		self.items_per_page = items_per_page
 
 	def fetch(self, p):
-		max_offset = self.query.count()
+		if hasattr(self.query,'__len__'):
+			max_offset=len(self.query)
+		else:		    
+			max_offset = self.query.count()
 		n = max_offset / self.items_per_page
 		if max_offset % self.items_per_page != 0:
 			n += 1
@@ -208,7 +211,10 @@ class Pager(object):
 		if p < 0 or p > n:
 			p = 1
 		offset = (p - 1) * self.items_per_page
-		results = self.query.fetch(self.items_per_page, offset)
+		if hasattr(self.query,'fetch'):
+			results = self.query.fetch(self.items_per_page, offset)
+		else:
+			results = self.query[offset:offset+self.items_per_page]
 
 
 

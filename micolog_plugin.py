@@ -51,6 +51,7 @@ class Plugins:
 				#internal name
 				plugin.iname=v
 				plugin.active=v in self.active_list
+				plugin.blog=self.blog
 				self.list[v]=plugin
 			except:
 				pass

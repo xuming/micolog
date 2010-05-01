@@ -464,6 +464,7 @@ class Post_comment(BaseRequestHandler):
 
 		key=self.param('key')
 		content=self.param('comment')
+		parent_id=self.paramint('parentid',0)
 		reply_notify_mail=self.parambool('reply_notify_mail')
 
 		sess=Session(self,timeout=180)
@@ -528,6 +529,10 @@ class Post_comment(BaseRequestHandler):
 					   ''
 					   )
 			comment.ip=self.request.remote_addr
+			
+			if parent_id:
+				comment.parent=Comment.get_by_id(parent_id)
+				
 			try:
 				comment.save()
 				memcache.delete("/"+comment.entry.link)
@@ -539,7 +544,6 @@ class Post_comment(BaseRequestHandler):
 				else:
 					self.redirect(self.referer+"#comment-"+str(comment.key().id()))
 
-				comment.notify()
 				comment.entry.removecache()
 				memcache.delete("/feed/comments")
 			except:
@@ -687,6 +691,7 @@ def getZipHandler(**args):
 
 def main():
 	webapp.template.register_template_library('filter')
+	webapp.template.register_template_library('app.recurse')
 	urls=	[('/media/([^/]*)/{0,1}.*',getMedia),
 			('/checkimg/', CheckImg),
 			('/checkcode/', CheckCode),

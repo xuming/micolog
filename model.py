@@ -168,13 +168,13 @@ class Blog(db.Model):
 	#每页评论数
 	comments_per_page=db.IntegerProperty(default=20)
 	#comment check type 0-No 1-算术 2-验证码 3-客户端计算
-	comment_check_type=db.IntegerProperty(default=3)
+	comment_check_type=db.IntegerProperty(default=1)
 
 	blognotice=db.TextProperty(default='')
 
 	domain=db.StringProperty()
 	show_excerpt=db.BooleanProperty(default=True)
-	version=0.7
+	version=0.712
 	timedelta=db.FloatProperty(default=8.0)# hours
 	language=db.StringProperty(default="en-us")
 
@@ -255,6 +255,7 @@ class Category(db.Model):
 	uid=db.IntegerProperty()
 	name=db.StringProperty(multiline=False)
 	slug=db.StringProperty(multiline=False)
+	parent_cat=db.SelfReferenceProperty()
 	@property
 	def posts(self):
 		return Entry.all().filter('entrytype =','post').filter("published =", True).filter('categorie_keys =',self)
@@ -305,7 +306,17 @@ class Category(db.Model):
 		else:
 			cate=Category.all().filter('uid =',id).get()
 			return cate
+		
+	@property	
+	def children(self):
+		key=self.key()
+		return [c for c in Category.all().filter('parent_cat =',self)]
 
+	
+	@classmethod
+	def allTops(self):
+		return [c for c in Category.all() if not c.parent_cat]
+	
 class Archive(db.Model):
 	monthyear = db.StringProperty(multiline=False)
 	year = db.StringProperty(multiline=False)
@@ -457,6 +468,7 @@ class Entry(BaseModel):
 
 
 
+	@property
 	def fullurl(self):
 		return g_blog.baseurl+'/'+self.link;
 
@@ -509,7 +521,10 @@ class Entry(BaseModel):
 			return Comment.all().filter('entry =',self).order('-date')
 		else:
 			return Comment.all().filter('entry =',self).order('date')
-
+		
+	def commentsTops(self):
+		return [c for c  in self.comments() if c.parent_key()==None]
+	
 	def delete_comments(self):
 		cmts = Comment.all().filter('entry =',self)
 		for comment in cmts:
@@ -675,6 +690,7 @@ class Comment(db.Model):
 	ip=db.StringProperty()
 	ctype=db.IntegerProperty(default=COMMENT_NORMAL)
 
+
 	@property
 	def shortcontent(self,len=20):
 		scontent=self.content
@@ -710,49 +726,7 @@ class Comment(db.Model):
 		self.entry.put()
 		memcache.delete("/"+self.entry.link)
 
-	def notify(self):
-		sbody=_('''New comment on your post "%s"
-Author : %s
-E-mail : %s
-URL	: %s
-Comment:
-%s
-You can see all comments on this post here:
-%s
-''')
 
-		sbody=sbody.decode('utf-8')
-
-		bbody='''Hi~ New reference on your comment for post "%s"
-Author : %s
-URL	: %s
-Comment:
-%s
-You can see all comments on this post here:
-%s
-'''
-		bbody=bbody.decode('utf-8')
-
-		if g_blog.comment_notify_mail and g_blog.owner and not users.is_current_user_admin() :
-			sbody=sbody%(self.entry.title,self.author,self.email,self.weburl,self.content,
-			g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
-			mail.send_mail_to_admins(g_blog.owner.email(),'Comments:'+self.entry.title, sbody,reply_to=self.email)
-			
-		#reply comment mail notify
-		refers = re.findall(r'@[\S]+-(\d+)[:]', self.content)
-		if len(refers)!=0:
-			replyIDs=[int(a) for a in refers]
-			commentlist=self.entry.comments()
-			emaillist=[c.email for c in commentlist if c.reply_notify_mail and c.key().id() in replyIDs]
-			emaillist = {}.fromkeys(emaillist).keys()
-			for refer in emaillist:
-				if g_blog.owner and mail.is_email_valid(refer):
-						emailbody = bbody%(self.entry.title,self.author,self.weburl,self.content,
-											g_blog.baseurl+"/"+self.entry.link+"#comment-"+str(self.key().id()))
-						message = mail.EmailMessage(sender = g_blog.owner.email(),subject = 'Comments:'+self.entry.title)
-						message.to = refer
-						message.body = emailbody
-						message.send()
 
 
 	def delit(self):
@@ -769,15 +743,11 @@ You can see all comments on this post here:
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_comment",self)
 		
+	@property
 	def children(self):
-		children=[]
 		key=self.key()
 		comments=Comment.all().ancestor(self)
-		for c in comments:
-			if c.parent_key()==key:
-				children.append(c)
-		
-		return children
+		return [c for c in comments if c.parent_key()==key]
 	
 
 class Media(db.Model):

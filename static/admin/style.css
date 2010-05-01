@@ -903,6 +903,9 @@ padding:0 0 12px;
 width:972px;
 
 }
+#nav2 ul{height:20px;margin-bottom:0;list-style-type:none;margin-left:0;padding:0}
+#nav2 ul li{display:bolck;float:left;}
+
 #nav2 a {
 color : #2583ad;
 text-decoration : none;

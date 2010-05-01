@@ -1,23 +1,13 @@
-﻿{% load i18n %}
-{% extends "base.html" %}
-{% block header %}
-<script type="text/javascript">
-
-</script>
-{% endblock %}
-
-{% block nav2 %}
-<div id="dnav2">
- <a href="/admin/setup" class="current" >{%trans "Basic" %}</a>
- <a href="/admin/import">{%trans "Import/Export" %}</a>
- <a href="/admin/sitemap">{%trans "Sitemap" %}</a>
- <a href="/admin/tools">{%trans "Tools" %}</a>
-</div>
-{% endblock %}
-
+{% load i18n %}
+{% extends "setup_base.html" %}
+{% block nav2_1 %}
+<li><a href="/admin/setup"  class="current">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
+{% endblock%}
 {% block content %}
-
-	 <!-- Admin Full Width -->
+     <!-- Admin Full Width -->
     <div id="m_admin">
         <form method="post">
             <div class="wrap">
@@ -27,7 +17,7 @@
                  <tr valign="top">
                 <th scope="row">{% trans "Blog Title:"%}</th>
                 <td><input type="text" size="45" value="{{ blog.title }}"  id="title" name="title"/>
-               </td>
+                </td>
                 </tr>
 
                 <tr valign="top">
@@ -89,7 +79,8 @@
                     <option value="{{theme}}" {%ifequal blog.theme_name theme%}selected='selected'{%endifequal%}>{{theme}}</option>
                     {%endfor%}
 
-                    </select>
+                    </select> 
+                       <a href="http://micolog.appspot.com/themes" target="_blank">Get more themes</a>
                </td>
                </tr>
                   <tr valign="top">
@@ -120,7 +111,7 @@
                </tr>
 
 
-                   <tr valign="top">
+                   <tr valign="top" style="display:none">
                 <th scope="row">{% trans "Enable comment notify by mail:"%}</th>
                 <td><input type="checkbox" size="45" {% if blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
                </td>
