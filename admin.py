@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cgi, os,sys,traceback
 import wsgiref.handlers
 ##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
@@ -27,6 +28,8 @@ from model import *
 from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault
+
+
 class Error404(BaseRequestHandler):
 	#@printinfo
 	def get(self,slug=None):
@@ -156,9 +159,25 @@ class admin_do_action(BaseRequestHandler):
 	def action_update_archives(self,slug=None):
 		for archive in Archive.all():
 			archive.delete()
-		entries=Entry.all()
+		entries=Entry.all().filter('entrytype =','post')
+		
+		archives={}
+		
+				
 		for entry in entries:
-			entry.update_archive()
+			my = entry.date.strftime('%B %Y') # September-2008
+			sy = entry.date.strftime('%Y') #2008
+			sm = entry.date.strftime('%m') #09
+			if archives.has_key(my):
+				archive=archives[my]
+				archive.entrycount+=1
+			else:
+				archive = Archive(monthyear=my,year=sy,month=sm,entrycount=1)
+				archives[my]=archive
+				
+		for ar in archives.values():
+			ar.put()
+			
 		self.write(_('"All entries have been updated."'))
 
 
@@ -419,7 +438,7 @@ class admin_entry(BaseRequestHandler):
 						'sticky':sticky}
 			  }
 		if not (title and (content or (is_external_page and external_page_address))):
-			vals.update({'result':False, 'msg':_('Please input title and content or external_page_address.')})
+			vals.update({'result':False, 'msg':_('Please input title and content.')})
 			self.render2('views/admin/entry.html',vals)
 		else:
 			if action=='add':
@@ -449,12 +468,12 @@ class admin_entry(BaseRequestHandler):
 				entry.categorie_keys=newcates;
 
 				entry.save(published)
-				if published:
-					smsg=_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')
+				if published:					
+					smsg=_('Saved ok. <a href="/%(link)s" target="_blank">View it now!</a>')
 				else:
 					smsg=_('Saved ok.')
 				   
-				vals.update({'action':'edit','result':True,'msg':_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')%entry.link,'entry':entry})
+				vals.update({'action':'edit','result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
 				self.render2('views/admin/entry.html',vals)
 			elif action=='edit':
 				try:
@@ -486,10 +505,10 @@ class admin_entry(BaseRequestHandler):
 
 					entry.save(published)
 					if published:
-						smsg=_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')
+						smsg=_('Saved ok. <a href="/%(link)s" target="_blank">View it now!</a>')
 					else:
 						smsg=_('Saved ok.')
-					vals.update({'result':True,'msg':_('Saved ok. <a href="/%s" target="_blank">View it now!</a>')%entry.link,'entry':entry})
+					vals.update({'result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
 					self.render2('views/admin/entry.html',vals)
 
 				except:

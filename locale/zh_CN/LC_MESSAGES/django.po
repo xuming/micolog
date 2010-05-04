@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-29 14:28+0800\n"
-"PO-Revision-Date: 2010-04-29 13:56+0800\n"
+"POT-Creation-Date: 2010-05-04 11:06+0800\n"
+"PO-Revision-Date: 2010-05-04 11:07+0800\n"
 "Last-Translator: xuming <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,163 +18,225 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: admin.py:78 admin.py:80 admin.py:89 admin.py:91
+#: admin.py:79
+#: admin.py:81
+#: admin.py:90
+#: admin.py:92
 msgid "This operate has not defined!"
-msgstr ""
+msgstr "操作未定义！"
 
-#: admin.py:98
+#: admin.py:99
 msgid "\"Cache cleared successful\""
-msgstr ""
+msgstr "\"缓存清除成功\""
 
-#: admin.py:106
+#: admin.py:107
 msgid "\"All comments updated\""
-msgstr "\"所有评论更新成功\""
+msgstr "\"评论更新成功\""
 
-#: admin.py:127
+#: admin.py:128
 msgid "\"Link formated succeed\""
-msgstr ""
+msgstr "\"链接格式化成功\""
 
-#: admin.py:129
+#: admin.py:130
 msgid "\"Please input url format.\""
-msgstr ""
+msgstr "\"请输入URL格式.\""
 
-#: admin.py:140
+#: admin.py:141
 msgid "\"Init has succeed.\""
-msgstr ""
+msgstr "\"初始化成功.\""
 
-#: admin.py:153
+#: admin.py:154
 msgid "\"All tags for entry have been updated.\""
-msgstr ""
+msgstr "\"标签更新成功.\""
 
-#: admin.py:162
+#: admin.py:163
 msgid "\"All entries have been updated.\""
-msgstr ""
+msgstr "\"实体更新成功\""
 
-#: admin.py:422
-msgid "Please input title and content or external_page_address."
-msgstr ""
+#: admin.py:423
+msgid "Please input title and content."
+msgstr "请输入标题和内容"
 
-#: admin.py:453 admin.py:457 admin.py:489 admin.py:492
+#: admin.py:454
+#: admin.py:490
 #, python-format
-msgid "Saved ok. <a href=\"/%s\" target=\"_blank\">View it now!</a>"
-msgstr ""
+msgid "Saved ok. <a href=\"/%(link)s\" target=\"_blank\">View it now!</a>"
+msgstr "保存成功. <a href=\"/%(link)s\" target=\"_blank\">马上查看!</a>"
 
-#: admin.py:455 admin.py:491
+#: admin.py:456
+#: admin.py:492
 msgid "Saved ok."
 msgstr "保存成功"
 
-#: admin.py:496
+#: admin.py:497
 msgid "Error:Entry cant been saved."
-msgstr ""
+msgstr "错误：文章保存失败。"
 
-#: admin.py:658
+#: admin.py:659
 msgid "Please input name and url."
 msgstr "请输入名称和URL"
 
-#: admin.py:678
+#: admin.py:679
 msgid "Error:Link cant been saved."
-msgstr ""
+msgstr "错误：链接保存失败！"
 
-#: admin.py:709
+#: admin.py:728
+#: admin.py:743
 msgid "Please input name and slug."
 msgstr "请输入名称和Slug"
 
-#: admin.py:715
-msgid "Saved ok"
-msgstr "保存成功"
+#: admin.py:747
+msgid "A circle declaration found."
+msgstr "发现循环定义"
 
-#: admin.py:727
-msgid "Error:Category cant been saved."
-msgstr ""
-
-#: admin.py:795
+#: admin.py:827
 msgid "Please input dispname and email."
 msgstr "请输入姓名，Email地址"
 
-#: admin.py:817
+#: admin.py:849
 msgid "Error:Author cant been saved."
-msgstr ""
+msgstr "错误：作者信息保存失败"
 
-#: admin.py:852 admin.py:873
+#: admin.py:884
+#: admin.py:905
 #, python-format
-msgid ""
-"<div>Plugin '%(name)s' havn't actived!</div><br><form method=\"post\" action="
-"\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/"
-"plugins/%(iname)s\"><input type=\"submit\" value=\"Activate Now\"/></form>"
+msgid "<div>Plugin '%(name)s' havn't actived!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s\"><input type=\"submit\" value=\"Activate Now\"/></form>"
 msgstr ""
-"<div>插件 '%(name)s' 还没有激活!</div><br><form method=\"post\" action=\"/"
-"admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/"
-"%(iname)s\">\n"
+"<div>插件 '%(name)s' 还没有激活!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s\">\n"
 "<input type=\"submit\" value=\"现在激活\"/></form>"
 
-#: base.py:132 tools/pingback.py:55
+#: base.py:132
+#: tools/pingback.py:55
 msgid "source URL does not exist"
 msgstr ""
 
-#: base.py:133 tools/pingback.py:56
+#: base.py:133
+#: tools/pingback.py:56
 msgid "The source URL does not contain a link to the target URL"
 msgstr ""
 
-#: base.py:134 tools/pingback.py:57
+#: base.py:134
+#: tools/pingback.py:57
 msgid "The specified target URL does not exist"
 msgstr ""
 
-#: base.py:135 tools/pingback.py:58
+#: base.py:135
+#: tools/pingback.py:58
 msgid "The specified target URL cannot be used as a target"
 msgstr ""
 
-#: base.py:136 tools/pingback.py:59
+#: base.py:136
+#: tools/pingback.py:59
 msgid "The pingback has already been registered"
 msgstr ""
 
-#: base.py:137 tools/pingback.py:60
+#: base.py:137
+#: tools/pingback.py:60
 msgid "Access Denied"
 msgstr "访问受限"
 
-#: base.py:174 tools/pingback.py:97
+#: base.py:174
+#: tools/pingback.py:97
 #, python-format
 msgid "An unknown server error (%s) occurred"
 msgstr "未知的服务器错误：(%s)"
 
-#: blog.py:486 blog.py:488 blog.py:492 blog.py:494
+#: blog.py:487
+#: blog.py:489
+#: blog.py:493
+#: blog.py:495
 msgid "Your check code is invalid ."
 msgstr "验证码错误"
 
-#: blog.py:505 blog.py:507
+#: blog.py:506
+#: blog.py:508
 msgid "Please input name, email and comment ."
 msgstr "请输入姓名，Email地址和评论内容"
 
-#: blog.py:547
+#: blog.py:551
 msgid "Comment not allowed."
 msgstr "不允许评论"
 
-#: blog.py:549
+#: blog.py:553
 msgid "Comment not allowed ."
 msgstr "不允许评论"
 
-#: blog.py:630
+#: blog.py:634
 msgid "this is a test"
 msgstr "这是一个测试"
 
-#: model.py:416
+#: model.py:427
 msgid "..more"
 msgstr "(..更多内容)"
 
-#: model.py:867
+#: model.py:837
 msgid "Hello world!"
 msgstr "欢迎使用Micolog"
 
-#: model.py:868
-msgid ""
-"<p>Welcome to micolog. This is your first post. Edit or delete it, then "
-"start blogging!</p>"
-msgstr ""
-"<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩"
-"的独立Blog之旅。</p>"
+#: model.py:838
+msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
+msgstr "<p>欢迎使用micolog. 这是您的第一篇博客. 您可以修改或删除这篇文章，开始您精彩的独立Blog之旅。</p>"
 
-#: model.py:870
+#: model.py:840
 msgid "Xuming's blog"
 msgstr "徐明的博客"
+
+#: plugins/sys_plugin/setup.html:4
+#: plugins/sys_plugin/setup2.html:31
+#: views/admin/setup.html:115
+msgid "Enable comment notify by mail:"
+msgstr "允许将评论发送到你的邮箱:"
+
+#: plugins/sys_plugin/setup.html:7
+#: plugins/sys_plugin/setup2.html:34
+msgid "Message to me:"
+msgstr "发送给我的消息"
+
+#: plugins/sys_plugin/setup.html:11
+#: plugins/sys_plugin/setup2.html:38
+msgid "Message to commenter:"
+msgstr "发送给评论者的消息"
+
+#: plugins/sys_plugin/setup2.html:8
+#: views/admin/import.html:32
+#: views/admin/setup.html:4
+#: views/admin/setup_base.html:8
+#: views/admin/sitemap.html:4
+#: views/admin/tools.html:67
+msgid "Basic"
+msgstr "基本配置"
+
+#: plugins/sys_plugin/setup2.html:9
+#: views/admin/import.html:33
+#: views/admin/setup.html:5
+#: views/admin/setup_base.html:9
+#: views/admin/sitemap.html:5
+#: views/admin/tools.html:68
+msgid "Import/Export"
+msgstr "导入/导出"
+
+#: plugins/sys_plugin/setup2.html:10
+#: views/admin/import.html:34
+#: views/admin/setup.html:6
+#: views/admin/setup_base.html:10
+#: views/admin/sitemap.html:6
+#: views/admin/tools.html:69
+msgid "Sitemap"
+msgstr "网站地图"
+
+#: plugins/sys_plugin/setup2.html:11
+#: views/admin/import.html:35
+#: views/admin/setup.html:7
+#: views/admin/setup_base.html:11
+#: views/admin/sitemap.html:7
+#: views/admin/tools.html:70
+#: views/admin/tools.html.py:77
+msgid "Tools"
+msgstr "工具"
+
+#: plugins/sys_plugin/sys_plugin.py:70
+msgid "Notify"
+msgstr "提醒"
 
 #: plugins/wordpress/wpimport.html:56
 msgid "Please select a file which exported from wordpress to import!"
@@ -184,7 +246,8 @@ msgstr "请选择一个从wordpress导出的格式化文件进行导入！"
 msgid "Wordpress export file (WXR file):"
 msgstr "Wordpress 格式文件(WXR格式):"
 
-#: plugins/wordpress/wpimport.html:71 views/admin/import.html:62
+#: plugins/wordpress/wpimport.html:71
+#: views/admin/import.html:59
 msgid "Import"
 msgstr "导入"
 
@@ -196,8 +259,10 @@ msgstr "修改作者"
 msgid "Add Author"
 msgstr "添加作者"
 
-#: views/admin/author.html:28 views/admin/category.html:28
-#: views/admin/entry.html:188 views/admin/link.html:28
+#: views/admin/author.html:28
+#: views/admin/category.html:28
+#: views/admin/entry.html:188
+#: views/admin/link.html:28
 msgid "Related"
 msgstr "相关操作"
 
@@ -217,8 +282,11 @@ msgstr "用于显示的名字"
 msgid "Manage Authors"
 msgstr "管理作者"
 
-#: views/admin/authors.html:7 views/admin/categories.html:7
-#: views/admin/links.html:7 views/admin/pages.html:7 views/admin/posts.html:7
+#: views/admin/authors.html:7
+#: views/admin/categories.html:7
+#: views/admin/links.html:7
+#: views/admin/pages.html:7
+#: views/admin/posts.html:7
 msgid "add new"
 msgstr "新建"
 
@@ -226,34 +294,48 @@ msgstr "新建"
 msgid "All Authors"
 msgstr "作者"
 
-#: views/admin/authors.html:14 views/admin/categories.html:14
-#: views/admin/comments.html:26 views/admin/filemanager.html:53
-#: views/admin/links.html:12 views/admin/pages.html:14
+#: views/admin/authors.html:14
+#: views/admin/categories.html:14
+#: views/admin/comments.html:26
+#: views/admin/filemanager.html:53
+#: views/admin/links.html:12
+#: views/admin/pages.html:14
 #: views/admin/posts.html:15
 msgid "Delete"
 msgstr "删除"
 
-#: views/admin/authors.html:18 views/admin/categories.html:18
-#: views/admin/comments.html:30 views/admin/filemanager.html:57
-#: views/admin/pages.html:18 views/admin/posts.html:20
+#: views/admin/authors.html:18
+#: views/admin/categories.html:18
+#: views/admin/comments.html:30
+#: views/admin/filemanager.html:57
+#: views/admin/pages.html:18
+#: views/admin/posts.html:20
 msgid "&laquo; prev"
 msgstr "&laquo; 前一页"
 
-#: views/admin/authors.html:22 views/admin/categories.html:22
-#: views/admin/comments.html:34 views/admin/filemanager.html:61
-#: views/admin/pages.html:22 views/admin/posts.html:24
+#: views/admin/authors.html:22
+#: views/admin/categories.html:22
+#: views/admin/comments.html:34
+#: views/admin/filemanager.html:61
+#: views/admin/pages.html:22
+#: views/admin/posts.html:24
 msgid "next &raquo;"
 msgstr "后一页 &raquo;"
 
-#: views/admin/authors.html:23 views/admin/categories.html:24
-#: views/admin/comments.html:35 views/admin/filemanager.html:62
-#: views/admin/pages.html:23 views/admin/posts.html:26
+#: views/admin/authors.html:23
+#: views/admin/categories.html:24
+#: views/admin/comments.html:35
+#: views/admin/filemanager.html:62
+#: views/admin/pages.html:23
+#: views/admin/posts.html:26
 #, python-format
 msgid "  Page %(pindex)s"
 msgstr "  第%(pindex)s页"
 
-#: views/admin/authors.html:34 views/admin/categories.html:35
-#: views/admin/category.html:40 views/admin/link.html:40
+#: views/admin/authors.html:34
+#: views/admin/categories.html:37
+#: views/admin/category.html:40
+#: views/admin/link.html:40
 #: views/admin/links.html:22
 msgid "Name"
 msgstr "名称"
@@ -294,7 +376,8 @@ msgstr "目录"
 msgid "Comments"
 msgstr "评论"
 
-#: views/admin/base.html:66 views/admin/entry.html:108
+#: views/admin/base.html:66
+#: views/admin/entry.html:108
 #: views/admin/upload.html:5
 msgid "Files"
 msgstr "文件"
@@ -327,10 +410,15 @@ msgstr "管理目录"
 msgid "All Categories"
 msgstr "所有目录"
 
-#: views/admin/categories.html:35 views/admin/category.html:47
+#: views/admin/categories.html:37
+#: views/admin/category.html:47
 #: views/admin/entry.html:266
 msgid "Slug"
 msgstr "名称(slug)"
+
+#: views/admin/categories.html:37
+msgid "Parent"
+msgstr "上一级"
 
 #: views/admin/category.html:11
 msgid "Edit category"
@@ -340,7 +428,8 @@ msgstr "编辑目录"
 msgid "Add category"
 msgstr "添加目录"
 
-#: views/admin/category.html:24 views/admin/entry.html:169
+#: views/admin/category.html:24
+#: views/admin/entry.html:169
 #: views/admin/link.html:24
 msgid "Save"
 msgstr "保存"
@@ -350,18 +439,20 @@ msgid "Manage All Categories"
 msgstr "管理所有页面"
 
 #: views/admin/category.html:43
-msgid ""
-"The name is used to identify the category almost everywhere, for example "
-"under the post or in the category widget."
+msgid "The name is used to identify the category almost everywhere, for example under the post or in the category widget."
 msgstr "目录的名字，将会显示在页面上"
 
 #: views/admin/category.html:50
-msgid ""
-"The 'slug' is the URL-friendly version of the name. It is usually all "
-"lowercase and contains only letters, numbers, and hyphens."
+msgid "The 'slug' is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens."
+msgstr "\"slug\"是一个URL友好的名称，将会被用在生成的url链接里面，通常只包含英文，数字和下划线"
+
+#: views/admin/category.html:54
+msgid "Parent Category"
+msgstr "上级目录"
+
+#: views/admin/category.html:57
+msgid "None"
 msgstr ""
-"\"slug\"是一个URL友好的名称，将会被用在生成的url链接里面，通常只包含英文，数"
-"字和下划线"
 
 #: views/admin/comments.html:7
 msgid "Manage Comments"
@@ -375,8 +466,10 @@ msgstr "所有评论"
 msgid "Filter:"
 msgstr "过滤："
 
-#: views/admin/comments.html:13 views/admin/comments.html.py:46
-#: views/admin/plugins.html:7 views/admin/posts.html:37
+#: views/admin/comments.html:13
+#: views/admin/comments.html.py:46
+#: views/admin/plugins.html:10
+#: views/admin/posts.html:37
 msgid "Author"
 msgstr "作者"
 
@@ -384,7 +477,8 @@ msgstr "作者"
 msgid "Do"
 msgstr "确定"
 
-#: views/admin/comments.html:46 views/admin/pages.html:34
+#: views/admin/comments.html:46
+#: views/admin/pages.html:34
 #: views/admin/posts.html:37
 msgid "Date"
 msgstr "日期"
@@ -437,7 +531,8 @@ msgstr "发布"
 msgid "Sticky it."
 msgstr "置顶"
 
-#: views/admin/entry.html:182 views/admin/posts.html:37
+#: views/admin/entry.html:182
+#: views/admin/posts.html:37
 msgid "allow comment"
 msgstr "允许评论"
 
@@ -457,7 +552,8 @@ msgstr "管理所有页面"
 msgid "Use as  external page"
 msgstr "用作外链接"
 
-#: views/admin/entry.html:207 views/admin/pages.html:34
+#: views/admin/entry.html:207
+#: views/admin/pages.html:34
 #: views/admin/posts.html:37
 msgid "Title"
 msgstr "标题"
@@ -522,7 +618,8 @@ msgstr "所有文件"
 msgid "File Name"
 msgstr "文件名"
 
-#: views/admin/filemanager.html:73 views/admin/upload.html:98
+#: views/admin/filemanager.html:73
+#: views/admin/upload.html:98
 msgid "Size"
 msgstr "大小"
 
@@ -538,52 +635,32 @@ msgstr ""
 msgid "Download"
 msgstr "下载"
 
-#: views/admin/import.html:34 views/admin/setup.html:11
-#: views/admin/sitemap.html:6 views/admin/tools.html:68
-msgid "Basic"
-msgstr "基本配置"
-
-#: views/admin/import.html:35 views/admin/setup.html:12
-#: views/admin/sitemap.html:7 views/admin/tools.html:69
-msgid "Import/Export"
-msgstr "导入/导出"
-
-#: views/admin/import.html:36 views/admin/setup.html:13
-#: views/admin/sitemap.html:8 views/admin/tools.html:70
-msgid "Sitemap"
-msgstr "网站地图"
-
-#: views/admin/import.html:37 views/admin/setup.html:14
-#: views/admin/sitemap.html:9 views/admin/tools.html:71
-#: views/admin/tools.html.py:79
-msgid "Tools"
-msgstr "工具"
-
-#: views/admin/import.html:44
+#: views/admin/import.html:41
 msgid "Export/Import for wordpress"
 msgstr "导入/导出"
 
-#: views/admin/import.html:45 views/admin/import.html.py:60
+#: views/admin/import.html:42
+#: views/admin/import.html.py:57
 msgid "Export"
 msgstr "导出"
 
-#: views/admin/import.html:46
+#: views/admin/import.html:43
 msgid "Export as  WordPress eXtended RSS file"
 msgstr "导出为 wordpress 文件格式"
 
-#: views/admin/import.html:48
+#: views/admin/import.html:45
 msgid "Export from Date:"
 msgstr "导出日期: 从"
 
-#: views/admin/import.html:49
+#: views/admin/import.html:46
 msgid "to Date:"
 msgstr "到"
 
-#: views/admin/import.html:49
+#: views/admin/import.html:46
 msgid "'s posts"
 msgstr "的文章"
 
-#: views/admin/import.html:59
+#: views/admin/import.html:56
 msgid "Export all posts"
 msgstr "导出所有文章"
 
@@ -608,12 +685,11 @@ msgid "Web Address"
 msgstr "网址"
 
 #: views/admin/link.html:50
-msgid ""
-"Example: <code>http://xuming.net</code> - don't forget the <code>http://</"
-"code>"
+msgid "Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>"
 msgstr "例如: <code>http://xuming.net</code> - 请不要忘记 <code>http://</code>"
 
-#: views/admin/link.html:54 views/admin/links.html:22
+#: views/admin/link.html:54
+#: views/admin/links.html:22
 msgid "LinkComment"
 msgstr "链接描述"
 
@@ -637,19 +713,23 @@ msgstr "管理页面"
 msgid "All Pages"
 msgstr "所有页面"
 
-#: views/admin/pages.html:34 views/admin/posts.html:37
+#: views/admin/pages.html:34
+#: views/admin/posts.html:37
 msgid "Status"
 msgstr "状态"
 
-#: views/admin/pages.html:40 views/admin/posts.html:43
+#: views/admin/pages.html:40
+#: views/admin/posts.html:43
 msgid "edit"
 msgstr "编辑"
 
-#: views/admin/pages.html:42 views/admin/posts.html:46
+#: views/admin/pages.html:42
+#: views/admin/posts.html:46
 msgid "Published"
 msgstr "发布"
 
-#: views/admin/pages.html:42 views/admin/posts.html:46
+#: views/admin/pages.html:42
+#: views/admin/posts.html:46
 msgid "Unpublished"
 msgstr "未发布"
 
@@ -657,27 +737,27 @@ msgstr "未发布"
 msgid "Manage Plugins"
 msgstr "管理插件"
 
-#: views/admin/plugins.html:7
+#: views/admin/plugins.html:10
 msgid "Plugin"
 msgstr "插件"
 
-#: views/admin/plugins.html:7
+#: views/admin/plugins.html:10
 msgid "Version"
 msgstr "版本"
 
-#: views/admin/plugins.html:7
+#: views/admin/plugins.html:10
 msgid "Description"
 msgstr "描述"
 
-#: views/admin/plugins.html:7
+#: views/admin/plugins.html:10
 msgid "Active Status"
 msgstr "激活状态"
 
-#: views/admin/plugins.html:17
+#: views/admin/plugins.html:20
 msgid "Deactivate"
 msgstr "取消激活"
 
-#: views/admin/plugins.html:20
+#: views/admin/plugins.html:23
 msgid "Activate"
 msgstr "激活"
 
@@ -689,151 +769,145 @@ msgstr "管理文章"
 msgid "All Posts"
 msgstr "所有文章"
 
-#: views/admin/setup.html:24
+#: views/admin/setup.html:14
 msgid "Setup and Configuraiton for this Blog"
 msgstr "博客设置/系统配置"
 
-#: views/admin/setup.html:28
+#: views/admin/setup.html:18
 msgid "Blog Title:"
 msgstr "博客标题"
 
-#: views/admin/setup.html:34
+#: views/admin/setup.html:24
 msgid "Sub Title:"
 msgstr "子标题"
 
-#: views/admin/setup.html:37
+#: views/admin/setup.html:27
 msgid "In a few words, explain what this blog is about."
 msgstr "关于这个博客的简单介绍"
 
-#: views/admin/setup.html:41
+#: views/admin/setup.html:31
 msgid "Blog notice:"
 msgstr "公告"
 
-#: views/admin/setup.html:47
+#: views/admin/setup.html:37
 msgid "Default Link Structure:"
 msgstr "默认结构化链接 "
 
-#: views/admin/setup.html:50 views/admin/setup.html.py:57
+#: views/admin/setup.html:40
+#: views/admin/setup.html.py:47
 msgid "Allowed variants: "
 msgstr "允许使用的变量:"
 
-#: views/admin/setup.html:54
+#: views/admin/setup.html:44
 msgid "Permalink Structure:"
 msgstr "结构化链接(Permalink) "
 
-#: views/admin/setup.html:61
+#: views/admin/setup.html:51
 msgid "Domain:"
 msgstr "域名:"
 
-#: views/admin/setup.html:67
+#: views/admin/setup.html:57
 msgid "Micolog Address(URL):"
 msgstr "博客网址(URL):"
 
-#: views/admin/setup.html:73
+#: views/admin/setup.html:63
 msgid "RSS Feed URL:"
 msgstr "RSS/Atom Feed地址:"
 
-#: views/admin/setup.html:78
+#: views/admin/setup.html:68
 msgid "Time delta:(Hours)"
 msgstr "时间差调整(单位:小时):"
 
-#: views/admin/setup.html:85
+#: views/admin/setup.html:75
 msgid "Theme:"
 msgstr "应用主题:"
 
-#: views/admin/setup.html:96
+#: views/admin/setup.html:87
 msgid "Posts per page:"
 msgstr "每页文章数:"
 
-#: views/admin/setup.html:101
+#: views/admin/setup.html:92
 msgid "Comments order:"
 msgstr "评论顺序"
 
-#: views/admin/setup.html:103
+#: views/admin/setup.html:94
 msgid "ASC"
 msgstr "升序"
 
-#: views/admin/setup.html:104
+#: views/admin/setup.html:95
 msgid "DESC"
 msgstr "降序"
 
-#: views/admin/setup.html:108
+#: views/admin/setup.html:99
 msgid "Comment Check Type:"
 msgstr "评论验证类型:"
 
-#: views/admin/setup.html:111
+#: views/admin/setup.html:102
 msgid "Arithmetic"
 msgstr "算术"
 
-#: views/admin/setup.html:112
+#: views/admin/setup.html:103
 msgid "Graph"
 msgstr "图形"
 
-#: views/admin/setup.html:113
+#: views/admin/setup.html:104
 msgid "Client Arithmetic"
 msgstr "客户端算术题（兼容0.6以下版本)"
 
-#: views/admin/setup.html:117
+#: views/admin/setup.html:108
 msgid "Comments per page:"
 msgstr "每页评论数:"
 
-#: views/admin/setup.html:124
-msgid "Enable comment notify by mail:"
-msgstr "允许将评论发送到你的邮箱:"
-
-#: views/admin/setup.html:129
+#: views/admin/setup.html:120
 msgid "Enable memcache:"
 msgstr "启用缓存:"
 
-#: views/admin/setup.html:134
+#: views/admin/setup.html:125
 msgid "Allow Trackback:"
 msgstr "允许 Trackback"
 
-#: views/admin/setup.html:140
+#: views/admin/setup.html:131
 msgid "Allow Pingback:"
 msgstr "允许 Pingback"
 
-#: views/admin/setup.html:145
+#: views/admin/setup.html:136
 msgid "Xmlrpc  setting"
 msgstr "客户端（Xmlrpc）调用设置："
 
-#: views/admin/setup.html:146
-msgid ""
-"Setup the username and password for RPC call. These will be used by client "
-"tools (e.g. Windows live writer). "
-msgstr ""
-"为了您可以通过客户端工具（如Windows live writer）进行写作，请在这里设置用户名"
-"和密码"
+#: views/admin/setup.html:137
+msgid "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "
+msgstr "为了您可以通过客户端工具（如Windows live writer）进行写作，请在这里设置用户名和密码"
 
-#: views/admin/setup.html:149
+#: views/admin/setup.html:140
 msgid "User name:"
 msgstr "用户名:"
 
-#: views/admin/setup.html:155
+#: views/admin/setup.html:146
 msgid "Password:"
 msgstr "密码:"
 
-#: views/admin/setup.html:162 views/admin/sitemap.html:52
+#: views/admin/setup.html:153
+#: views/admin/sitemap.html:49
 msgid "Save Changes"
 msgstr "保 存"
 
-#: views/admin/sitemap.html:19
+#: views/admin/sitemap.html:16
 msgid "Sitemap Setup"
 msgstr "设置Sitemap"
 
-#: views/admin/sitemap.html:23
+#: views/admin/sitemap.html:20
 msgid "Entries in sitemap:"
 msgstr "文章或页面数量:"
 
-#: views/admin/sitemap.html:31
+#: views/admin/sitemap.html:28
 msgid "Include category:"
 msgstr "包含目录:"
 
-#: views/admin/sitemap.html:37
+#: views/admin/sitemap.html:34
 msgid "Include tag:"
 msgstr "包含标签(tag):"
 
-#: views/admin/sitemap.html:42
+#: views/admin/sitemap.html:39
 msgid "Pinging Search Engine (Google):"
 msgstr "Ping搜索引擎(Google)"
 
@@ -841,7 +915,8 @@ msgstr "Ping搜索引擎(Google)"
 msgid "Cache status"
 msgstr "缓存状态"
 
-#: views/admin/status.html:25 views/admin/status.html.py:28
+#: views/admin/status.html:25
+#: views/admin/status.html.py:28
 msgid "Clear cache"
 msgstr "清除缓存"
 
@@ -853,61 +928,63 @@ msgstr "清除缓存数据"
 msgid "Environ"
 msgstr "环境"
 
-#: views/admin/tools.html:81
+#: views/admin/tools.html:79
 msgid "Careless use of it will be dangerous!"
 msgstr "该页面提供的工具请谨慎使用!"
 
-#: views/admin/tools.html:84 views/admin/tools.html.py:90
-#: views/admin/tools.html:97 views/admin/tools.html.py:105
-#: views/admin/tools.html:116
+#: views/admin/tools.html:82
+#: views/admin/tools.html.py:88
+#: views/admin/tools.html:95
+#: views/admin/tools.html.py:103
+#: views/admin/tools.html:114
 msgid "Run"
 msgstr "执行"
 
-#: views/admin/tools.html:85
+#: views/admin/tools.html:83
 msgid "Update tags"
 msgstr "更新标签"
 
-#: views/admin/tools.html:86
+#: views/admin/tools.html:84
 msgid "It will refresh all tags for each entry."
 msgstr "该操作将会更新所有文章和页面的标签"
 
-#: views/admin/tools.html:92
+#: views/admin/tools.html:90
 msgid "Init datas"
 msgstr "初始化数据"
 
-#: views/admin/tools.html:93
+#: views/admin/tools.html:91
 msgid "It will delete  all posts, pages and comments."
 msgstr "该操作将会删除所有文章，页面和评论"
 
-#: views/admin/tools.html:99
+#: views/admin/tools.html:97
 msgid "Update comments"
 msgstr "更新评论数"
 
-#: views/admin/tools.html:100
+#: views/admin/tools.html:98
 msgid "It will refresh the number of comments for each entry."
 msgstr "该操作将会更新所有文章的评论数"
 
-#: views/admin/tools.html:107
+#: views/admin/tools.html:105
 msgid "Rebuild URL"
 msgstr "重建文章链接"
 
-#: views/admin/tools.html:108
+#: views/admin/tools.html:106
 msgid "The URL of all entries (post or page) will be rebuild."
 msgstr "该操作将会按照指定的Permalink重置所有文章的URL链接"
 
-#: views/admin/tools.html:110
+#: views/admin/tools.html:108
 msgid "Permalink"
 msgstr "结构化链接(Permalink) "
 
-#: views/admin/tools.html:112
+#: views/admin/tools.html:110
 msgid "Available parameters:"
 msgstr "可用的参数:"
 
-#: views/admin/tools.html:119
+#: views/admin/tools.html:117
 msgid "Update archives"
 msgstr "更新归档"
 
-#: views/admin/tools.html:120
+#: views/admin/tools.html:118
 msgid "It will update the monthyear of entries."
 msgstr "该操作将更新归档"
 
@@ -915,7 +992,8 @@ msgstr "该操作将更新归档"
 msgid "Error: invalid file extension"
 msgstr "错误：不支持的文件格式"
 
-#: views/admin/upload.html:53 views/admin/upload.html.py:101
+#: views/admin/upload.html:53
+#: views/admin/upload.html.py:101
 msgid "Add"
 msgstr "添加"
 
@@ -931,6 +1009,10 @@ msgstr "文件名"
 msgid "Operater"
 msgstr "操作"
 
+#~ msgid "Please input title and content or external_page_address."
+#~ msgstr "请输入标题和内容或扩展页面地址"
+#~ msgid "Saved ok"
+#~ msgstr "保存成功"
 #~ msgid ""
 #~ "New comment on your post \"%s\"\n"
 #~ "Author : %s\n"
@@ -949,7 +1031,6 @@ msgstr "操作"
 #~ "%s\n"
 #~ "查看所有评论:\n"
 #~ "%s\n"
-
 #~ msgid ""
 #~ "Hi~ New reference on your comment for post \"%s\"\n"
 #~ "Author : %s\n"
@@ -966,13 +1047,12 @@ msgstr "操作"
 #~ "%s\n"
 #~ "You can see all comments on this post here:\n"
 #~ "%s\n"
-
 #~ msgid "Insert"
 #~ msgstr "插入"
 
 #, fuzzy
 #~ msgid "Web Comment"
 #~ msgstr "评论"
-
 #~ msgid "Advance"
 #~ msgstr "高级"
+

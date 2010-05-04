@@ -1,0 +1,45 @@
+{% load i18n %}
+{% extends "../../views/admin/base.html" %}
+{% block header %}
+{% endblock %}
+{% block nav2 %}
+<div id="dnav2">
+<ul>{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>{% endblock %}
+{%for menu in self.blog.plugins.get_setupmenu %}
+<li><a href="{{menu.url}}" {%ifequal m_id menu.m_id%}class="current"{%endifequal%} >{{menu.title}}</a></li>
+{%endfor%}
+</ul>
+<div style="clear:both"></div>
+</div>
+{% endblock %}
+{% block content %}
+<h3>Sys Plugin</h3>
+			   <p>This is a system plugin for micolog. <br>Also a demo for how to write plugin for micolog.</p>
+			   <h4>feature</h4>
+			   <p><ol>
+			   <li>Add Meta &lt;meta name="generator" content="Micolog x.x" /&gt;</li>
+			   <li>Add footer "&lt;!--Powered by micolog x.x--&gt;"</li>
+			   <li>Comments Filter with blocklist <a href="/e/sys_plugin/setup">Setup</a></li>
+			   <li>Comment Notify.</li>
+			   </ol></p>
+			    <h4>Notify Setting<h4>
+			    <form action="" method="post">
+			    <div><b>{% trans "Enable comment notify by mail:"%}</b>
+			    <input type="checkbox" size="45" {% if self.blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
+               </div>
+                <div><b>{% trans "Message to me:"%}</b></div>
+                
+               <textarea name='sbody' style="width:600px;height:200px;">{{self.sbody}}</textarea>
+               
+               <div><b>{% trans "Message to commenter:"%}</b></div>
+              <textarea name='bbody' style="width:600px;height:200px;">{{self.bbody}}</textarea>
+                  <p>
+                  <input type="submit" value="Save" />
+                  </p>
+                </form>
+                
+{%endblock%}

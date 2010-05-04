@@ -4,6 +4,7 @@ font : 0.9em Tahoma, Verdana, sans-serif;
 color : #333;
 margin : 0;
 padding : 0;
+min-width: 998px;
 }
 #dashboard a {
 text-decoration : none;
@@ -89,9 +90,8 @@ color : #ccc;
 padding : 5px 0;
 }
 #dashboard .dash {
-width : 972px;
 text-align : right;
-margin : auto;
+margin : auto 15px;
 }
 #searchtop {
 float : left;
@@ -120,8 +120,7 @@ border-bottom : 1px solid #c6d9e9;
 padding : 10px 0;
 }
 .headings {
-width : 972px;
-margin : auto;
+margin : auto 15px;
 }
 #header h1 {
 font : normal 2em Georgia, "Times New Roman", Times, serif;
@@ -143,10 +142,11 @@ display : block;
 margin : 0 0 15px;
 padding : 0;
 }
+* html #nav{height:28px;}
 #nav ul {
 list-style : none;
-width : 972px;
-margin : 10px auto;
+
+margin : 10px 15px;
 padding : 0;
 }
 #nav ul li {
@@ -159,10 +159,10 @@ margin : 0;
 padding : 0 20px 0 0;
 }
 #container {
-width : 972px;
+
 min-height : 300px;
 height : auto !important ;
-margin : 0 auto;
+margin : 0 15px;
 padding : 0 0 20px;
 }
 #featured {
@@ -336,7 +336,6 @@ margin : 0;
 padding : 0;
 }
 .footerinner {
-width : 972px;
 margin : auto;
 padding : 15px 0 45px;
 }
@@ -384,8 +383,6 @@ padding : 5px;
 color : #dadada;
 }
 #credits {
-float : left;
-width : 962px;
 font-size : 0.8em;
 color : #ccc;
 height : 29px;
@@ -776,9 +773,11 @@ color : #d7d7d7;
 #poststuff #post-body {
 margin-right : 230px;
 }
-#poststuff #post-body2 {
-width : 740px;
+
+* html #poststuff .entry-editor {
+width : 780px;
 float : left;
+margin-right:0px!important;
 }
 .submitbox {
 float : right;
@@ -889,18 +888,16 @@ font-size : 12px;
 text-align : center;
 border-left : 0;
 border-right : 0;
-margin : 5px auto;
+margin : 5px 15px;
 padding : 5px 0;
-width:972px;
 }
 #hiddenmessage .error {
 color : red;
 }
 #nav2 #dnav2{
 border-bottom:1px solid #DADADA;
-margin:0 auto;
-padding:0 0 12px;
-width:972px;
+margin:0 15px;
+padding:0 0 6px;
 
 }
 #nav2 ul{height:20px;margin-bottom:0;list-style-type:none;margin-left:0;padding:0}
@@ -911,7 +908,7 @@ color : #2583ad;
 text-decoration : none;
 padding-right : 10px;
 }
-#titlewrap input,.f_text input{width:100%}
+#titlewrap input,.f_text input{width:95%}
 #poststuff #titlewrap ,.f_text{
 border-color : #ccc;
 border-style : solid;

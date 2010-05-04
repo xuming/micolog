@@ -41,6 +41,7 @@ class Plugins:
 		self._action_plugins={}
 		self._urlmap={}
 		self._handlerlist={}
+		self._setupmenu=[]
 		pi=PluginIterator()
 		self.active_list=OptionSet.getValue("PluginActive",[])
 		for v,m in pi:
@@ -149,6 +150,7 @@ class Plugins:
 				if self.blog.application:
 					self.remove_urlhandler(plugin,self.blog.application)
 		self._urlmap={}
+		self._setupmenu=[]
 
 
 	def filter(self,attr,value):
@@ -199,8 +201,16 @@ class Plugins:
 			return self._urlmap[url]
 		else:
 			return None
+	
+	def get_setupmenu(self):
+		#Get menu list for admin setup page
+		if not self._setupmenu:
+			for item in self:
+				if item.active:
+					self._setupmenu+=item._setupmenu
+		return self._setupmenu	
 
-	def get_handlerlist(self):
+	def get_handlerlist(self,url):
 		if not self._handlerlist:
 			for item in self:
 				if item.active:
@@ -244,6 +254,7 @@ class Plugin:
 		self._urlmap={}
 		self._handlerlist={}
 		self._urlhandler={}
+		self._setupmenu=[]
 
 	def get(self,page):
 		return "<h3>%s</h3><p>%s</p>"%(self.name,self.description)
@@ -275,6 +286,11 @@ class Plugin:
 	def register_urlzip(self,name,zipfile):
 		zipfile=os.path.join(self.dir,zipfile)
 		self._handlerlist[name]=zipserve.make_zip_handler(zipfile)
+		
+	def register_setupmenu(self,m_id,title,url):
+		#Add menu to admin setup page.
+		#m_id is a flag to check current page
+		self._setupmenu.append({'m_id':m_id,'title':title,'url':url})
 
 
 class Plugin_importbase(Plugin):

@@ -537,16 +537,18 @@ class Entry(BaseModel):
 		my = self.date.strftime('%B %Y') # September-2008
 		sy = self.date.strftime('%Y') #2008
 		sm = self.date.strftime('%m') #09
-		archive = Archive.all().filter('monthyear',my).fetch(10)
+		
+		
+		archive = Archive.all().filter('monthyear',my).get()
 		if self.entrytype == 'post':
-			if archive == []:
+			if not archive:
 				archive = Archive(monthyear=my,year=sy,month=sm,entrycount=1)
 				self.monthyear = my
 				archive.put()
 			else:
 				# ratchet up the count
-				archive[0].entrycount += cnt
-				archive[0].put()
+				archive.entrycount += cnt
+				archive.put()
 		g_blog.entrycount+=cnt
 		g_blog.put()
 
@@ -597,7 +599,7 @@ class Entry(BaseModel):
 		if is_publish:
 			if g_blog.sitemap_ping:
 				Sitemap_NotifySearch()
-
+		
 		if old_publish and not is_publish:
 			self.update_archive(-1)
 		if not old_publish and is_publish:

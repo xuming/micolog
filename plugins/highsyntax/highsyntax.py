@@ -36,7 +36,7 @@ if ($('pre[class^=brush:]').length > 0)
 				<form action="" method="post">
 			   <p><B>Require:</B>
 					<ol>
-					<li><b>&lt;%mf footer%&gt; </b>in template "base.html".</li>
+					<li><b>{%mf footer%} </b>in template "base.html".</li>
 					<li><a href="http://jquery.org"  target="_blank">Jquery</a> version 1.3.2 or new.</li>
 					</ol>
 			   </p>
