@@ -1,5 +1,1 @@
-micolog 0.7 beta 
-Add:
-Plugins
-Trackback
-Pingback 
+micolog 0.7 RC2
