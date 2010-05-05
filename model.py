@@ -174,7 +174,7 @@ class Blog(db.Model):
 
 	domain=db.StringProperty()
 	show_excerpt=db.BooleanProperty(default=True)
-	version=0.712
+	version=0.713
 	timedelta=db.FloatProperty(default=8.0)# hours
 	language=db.StringProperty(default="en-us")
 
