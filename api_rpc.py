@@ -49,8 +49,8 @@ def post_struct(entry):
 	struct = {
 		'postid': entry.key().id(),
 		'title': entry.title,
-		'link': entry.fullurl(),
-		'permaLink': entry.fullurl(),
+		'link': entry.fullurl,
+		'permaLink': entry.fullurl,
 		'description': unicode(entry.content),
 		'categories': categories,
 		'userid': '1',
@@ -85,8 +85,8 @@ def page_struct(entry):
 	struct = {
 		'page_id': entry.key().id(),
 		'title': entry.title,
-		'link': entry.fullurl(),
-		'permaLink': entry.fullurl(),
+		'link': entry.fullurl,
+		'permaLink': entry.fullurl,
 		'description': unicode(entry.content),
 		'categories': categories,
 		'userid': '1',
@@ -214,7 +214,7 @@ def metaWeblog_newPost(blogid, struct, publish):
 
 		if struct.has_key('mt_tb_ping_urls'):
 			for url in struct['mt_tb_ping_urls']:
-				util.do_trackback(url,entry.title,entry.get_content_excerpt(more='')[:60],entry.fullurl(),g_blog.title)
+				util.do_trackback(url,entry.title,entry.get_content_excerpt(more='')[:60],entry.fullurl,g_blog.title)
 		g_blog.tigger_action("xmlrpc_publish_post",entry)
 	else:
 		entry.save()
