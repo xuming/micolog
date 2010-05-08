@@ -36,6 +36,8 @@ if (commentuser)
  $('#url').val(data[2]);
 };
 
+  
+
 $('#commentform').ajaxForm({
               	type:'post',
               	dataType:  'json',
@@ -111,6 +113,22 @@ $('#commentform').ajaxForm({
               });
 	}
 )
+
+
+function rnd()
+{
+    var today=new Date();
+    var seed=today.getTime();
+    seed = (seed*9301+49197) % 233281;
+    return seed/(233281.0);
+}
+
+function rand(number)
+{
+　　return Math.ceil(rnd()*number);
+}
+
+
 function get_check_area(type)
 {
 	if (type==1)
@@ -121,6 +139,14 @@ function get_check_area(type)
 	{
 	    $('#check').html('<img id="checkimg" src="/checkimg/" style="border:0px;padding:0;float:left;margin-right:8px"/>');
         $('#checkarea').show();
+	}else if(type==3)
+	{
+		 checknum1=rand(10);
+		 checknum2=rand(10);
+        $('#check').html('<span style="color:red">'+ checknum1+'+'+checknum2+'=</span>'
+        		+'<input type="hidden" name="checknum" id="checknum" value="'+(checknum1+checknum2)+'" />');
+		$('#checkarea').show();
+		
 	}
 
 

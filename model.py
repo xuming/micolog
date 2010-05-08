@@ -691,6 +691,7 @@ class Comment(db.Model):
 	reply_notify_mail=db.BooleanProperty(default=False)
 	ip=db.StringProperty()
 	ctype=db.IntegerProperty(default=COMMENT_NORMAL)
+	comment_order=db.IntegerProperty(default=1)
 
 
 	@property
@@ -725,6 +726,7 @@ class Comment(db.Model):
 
 		self.put()
 		self.entry.commentcount+=1
+		self.comment_order=self.entry.commentcount
 		self.entry.put()
 		memcache.delete("/"+self.entry.link)
 

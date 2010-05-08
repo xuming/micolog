@@ -142,7 +142,7 @@ display : block;
 margin : 0 0 15px;
 padding : 0;
 }
-* html #nav{height:28px;}
+* html #nav{_height:28px;}
 #nav ul {
 list-style : none;
 
@@ -159,7 +159,6 @@ margin : 0;
 padding : 0 20px 0 0;
 }
 #container {
-
 min-height : 300px;
 height : auto !important ;
 margin : 0 15px;
@@ -775,9 +774,9 @@ margin-right : 230px;
 }
 
 * html #poststuff .entry-editor {
-width : 780px;
-float : left;
-margin-right:0px!important;
+_width : 780px;
+_float : left;
+_margin-right:0px!important;
 }
 .submitbox {
 float : right;

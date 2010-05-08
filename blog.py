@@ -474,7 +474,6 @@ class Post_comment(BaseRequestHandler):
 				check_ret=True
 				if g_blog.comment_check_type in (1,2)  :
 					checkret=self.param('checkret')
-					logging.info('______'+checkret)
 					check_ret=(int(checkret) == sess['code'])
 				elif  g_blog.comment_check_type ==3:
 					import app.gbtools as gb

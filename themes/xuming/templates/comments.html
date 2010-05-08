@@ -33,6 +33,7 @@
 {{comments_nav.nav}}
 </div>
 <input type="hidden" value="{{blog.comment_check_type}}" id="check_type"/>
+
 <h3 id="respond">我要留言</h3>
 {% if entry.allow_comment %}
 <div class="info" id="comment_info"></div>
@@ -47,9 +48,13 @@
 
 <p><input type="text" name="url" id="url"  size="25" tabindex="3" />
 <label for="url">博客/网站(web/blog)</label></p>
+
+<p><input type="checkbox" name="reply_notify_mail" id="reply_notify_mail" tabindex="4" />
+<label for="reply_notify_mail">有回复时邮件通知我</label></p>
+
 <p id="checkarea" style='display:none'>
  验证码：<span id="check"></span>
-<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="4" />
+<input type="text" name="checkret" id="checkret" value="" size="5" tabindex="5" />
 </p>
 
 
