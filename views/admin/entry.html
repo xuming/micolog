@@ -266,16 +266,17 @@
 <div class="stuffbox">
 <h3>{% trans "Slug" %}</h3>
 <div class="inside">
-	<input type="text" value="{{entry.slug|escape}}" tabindex="1" size="30" name="slug"/><br/>
+	<input type="text" value="{{entry.slug|escape}}" tabindex="1" size="50" name="slug"/><br/>
 </div>
 </div>
 {%ifequal entrytype "post"%}
 <div class="clear"></div>
 <div class="stuffbox" id="tag">
 <h3>{% trans "Tag" %}</h3>
-<div class="inside">
-	<input type="text" id="tags" value="{{entry.strtags|escape}}" tabindex="1" size="30" name="tags"/><br/>
+<div class="inside" style="float:left;">
+	<input type="text" id="tags" onkeyup="this.value=this.value.replace(/，/g, ',');" value="{{entry.strtags|escape}}" tabindex="1" size="50" name="tags"/><br/>
 </div>
+{%include "selecttags.html"%}
 </div>
 
 <div style="display:none">

@@ -37,6 +37,12 @@ def format_date(d):
 	if not d: return None
 	#return xmlrpclib.DateTime(d.isoformat())
 	return xmlrpclib.DateTime(d)
+def dateformat(creatdate):
+	try:
+		dt=datetime.strptime(creatdate, "%Y%m%dT%H:%M:%S")
+	except:
+		dt=datetime.strptime(creatdate, "%Y%m%dT%H:%M:%SZ")
+	return dt
 
 def post_struct(entry):
 	if not entry:
@@ -153,6 +159,12 @@ def blogger_getUserInfo(appkey):
 	return None
 
 #-------------------------------------------------------------------------------
+#  Test XMLRPC API by saying, "Hello!" to client.
+#-------------------------------------------------------------------------------
+def demo_sayHello():
+	return 'Hello!'
+
+#-------------------------------------------------------------------------------
 # metaWeblog
 #-------------------------------------------------------------------------------
 
@@ -188,9 +200,11 @@ def metaWeblog_newPost(blogid, struct, publish):
 
 	try:
 		if struct.has_key('date_created_gmt'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+			dt=str(struct['date_created_gmt'])
+			entry.date=dateformat(dt)
 		elif struct.has_key('dateCreated'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+			dt=str(struct['dateCreated'])
+			entry.date=dateformat(dt)-timedelta(seconds=3600*g_blog.timedelta)
 	except:
 		pass
 
@@ -213,7 +227,8 @@ def metaWeblog_newPost(blogid, struct, publish):
 		entry.save(True)
 
 		if struct.has_key('mt_tb_ping_urls'):
-			for url in struct['mt_tb_ping_urls']:
+			links=struct['mt_tb_ping_urls'].split(' ')
+			for url in links:
 				util.do_trackback(url,entry.title,entry.get_content_excerpt(more='')[:60],entry.fullurl,g_blog.title)
 		g_blog.tigger_action("xmlrpc_publish_post",entry)
 	else:
@@ -263,9 +278,11 @@ def metaWeblog_editPost(postid, struct, publish):
 
 	try:
 		if struct.has_key('date_created_gmt'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+			dt=str(struct['date_created_gmt'])
+			entry.date=dateformat(dt)
 		elif struct.has_key('dateCreated'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+			dt=str(struct['dateCreated'])
+			entry.date=dateformat(dt)-timedelta(seconds=3600*g_blog.timedelta)
 	except:
 		pass
 
@@ -405,9 +422,11 @@ def wp_newPage(blogid,struct,publish):
 
 		try:
 			if struct.has_key('date_created_gmt'): #如果有日期属性
-				entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+				dt=str(struct['date_created_gmt'])
+				entry.date=dateformat(dt)
 			elif struct.has_key('dateCreated'): #如果有日期属性
-				entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+				dt=str(struct['dateCreated'])
+				entry.date=dateformat(dt)-timedelta(seconds=3600*g_blog.timedelta)
 		except:
 			pass
 
@@ -461,9 +480,11 @@ def wp_editPage(blogid,pageid,struct,publish):
 		entry.menu_order=int(struct['wp_page_order'])
 	try:
 		if struct.has_key('date_created_gmt'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['date_created_gmt']), "%Y%m%dT%H:%M:%S")
+			dt=str(struct['date_created_gmt'])
+			entry.date=dateformat(dt)
 		elif struct.has_key('dateCreated'): #如果有日期属性
-			entry.date=datetime.strptime(str(struct['dateCreated']), "%Y%m%dT%H:%M:%S")-timedelta(seconds=3600*g_blog.timedelta)
+			dt=str(struct['dateCreated'])
+			entry.date=dateformat(dt)-timedelta(seconds=3600*g_blog.timedelta)
 	except:
 		pass
 
@@ -517,10 +538,10 @@ def wp_editComment(blogid,commentid,struct):
 		if comment:
 			url=struct['author_url']
 			if url:
-		   		try:
+				try:
 					comment.weburl=url
-		   		except:
-			   		comment.weburl=None
+				except:
+					comment.weburl=None
 			#comment.date= format_date(datetime.now())
 			comment.author=struct['author']
 			#comment.weburl=struct['author_url']
@@ -543,10 +564,10 @@ def wp_newComment(blogid,postid,struct):
 	                email=struct['author_email'])
 	url=struct['author_url']
 	if url:
-	   try:
+		try:
 			comment.weburl=url
-	   except:
-		   comment.weburl=None
+		except:
+			comment.weburl=None
 
 	comment.save()
 	return comment.key().id()
@@ -572,14 +593,14 @@ def wp_deleteCategory(blogid,cateid):
 	except:
 		return False
 @checkauth()
-def	wp_suggestCategories(blogid,category,max_result):
+def wp_suggestCategories(blogid,category,max_result):
 	categories=Category.all()
-  	cates=[]
-  	for cate in categories:
+	cates=[]
+	for cate in categories:
 		cates.append({  'categoryId' : str(cate.ID()),
 					'categoryName':cate.name
 					})
-  	return cates[:max_result]
+	return cates[:max_result]
 
 @checkauth()
 def wp_getComment(blogid,commentid):
@@ -623,9 +644,9 @@ def wp_getComments(blogid,data):
 
 		for comment in comments.fetch(number,offset):
 			yield {
-		 				'dateCreated':format_date(comment.date),
-		 				'date_created_gmt':format_date(comment.date),
-		 				'user_id':'0',
+						'dateCreated':format_date(comment.date),
+						'date_created_gmt':format_date(comment.date),
+						'user_id':'0',
 						'comment_id':str(comment.key().id()),
 						'parent':'',
 						'status':'approve',
@@ -644,26 +665,26 @@ def wp_getComments(blogid,data):
 
 @checkauth()
 def mt_getPostCategories(postid):
-	  post=Entry.get_by_id(int(postid))
-	  categories=post.categories
-	  cates=[]
-	  for cate in categories:
-			#cate=Category(key)
-			cates.append({'categoryId' : str(cate.ID()),
-						'categoryName':cate.name,
-						'isPrimary':True
-						})
-	  return cates
+	post=Entry.get_by_id(int(postid))
+	categories=post.categories
+	cates=[]
+	for cate in categories:
+		#cate=Category(key)
+		cates.append({'categoryId' : str(cate.ID()),
+					'categoryName':cate.name,
+					'isPrimary':True
+					})
+	return cates
 
 @checkauth()
 def mt_getCategoryList(blogid):
-	  categories=Category.all()
-	  cates=[]
-	  for cate in categories:
+	categories=Category.all()
+	cates=[]
+	for cate in categories:
 			cates.append({  'categoryId' : str(cate.ID()),
-						'categoryName':cate.name
-						})
-	  return cates
+					'categoryName':cate.name
+					})
+	return cates
 
 @checkauth()
 def mt_setPostCategories(postid,cates):
@@ -684,6 +705,19 @@ def mt_setPostCategories(postid,cates):
 		return False
 
 @checkauth()
+def mt_getTrackbackPings(self,postid):
+	try:
+		entry=Entry.get_by_id(int(postid))
+		Tracks=[]
+		list=Comment.all().filter('entry =',entry).filter('ctype =',1)
+
+		for track in list:
+			Tracks.append({'pingIP':track.ip,'pingURL':track.weburl,'pingTitle':track.author})
+		return Tracks
+	except:
+		return False
+
+@checkauth()
 def mt_publishPost(postid):
 	try:
 		entry=Entry.get_by_id(int(postid))
@@ -695,14 +729,45 @@ def mt_publishPost(postid):
 @checkauth()
 def mt_getRecentPostTitles(blogid,num):
 	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
- 	return [entry_title_struct(entry) for entry in entries]
+	return [entry_title_struct(entry) for entry in entries]
 
 #------------------------------------------------------------------------------
 #pingback
 #------------------------------------------------------------------------------
+def pingback_extensions_getPingbacks(self,url):
+	from urlparse import urlparse
+	param=urlparse(url)
+	slug=param[2]
+	slug=urldecode(slug)
+	try:
+		entrie = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
+		pings=[]
+		list=Comment.all().filter('entry =',entry).filter('ctype =',2)
+		
+		for ping in list:
+			pings.append(ping.weburl)
+		return pings
+	except:
+		return False
 _title_re = re.compile(r'<title>(.*?)</title>(?i)')
 _pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
 _chunk_re = re.compile(r'\n\n|<(?:p|div|h\d)[^>]*>')
+
+def fetch_result(source_uri):
+	for RETRY in range(5):
+		rpc = urlfetch.create_rpc()
+		urlfetch.make_fetch_call(rpc, source_uri)
+		try:
+			response = rpc.get_result()
+			return response
+		except urlfetch.DownloadError:
+			logging.info('Download Error, Retry %s times'%RETRY)
+			continue
+		except:
+			raise Fault(16, 'The source URL does not exist.%s'%source_uri)
+	else:
+		logging.info('Times Over')
+		raise Fault(16, 'The source URL does not exist.%s'%source_uri)
 def pingback_ping(source_uri, target_uri):
 	# next we check if the source URL does indeed exist
 	if not g_blog.allow_pingback:
@@ -710,9 +775,11 @@ def pingback_ping(source_uri, target_uri):
 	try:
 
 		g_blog.tigger_action("pre_ping",source_uri,target_uri)
-		response = urlfetch.fetch(source_uri)
+		response = fetch_result(source_uri)
+		logging.info('source_uri: '+source_uri+'target_uri:'+target_uri)
 	except Exception ,e :
 		#logging.info(e.message)
+		logging.info('The source URL does not exist.%s'%source_uri)
 		raise Fault(16, 'The source URL does not exist.%s'%source_uri)
 	# we only accept pingbacks for links below our blog URL
 	blog_url = g_blog.baseurl
@@ -737,6 +804,14 @@ def get_excerpt(response, url_hint, body_limit=1024 * 512):
 	not be calculated it will be `None`.
 	"""
 	contents = response.content[:body_limit]
+	if 'charset=gb2312' in contents[:200].lower():
+		contents = contents.decode('gb2312').encode('UTF-8')
+	elif 'charset=gbk"' in contents[:200].lower():
+		contents = contents.decode('GBK').encode('UTF-8')
+	try:
+		contents=contents.decode('utf-8')
+	except:
+		pass
 
 	title_match = _title_re.search(contents)
 	title = title_match and strip_tags(title_match.group(1)) or None
@@ -786,7 +861,7 @@ def pingback_post(response,source_uri, target_uri, slug):
 		raise Fault(48, 'pingback has already been registered')
 		return
 
-	comment=Comment(author=urlparse(source_uri).hostname,
+	comment=Comment(author=title[:30],
 			content="<strong>"+title[:250]+"...</strong><br/>" +
 					excerpt[:250] + '...',
 			weburl=source_uri,
@@ -809,6 +884,7 @@ class PlogXMLRPCDispatcher(SimpleXMLRPCDispatcher):
 		self.register_introspection_functions()
 
 dispatcher = PlogXMLRPCDispatcher({
+	'demo.sayHello':demo_sayHello,
 	'blogger.getUsersBlogs' : blogger_getUsersBlogs,
 	'blogger.deletePost' : blogger_deletePost,
 	'blogger.getUserInfo': blogger_getUserInfo,
@@ -852,9 +928,11 @@ dispatcher = PlogXMLRPCDispatcher({
 	'mt.getCategoryList':mt_getCategoryList,
 	'mt.publishPost':mt_publishPost,
 	'mt.getRecentPostTitles':mt_getRecentPostTitles,
+	'mt.getTrackbackPings':mt_getTrackbackPings,
 
 	##pingback
 	'pingback.ping':pingback_ping,
+	'pingback.extensions.getPingbacks':pingback_extensions_getPingbacks,
 
 
 
@@ -864,7 +942,7 @@ dispatcher = PlogXMLRPCDispatcher({
 # {{{ Handlers
 class CallApi(BaseRequestHandler):
 	def get(self):
-		Logger(request = self.request.uri, response = '----------------------------------').put()
+		Logger(request = self.request.uri, response = self.request.remote_addr+'----------------------------------').put()
 		self.write('<h1>please use POST</h1>')
 
 	def post(self):

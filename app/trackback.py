@@ -68,7 +68,7 @@ class TrackBack:
     def autodiscover(self, urlToCheck):
 
         response=urlfetch.fetch(urlToCheck)
-        data = response.read()
+        data = response.content
         tbpattern = r'trackback:ping="(.*?)"'
         reg = re.search(tbpattern, data)
         if reg:

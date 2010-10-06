@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cgi, os,sys,traceback
+import cgi, os,sys,traceback,logging
 import wsgiref.handlers
 ##os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 ##from django.conf import settings
@@ -25,6 +25,7 @@ import pickle
 from base import *
 from model import *
 
+from app.pingback import autoPingback
 from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault
@@ -68,6 +69,19 @@ class setlanguage(BaseRequestHandler):
 
 			#self.response.headers.add_header('Set-Cookie', cookiestr)
 
+def fetch_result(target_uri):
+	for RETRY in range(5):
+		try:
+			response = urlfetch.fetch(target_uri)
+			return response
+		except urlfetch.DownloadError:
+			logging.info('Download Error, Retry %s times'%RETRY)
+			continue
+		except:
+			raise PingbackError(16)
+	else:
+		logging.info('Times Over')
+		raise PingbackError(16)
 
 
 class admin_do_action(BaseRequestHandler):
@@ -82,7 +96,7 @@ class admin_do_action(BaseRequestHandler):
 		except:
 			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 
-	@requires_admin
+	
 	def post(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -93,13 +107,16 @@ class admin_do_action(BaseRequestHandler):
 		except:
 			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 
+	@requires_admin
 	def action_test(self):
 		self.write(os.environ)
 
+	@requires_admin
 	def action_cacheclear(self):
 		memcache.flush_all()
 		self.write(_('"Cache cleared successful"'))
 
+	@requires_admin
 	def action_updatecomments(self):
 		for entry in Entry.all():
 			cnt=entry.comments().count()
@@ -108,6 +125,13 @@ class admin_do_action(BaseRequestHandler):
 				entry.put()
 		self.write(_('"All comments updated"'))
 
+	@requires_admin
+	def action_updatecommentno(self):
+		for entry in Entry.all():
+			entry.update_commentno()
+		self.write(_('"All comments number Updates."'))
+
+	@requires_admin
 	def action_updatelink(self):
 		link_format=self.param('linkfmt')
 
@@ -131,6 +155,7 @@ class admin_do_action(BaseRequestHandler):
 		else:
 			self.write(_('"Please input url format."'))
 
+	@requires_admin
 	def action_init_blog(self,slug=None):
 
 		for com in Comment.all():
@@ -142,6 +167,7 @@ class admin_do_action(BaseRequestHandler):
 		g_blog.entrycount=0
 		self.write(_('"Init has succeed."'))
 
+	@requires_admin
 	def action_update_tags(self,slug=None):
 		for tag in Tag.all():
 			tag.delete()
@@ -155,7 +181,7 @@ class admin_do_action(BaseRequestHandler):
 
 		self.write(_('"All tags for entry have been updated."'))
 
-
+	@requires_admin
 	def action_update_archives(self,slug=None):
 		for archive in Archive.all():
 			archive.delete()
@@ -197,7 +223,8 @@ class admin_do_action(BaseRequestHandler):
 		source_uri=self.param('source')
 		target_uri=self.param('target')
 		try:
-			response =urlfetch.fetch(target_uri)
+			#response =urlfetch.fetch(target_uri)
+			response=fetch_result(target_uri) #retry up to 5 times
 		except:
 			raise PingbackError(32)
 
@@ -205,7 +232,7 @@ class admin_do_action(BaseRequestHandler):
 			pingback_uri = response.headers['X-Pingback']
 		except KeyError:
 			_pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
-			match = _pingback_re.search(response.data)
+			match = _pingback_re.search(response.content)
 			if match is None:
 				raise PingbackError(33)
 			pingback_uri =urldecode(match.group(1))
@@ -375,6 +402,7 @@ class admin_entry(BaseRequestHandler):
 		action=self.param("action")
 		entry=None
 		cats=Category.all()
+		alltags=Tag.all()
 		if action and  action=='edit':
 				try:
 					key=self.param('key')
@@ -388,7 +416,7 @@ class admin_entry(BaseRequestHandler):
 		def mapit(cat):
 			return {'name':cat.name,'slug':cat.slug,'select':entry and cat.key() in entry.categorie_keys}
 
-		vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats)}
+		vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats),'alltags':alltags}
 		self.render2('views/admin/entry.html',vals)
 
 	@requires_admin
@@ -411,7 +439,7 @@ class admin_entry(BaseRequestHandler):
 		entry_slug=self.param('slug')
 		entry_parent=self.paramint('entry_parent')
 		menu_order=self.paramint('menu_order')
-		entry_excerpt=self.param('excerpt').replace('\n','<br>')
+		entry_excerpt=self.param('excerpt').replace('\n','<br />')
 		password=self.param('password')
 		sticky=self.parambool('sticky')
 
@@ -475,6 +503,11 @@ class admin_entry(BaseRequestHandler):
 				   
 				vals.update({'action':'edit','result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
 				self.render2('views/admin/entry.html',vals)
+				if published and entry.allow_trackback and g_blog.allow_pingback:
+					try:
+						autoPingback(entry.fullurl,HTML=content)
+					except:
+						pass
 			elif action=='edit':
 				try:
 					entry=Entry.get(key)
@@ -622,10 +655,18 @@ class admin_comments(BaseRequestHandler):
 	def post(self,slug=None):
 		try:
 			linkcheck= self.request.get_all('checks')
+			entrykeys=[]
 			for key in linkcheck:
 
 				comment=Comment.get(key)
 				comment.delit()
+				entrykeys.append(comment.entry.key())
+			entrykeys=set(entrykeys)
+			for key in entrykeys:
+				e=Entry.get(key)
+				e.update_commentno()
+				e.removecache()
+			memcache.delete("/feed/comments")
 		finally:
 			self.redirect(self.request.uri)
 

@@ -6,6 +6,7 @@ from google.appengine.ext.db import Model as DBModel
 from google.appengine.api import memcache
 from google.appengine.api import mail
 from google.appengine.api import urlfetch
+from google.appengine.api import datastore
 from datetime import datetime
 import urllib, hashlib,urlparse
 import zipfile,re,pickle,uuid
@@ -399,6 +400,7 @@ class Entry(BaseModel):
 	entry_parent=db.IntegerProperty(default=0)#When level=0 show on main menu.
 	menu_order=db.IntegerProperty(default=0)
 	commentcount = db.IntegerProperty(default=0)
+	trackbackcount = db.IntegerProperty(default=0)
 
 	allow_comment = db.BooleanProperty(default=True) #allow comment
 	#allow_pingback=db.BooleanProperty(default=False)
@@ -506,7 +508,7 @@ class Entry(BaseModel):
 		self.tags=tags
 
 	def get_comments_by_page(self,index,psize):
-		return self.comments().fetch(psize,offset = (index-1) * psize)
+		return self.purecomments().fetch(psize,offset = (index-1) * psize)
 
 	@property
 	def strtags(self):
@@ -522,14 +524,33 @@ class Entry(BaseModel):
 		else:
 			return Comment.all().filter('entry =',self).order('date')
 		
+	def purecomments(self):
+		if g_blog.comments_order:
+			return Comment.all().filter('entry =',self).filter('ctype =',0).order('-date')
+		else:
+			return Comment.all().filter('entry =',self).filter('ctype =',0).order('date')
+
+	def trackcomments(self):
+		if g_blog.comments_order:
+			return Comment.all().filter('entry =',self).filter('ctype IN',[1,2]).order('-date')
+		else:
+			return Comment.all().filter('entry =',self).filter('ctype IN',[1,2]).order('date')
 	def commentsTops(self):
-		return [c for c  in self.comments() if c.parent_key()==None]
+		return [c for c  in self.purecomments() if c.parent_key()==None]
 	
 	def delete_comments(self):
 		cmts = Comment.all().filter('entry =',self)
 		for comment in cmts:
 			comment.delete()
 		self.commentcount = 0
+		self.trackbackcount = 0
+	def update_commentno(self):
+		cmts = Comment.all().filter('entry =',self).order('date')
+		i=1
+		for comment in cmts:
+			comment.no=i
+			i+=1
+			comment.store()
 
 	def update_archive(self,cnt=1):
 		"""Checks to see if there is a month-year entry for the
@@ -691,15 +712,26 @@ class Comment(db.Model):
 	reply_notify_mail=db.BooleanProperty(default=False)
 	ip=db.StringProperty()
 	ctype=db.IntegerProperty(default=COMMENT_NORMAL)
+	no=db.IntegerProperty(default=0)
 	comment_order=db.IntegerProperty(default=1)
 
+	@property
+	def mpindex(self):
+		count=self.entry.commentcount
+		no=self.no
+		if g_blog.comments_order:
+			no=count-no+1
+		index=no / g_blog.comments_per_page
+		if no % g_blog.comments_per_page or no==0:
+			index+=1
+		return index
 
 	@property
 	def shortcontent(self,len=20):
 		scontent=self.content
 		scontent=re.sub(r'<br\s*/>',' ',scontent)
 		scontent=re.sub(r'<[^>]+>','',scontent)
-		scontent=re.sub(r'(@[\S]+)-\d+[:]',r'\1:',scontent)
+		scontent=re.sub(r'(@[\S]+)-\d{2,7}',r'\1:',scontent)
 		return scontent[:len].replace('<','&lt;').replace('>','&gt;')
 
 
@@ -727,14 +759,20 @@ class Comment(db.Model):
 		self.put()
 		self.entry.commentcount+=1
 		self.comment_order=self.entry.commentcount
+		if (self.ctype == COMMENT_TRACKBACK) or (self.ctype == COMMENT_PINGBACK):
+			self.entry.trackbackcount+=1
 		self.entry.put()
 		memcache.delete("/"+self.entry.link)
-
-
-
+		return True
 
 	def delit(self):
 		self.entry.commentcount-=1
+		if self.entry.commentcount<0:
+			self.entry.commentcount = 0
+		if (self.ctype == COMMENT_TRACKBACK) or (self.ctype == COMMENT_PINGBACK):
+			self.entry.trackbackcount-=1
+		if self.entry.trackbackcount<0:
+			self.entry.trackbackcount = 0
 		self.entry.put()
 		self.delete()
 
@@ -753,6 +791,10 @@ class Comment(db.Model):
 		comments=Comment.all().ancestor(self)
 		return [c for c in comments if c.parent_key()==key]
 	
+	def store(self, **kwargs):
+		rpc = datastore.GetRpcFromKwargs(kwargs)
+		self._populate_internal_entity()
+		return datastore.Put(self._entity, rpc=rpc)
 
 class Media(db.Model):
 	name =db.StringProperty()
@@ -813,11 +855,19 @@ def Sitemap_NotifySearch():
 	  query_map[query_attr] = url
 	  query = urllib.urlencode(query_map)
 	  notify = urlparse.urlunsplit((ping[0], ping[1], ping[2], query, ping[4]))
+	  # Send the notification
+	  logging.info('Notifying search engines. %s'%ping[1])
+	  logging.info('url: %s'%notify)
 	  try:
-		urlfetch.fetch(notify)
+		  result = urlfetch.fetch(notify)
+		  if result.status_code == 200:
+			  logging.info('Notify Result: %s' % result.content)
+		  if result.status_code == 404:
+			  logging.info('HTTP error 404: Not Found')
+			  logging.warning('Cannot contact: %s' % ping[1])
 
 	  except :
-		logging.error('Cannot contact: %s' % ping[1])
+		  logging.error('Cannot contact: %s' % ping[1])
 
 def InitBlogData():
 	global g_blog

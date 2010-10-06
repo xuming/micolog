@@ -134,7 +134,9 @@ class MainPage(BasePublicPage):
 						   'show_prev' : show_prev,
 						'show_next' : show_next,
 						'pageindex':page,
-						'ishome':True
+						'ishome':True,
+						'pagecount':max_page,
+						'postscount':entrycount
 							})
 
 
@@ -227,7 +229,7 @@ class SinglePost(BasePublicPage):
 ##		else:
 		commentuser=['','','']
 
-		comments_nav=self.get_comments_nav(mp,entry.comments().count())
+		comments_nav=self.get_comments_nav(mp,entry.purecomments().count())
 
 		if entry.entrytype=='post':
 			self.render('single',
@@ -258,15 +260,13 @@ class SinglePost(BasePublicPage):
 
 	def post(self,slug=None,postid=None):
 		'''handle trackback'''
-		error = '''
-<?xml version="1.0" encoding="utf-8"?>
+		error = '''<?xml version="1.0" encoding="utf-8"?>
 <response>
 <error>1</error>
 <message>%s</message>
 </response>
 '''
-		success = '''
-<?xml version="1.0" encoding="utf-8"?>
+		success = '''<?xml version="1.0" encoding="utf-8"?>
 <response>
 <error>0</error>
 </response>
@@ -287,10 +287,14 @@ class SinglePost(BasePublicPage):
 			return
 		#check code ,rejest spam
 		entry=entries[0]
+		logging.info(self.request.remote_addr+self.request.path+" "+entry.trackbackurl)
 		#key=self.param("code")
 		#if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
-		import cgi
-		param=cgi.parse_qs(self.request.uri)
+		#import cgi
+		from urlparse import urlparse
+		param=urlparse(self.request.uri)
+		code=param[4]
+		param=cgi.parse_qs(code)
 		if param.has_key('code'):
 			code=param['code'][0]
 
@@ -392,22 +396,22 @@ class FeedHandler(BaseRequestHandler):
 		entries = Entry.all().filter('entrytype =','post').filter('published =',True).order('-date').fetch(10)
 		if entries and entries[0]:
 			last_updated = entries[0].date
-			last_updated = last_updated.strftime("%Y-%m-%dT%H:%M:%SZ")
+			last_updated = last_updated.strftime("%a, %d %b %Y %H:%M:%S +0000")
 		for e in entries:
-			e.formatted_date = e.date.strftime("%Y-%m-%dT%H:%M:%SZ")
-		self.response.headers['Content-Type'] = 'application/atom+xml'
-		self.render2('views/atom.xml',{'entries':entries,'last_updated':last_updated})
+			e.formatted_date = e.date.strftime("%a, %d %b %Y %H:%M:%S +0000")
+		self.response.headers['Content-Type'] = 'application/rss+xml'
+		self.render2('views/rss.xml',{'entries':entries,'last_updated':last_updated})
 
 class CommentsFeedHandler(BaseRequestHandler):
 	@cache(time=600)
 	def get(self,tags=None):
-		comments = Comment.all().order('-date').fetch(10)
+		comments = Comment.all().order('-date').filter('ctype =',0).fetch(10)
 		if comments and comments[0]:
 			last_updated = comments[0].date
-			last_updated = last_updated.strftime("%Y-%m-%dT%H:%M:%SZ")
+			last_updated = last_updated.strftime("%a, %d %b %Y %H:%M:%S +0000")
 		for e in comments:
-			e.formatted_date = e.date.strftime("%Y-%m-%dT%H:%M:%SZ")
-		self.response.headers['Content-Type'] = 'application/atom+xml'
+			e.formatted_date = e.date.strftime("%a, %d %b %Y %H:%M:%S +0000")
+		self.response.headers['Content-Type'] = 'application/rss+xml'
 		self.render2('views/comments.xml',{'comments':comments,'last_updated':last_updated})
 
 class SitemapHandler(BaseRequestHandler):
@@ -483,19 +487,19 @@ class Post_comment(BaseRequestHandler):
 
 				if not check_ret:
 					if useajax:
-						self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
+						self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')),ensure_ascii = False))
 					else:
 						self.error(-102,_('Your check code is invalid .'))
 					return
 			except:
 				if useajax:
-					self.write(simplejson.dumps((False,-102,_('Your check code is invalid .'))))
+					self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')),ensure_ascii = False))
 				else:
 					self.error(-102,_('Your check code is invalid .'))
 				return
 
 		sess.invalidate()
-		content=content.replace('\n','<br>')
+		content=content.replace('\n','<br />')
 		content=myfilter.do_filter(content)
 		name=cgi.escape(name)[:20]
 		url=cgi.escape(url)[:100]
@@ -512,10 +516,12 @@ class Post_comment(BaseRequestHandler):
 							reply_notify_mail=reply_notify_mail,
 							entry=Entry.get(key))
 			if url:
-			   try:
+				try:
+					if not url.startswith(('http://','https://')):
+						url = 'http://' + url
 					comment.weburl=url
-			   except:
-				   comment.weburl=None
+				except:
+					comment.weburl=None
 
 			#name=name.decode('utf8').encode('gb2312')
 
@@ -532,6 +538,7 @@ class Post_comment(BaseRequestHandler):
 			if parent_id:
 				comment.parent=Comment.get_by_id(parent_id)
 				
+			comment.no=comment.entry.commentcount+1
 			try:
 				comment.save()
 				memcache.delete("/"+comment.entry.link)
@@ -539,7 +546,7 @@ class Post_comment(BaseRequestHandler):
 				self.response.headers.add_header( 'Set-Cookie', cookiestr)
 				if useajax:
 					comment_c=self.get_render('comment',{'comment':comment})
-					self.write(simplejson.dumps((True,comment_c.decode('utf8'))))
+					self.write(simplejson.dumps((True,comment_c.decode('utf8')),ensure_ascii = False))
 				else:
 					self.redirect(self.referer+"#comment-"+str(comment.key().id()))
 

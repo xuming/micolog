@@ -1129,3 +1129,42 @@ font-size:11px;
 }
 #lang_menu a:hover{background:#333333 none repeat scroll 0 0;
 color:#FFFFFF !important;}
+
+
+#popgrin-container {
+background:url(/static/images/loading.gif) no-repeat scroll 100% 100% #F7F7F7;
+border:1px solid #B6B6B6;
+color:#555555;
+display:none;
+font-size:0.92em;
+height:auto;
+left:5px;
+line-height:168%;
+margin:0;
+padding:5px;
+position:absolute;
+top:-10px;
+width:250px;
+}
+
+#popgrin-close {
+background:url("/static/images/close.gif") no-repeat scroll 0 0 transparent;
+border:medium none;
+color:#2F63B3;
+display:block;
+float:right;
+margin:0;
+outline-style:none;
+padding:0;
+text-decoration:none;
+text-indent:-999em;
+width:8px;
+}
+
+#popgrin-content a {
+color:#555555;
+outline-style:none;
+text-decoration:none;
+font-family:Microsoft Yahei,Arial;
+font-size:14px;
+}
