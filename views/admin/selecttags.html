@@ -1,0 +1,59 @@
+<div id="selscttags" style="margin:3px 10px 0 0;">
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function(){
+  $('#popgrin-close').click(function(){
+    $('#popgrin-container').slideUp('normal');
+  });
+  $('#popgrin-insert').click(function(ev){
+    xx = ev.pageX - $('#popgrin-container').width() /2;
+    yy = ev.pageY - $('#popgrin-container').height() / 2;
+    $('#popgrin-container')
+     .css('top',yy).css('left',xx)
+     .slideDown('normal');
+  });
+});
+
+function insertTags(insertStr) {
+  var myField;
+  var string=insertStr;
+  insertStr=","+insertStr.replace( /^\s+/, '' ).replace( /\s+$/, '' )+",";
+  if (document.getElementById('tags') && document.getElementById('tags').type == 'text') {
+    myField = document.getElementById('tags');
+  } else {
+    return false;
+  }
+
+  if (myField.selectionStart || myField.selectionStart == '0') {
+    var startPos = myField.selectionStart;
+    var endPos = myField.selectionEnd;
+    var cursorPos = startPos;
+    var re = new RegExp(string + ",");myField.value=myField.value+",";
+    if(!myField.value.match(re)){
+    myField.value = myField.value.substring(0, startPos)
+            + insertStr
+            + myField.value.substring(endPos, myField.value.length);}
+    myField.value=myField.value.replace( /\s+,+\s*/g, ',' ).replace( /,+/g, ',' ).replace( /,+\s+,+/g, ',' ).replace( /,+\s*$/g, '' ).replace( /^\s*,+/g, '' );
+    cursorPos += insertStr.length;
+    myField.focus();
+    myField.selectionStart = cursorPos;
+    myField.selectionEnd = cursorPos;
+
+  } else {
+    var re = new RegExp(string + ",");myField.value=myField.value+",";
+    if(!myField.value.match(re)){
+    myField.value += insertStr;}
+    myField.value=myField.value.replace( /\s+,+\s*/g, ',' ).replace( /,+/g, ',' ).replace( /,+\s+,+/g, ',' ).replace( /,+\s*$/g, '' ).replace( /^\s*,+/g, '' );
+    myField.focus();
+  }
+}
+// ]]>
+</script>
+<a href="javascript:void(0)" id="popgrin-insert" title="Select Tags<">Select Tags</a>
+<div id="popgrin-container" style="display:none;">
+<a id="popgrin-close" href="javascript:void(0)" title="Close">Close</a>
+<div id="popgrin-content" >
+{%for tag in alltags%} <a href='javascript:void(0)' style='margin-right:5px' onclick='insertTags("{{tag.tag}}");return $("#popgrin-container").hide(500);'>{{tag.tag}}</a>  {%endfor%}
+
+</div></div>
+</div>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>{{ blog.title|escape }}</title>
+	<atom:link href="{{ blog.baseurl }}/feed" rel="self" type="application/rss+xml" />
+	<link>{{ blog.baseurl }}</link>
+	<description>{{ blog.subtitle|escape }}</description>
+	<lastBuildDate>{{last_updated}}</lastBuildDate>
+	<language>zh-cn</language>
+	<sy:updatePeriod>daily</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>Micolog-Python 0.7</generator>
+		{% for entry in entries %}<item>
+		<title>{{entry.title|escape}}</title>
+		<link>{{ blog.baseurl }}/{{entry.link|escape}}</link>
+		<comments>{{ blog.baseurl }}/{{entry.link|escape}}#comments</comments>
+		<pubDate>{{entry.formatted_date}}</pubDate>
+		<dc:creator>{{entry.author_name|escape}}</dc:creator>
+				{%for cate in entry.categories%}<category><![CDATA[{{cate.name}} ]]></category>
+{%endfor%}
+
+		<guid isPermaLink="false">{{ blog.baseurl }}/?p={{entry.post_id}}</guid>
+		<description><![CDATA[{{entry.excerpt|escape}}]]></description>
+			<content:encoded><![CDATA[{{entry.content}}
+{%if entry.relateposts%}
+<h4>相关阅读</h4>
+<ul>
+    {%for post in entry.relateposts%}
+    <li><a href="{{blog.baseurl}}/{{post.link|escape}}">{{post.title|escape}}</a></li>
+    {%endfor%}
+</ul>{%endif%}
+<p>本文网址:<a href="{{blog.baseurl}}/{{entry.link|escape}}">{{blog.baseurl}}/{{entry.link|escape}}</a></p>
+]]></content:encoded>
+			<wfw:commentRss>{{ blog.feedurl }}/comments</wfw:commentRss>
+		<slash:comments>{{entry.commentcount}}</slash:comments>
+		</item>{%endfor%}
+	</channel>
+</rss>
