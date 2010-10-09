@@ -96,7 +96,7 @@ class admin_do_action(BaseRequestHandler):
 		except:
 			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
 
-	
+
 	def post(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -186,10 +186,10 @@ class admin_do_action(BaseRequestHandler):
 		for archive in Archive.all():
 			archive.delete()
 		entries=Entry.all().filter('entrytype =','post')
-		
+
 		archives={}
-		
-				
+
+
 		for entry in entries:
 			my = entry.date.strftime('%B %Y') # September-2008
 			sy = entry.date.strftime('%Y') #2008
@@ -200,10 +200,10 @@ class admin_do_action(BaseRequestHandler):
 			else:
 				archive = Archive(monthyear=my,year=sy,month=sm,entrycount=1)
 				archives[my]=archive
-				
+
 		for ar in archives.values():
 			ar.put()
-			
+
 		self.write(_('"All entries have been updated."'))
 
 
@@ -433,7 +433,7 @@ class admin_entry(BaseRequestHandler):
 			published=False
 		else:
 			published=self.param('published')=='True'
-			 
+
 		allow_comment=self.parambool('allow_comment')
 		allow_trackback=self.parambool('allow_trackback')
 		entry_slug=self.param('slug')
@@ -465,6 +465,7 @@ class admin_entry(BaseRequestHandler):
 						'password':password,
 						'sticky':sticky}
 			  }
+
 		if not (title and (content or (is_external_page and external_page_address))):
 			vals.update({'result':False, 'msg':_('Please input title and content.')})
 			self.render2('views/admin/entry.html',vals)
@@ -496,11 +497,11 @@ class admin_entry(BaseRequestHandler):
 				entry.categorie_keys=newcates;
 
 				entry.save(published)
-				if published:					
+				if published:
 					smsg=_('Saved ok. <a href="/%(link)s" target="_blank">View it now!</a>')
 				else:
 					smsg=_('Saved ok.')
-				   
+
 				vals.update({'action':'edit','result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
 				self.render2('views/admin/entry.html',vals)
 				if published and entry.allow_trackback and g_blog.allow_pingback:
@@ -526,6 +527,7 @@ class admin_entry(BaseRequestHandler):
 					entry.password=password
 					entry.sticky=sticky
 					newcates=[]
+
 					if cats:
 
 						for cate in cats:
@@ -537,11 +539,13 @@ class admin_entry(BaseRequestHandler):
 					entry.allow_trackback=allow_trackback
 
 					entry.save(published)
+
 					if published:
 						smsg=_('Saved ok. <a href="/%(link)s" target="_blank">View it now!</a>')
 					else:
 						smsg=_('Saved ok.')
-					vals.update({'result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
+					vals.update({'result':True,'msg':smsg%{'link':str(urlencode( entry.link))},'entry':entry})
+
 					self.render2('views/admin/entry.html',vals)
 
 				except:
@@ -619,7 +623,8 @@ class admin_categories(BaseRequestHandler):
 			for key in linkcheck:
 
 				cat=Category.get(key)
-				cat.delete()
+				if cat:
+					cat.delete()
 		finally:
 			self.redirect('/admin/categories')
 
@@ -749,7 +754,7 @@ class admin_category(BaseRequestHandler):
 		category=None
 		if action and  action=='edit':
 				try:
-					
+
 					category=Category.get(key)
 
 				except:
@@ -769,32 +774,32 @@ class admin_category(BaseRequestHandler):
 					return False
 				parent=parent.parent_cat
 			return True
-		
+
 		action=self.param("action")
 		name=self.param("name")
 		slug=self.param("slug")
 		parentkey=self.param('parentkey')
 		key=self.param('key')
-					
+
 
 		vals={'action':action,'postback':True}
-		
+
 		try:
-		
+
 				if action=='add':
 					cat= Category(name=name,slug=slug)
 					if not (name and slug):
 						raise Exception(_('Please input name and slug.'))
 					if parentkey:
 						cat.parent_cat=Category.get(parentkey)
-							
+
 					cat.put()
 					self.redirect('/admin/categories')
-					
+
 					#vals.update({'result':True,'msg':_('Saved ok')})
 					#self.render2('views/admin/category.html',vals)
 				elif action=='edit':
-						
+
 						cat=Category.get(key)
 						cat.name=name
 						cat.slug=slug
@@ -814,7 +819,7 @@ class admin_category(BaseRequestHandler):
 				cates=[c for c in Category.all() if c.key()!=cat.key()]
 			else:
 				cates= Category.all()
-			
+
 			vals.update({'result':False,'msg':e.message,'category':cat,'key':key,'categories':cates})
 			self.render2('views/admin/category.html',vals)
 
@@ -1077,7 +1082,7 @@ class admin_ThemeEdit(BaseRequestHandler):
 def main():
 	webapp.template.register_template_library('filter')
 	webapp.template.register_template_library('app.recurse')
-	
+
 	application = webapp.WSGIApplication(
 					[
 					('/admin/{0,1}',admin_main),

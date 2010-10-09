@@ -24,7 +24,7 @@ Comment:
 %(content)s
 You can see all comments on this post here:
 %(commenturl)s
-'''		
+'''
 
 class NotifyHandler(BaseRequestHandler):
 	def __init__(self):
@@ -32,14 +32,14 @@ class NotifyHandler(BaseRequestHandler):
 		self.current="config"
 		self.sbody=OptionSet.getValue('sys_plugin_sbody',SBODY)
 		self.bbody=OptionSet.getValue('sys_plugin_bbody',BBODY)
-				
-	def get(self):	
+
+	def get(self):
 		self.template_vals.update({'self':self})
 		content=template.render('plugins/sys_plugin/setup.html',self.template_vals)
-		self.render2('views/admin/setup_base.html',{'m_id':'sysplugin_notify','content':content})		
+		self.render2('views/admin/setup_base.html',{'m_id':'sysplugin_notify','content':content})
 		#Also you can use:
 		#self.render2('plugins/sys_plugin/setup2.html',{'m_id':'sysplugin_notify','self':self})
-		
+
 	def post(self):
 		self.bbody=self.param('bbody')
 		self.sbody=self.param('sbody')
@@ -47,10 +47,10 @@ class NotifyHandler(BaseRequestHandler):
 		self.blog.put()
 		OptionSet.setValue('sys_plugin_sbody',self.sbody)
 		OptionSet.setValue('sys_plugin_bbody',self.bbody)
-		
+
 		self.get()
-		
-		
+
+
 class sys_plugin(Plugin):
 	def __init__(self):
 		Plugin.__init__(self,__file__)
@@ -63,12 +63,12 @@ class sys_plugin(Plugin):
 		self.blocklist=OptionSet.getValue("sys_plugin_blocklist",default="")
 		self.register_filter('head',self.head)
 		self.register_filter('footer',self.footer)
-		
+
 		self.register_urlmap('sys_plugin/setup',self.setup)
-		
+
 		self.register_urlhandler('/admin/sys_plugin/notify',NotifyHandler)
 		self.register_setupmenu('sysplugin_notify',_('Notify'),'/admin/sys_plugin/notify')
-		
+
 		self.register_action('pre_comment',self.pre_comment)
 		self.register_action('save_comment',self.save_comment)
 		self.sbody=OptionSet.getValue('sys_plugin_sbody',SBODY)
@@ -122,12 +122,18 @@ class sys_plugin(Plugin):
 	def save_comment(self,comment,*arg1,**arg2):
 		if self.blog.comment_notify_mail:
 			self.notify(comment)
-   	   
+
 	def notify(self,comment):
-		
-		sbody=self.sbody.decode('utf-8')
-		bbody=self.bbody.decode('utf-8')
-		
+
+		try:
+						sbody=self.sbody.decode('utf-8')
+		except:
+						sbody=self.sbody
+		try:
+						bbody=self.bbody.decode('utf-8')
+		except:
+						bbody=self.bbody
+
 		if self.blog.comment_notify_mail and self.blog.owner and not users.is_current_user_admin() :
 			sbody=sbody%{'title':comment.entry.title,
 						   'author':comment.author,
@@ -137,7 +143,7 @@ class sys_plugin(Plugin):
 						   'commenturl':comment.entry.fullurl+"#comment-"+str(comment.key().id())
 						 }
 			mail.send_mail_to_admins(self.blog.owner.email(),'Comments:'+comment.entry.title, sbody,reply_to=comment.email)
-			
+
 		#reply comment mail notify
 		refers = re.findall(r'#comment-(\d+)', comment.content)
 		if len(refers)!=0:

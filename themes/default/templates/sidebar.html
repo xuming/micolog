@@ -1,8 +1,7 @@
 <div class="sidebar">
 <ul>
 <li>
-
-    <h2>Recent Comments</h2>
+<h2>Recent Comments</h2>
         <ul>
         {% for comment in recent_comments %}
         <li><a href="/{{comment.entry.link}}#comment-{{comment.key.id}}">{{comment.author}}:{{comment.shortcontent}}...</a> </li>
@@ -14,7 +13,7 @@
  <h2>Categories</h2>
   <ul>
  	{%for cate in categories%}
-  <li>	<a href="/category/{{cate.slug}}">{{cate.name}}({{cate.count}})</a></li>
+  <li>	<a href="/category/{{cate.slug|urlencode}}">{{cate.name}}({{cate.count}})</a></li>
  	{%endfor%}
  	</ul>
 

@@ -13,7 +13,7 @@ Tags: blue, white, fixed width, two columns, widgets, rounded corners
 body { background:url(images/topbkg.gif) repeat-x; font:0.69em Verdana, Arial, Helvetica, sans-serif; color:#333;}
 
 /*...... links ........*/
-a { color:#2583ad;}
+a { color:#2583ad;font-size:1.1em}
 a:hover { color:#000;}
 
 /*...... main and sticky footer ........*/
@@ -66,11 +66,12 @@ height:30px; }
 .box p.dpost { display:block; background:#f6f6f6; padding:5px 5px 5px 10px; margin:10px 0 0 0; clear:both;}
 .box p.dpost a { font-weight:normal; }
 .box p a { font-weight:bold;}
-.box p { line-height:140%;}
+.box p { }
+.en_body{padding:8px;font-size:1.1em;line-height:1.6}
 .meta { display:block; background:#f6f6f6; padding:10px; margin:10px 0 5px 0; }
 .meta p { padding-bottom:10px;}
 .space { display:block; height:15px;}
-.nifty { display:block; padding:10px; margin-bottom:10px; background:#e4f2fd; border:1px solid #f0f0f0;}
+.nifty { display:block; padding:10px; margin-bottom:5px; background:#e4f2fd; border:1px solid #f0f0f0;}
 .box img { border:1px solid #dadada; padding:3px;}
 .box img.wp-smiley { border:none; vertical-align:middle;}
 

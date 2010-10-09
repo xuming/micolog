@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import os,logging
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -175,7 +175,7 @@ class Blog(db.Model):
 
 	domain=db.StringProperty()
 	show_excerpt=db.BooleanProperty(default=True)
-	version=0.713
+	version=0.735
 	timedelta=db.FloatProperty(default=8.0)# hours
 	language=db.StringProperty(default="en-us")
 
@@ -273,6 +273,8 @@ class Category(db.Model):
 		for entry in Entry.all().filter('categorie_keys =',self):
 			entry.categorie_keys.remove(self.key())
 			entry.put()
+		for cat in Category.all().filter('parent_cat =',self):
+			cat.delete()
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_category",self)
 
@@ -307,17 +309,17 @@ class Category(db.Model):
 		else:
 			cate=Category.all().filter('uid =',id).get()
 			return cate
-		
-	@property	
+
+	@property
 	def children(self):
 		key=self.key()
 		return [c for c in Category.all().filter('parent_cat =',self)]
 
-	
+
 	@classmethod
 	def allTops(self):
 		return [c for c in Category.all() if not c.parent_cat]
-	
+
 class Archive(db.Model):
 	monthyear = db.StringProperty(multiline=False)
 	year = db.StringProperty(multiline=False)
@@ -353,6 +355,7 @@ class Tag(db.Model):
 			if tag:
 				if tag.tagcount>1:
 					tag.tagcount-=1
+					tag.put()
 				else:
 					tag.delete()
 
@@ -523,7 +526,7 @@ class Entry(BaseModel):
 			return Comment.all().filter('entry =',self).order('-date')
 		else:
 			return Comment.all().filter('entry =',self).order('date')
-		
+
 	def purecomments(self):
 		if g_blog.comments_order:
 			return Comment.all().filter('entry =',self).filter('ctype =',0).order('-date')
@@ -537,7 +540,7 @@ class Entry(BaseModel):
 			return Comment.all().filter('entry =',self).filter('ctype IN',[1,2]).order('date')
 	def commentsTops(self):
 		return [c for c  in self.purecomments() if c.parent_key()==None]
-	
+
 	def delete_comments(self):
 		cmts = Comment.all().filter('entry =',self)
 		for comment in cmts:
@@ -558,8 +561,8 @@ class Entry(BaseModel):
 		my = self.date.strftime('%B %Y') # September-2008
 		sy = self.date.strftime('%Y') #2008
 		sm = self.date.strftime('%m') #09
-		
-		
+
+
 		archive = Archive.all().filter('monthyear',my).get()
 		if self.entrytype == 'post':
 			if not archive:
@@ -620,7 +623,7 @@ class Entry(BaseModel):
 		if is_publish:
 			if g_blog.sitemap_ping:
 				Sitemap_NotifySearch()
-		
+
 		if old_publish and not is_publish:
 			self.update_archive(-1)
 		if not old_publish and is_publish:
@@ -643,12 +646,12 @@ class Entry(BaseModel):
 
 	@property
 	def next(self):
-		return Entry.all().filter('entrytype =','post').filter("published =", True).order('post_id').filter('post_id >',self.post_id).fetch(1)
+		return Entry.all().filter('entrytype =','post').filter("published =", True).order('date').filter('date >',self.date).fetch(1)
 
 
 	@property
 	def prev(self):
-		return Entry.all().filter('entrytype =','post').filter("published =", True).order('-post_id').filter('post_id <',self.post_id).fetch(1)
+		return Entry.all().filter('entrytype =','post').filter("published =", True).order('-date').filter('date <',self.date).fetch(1)
 
 	@property
 	def relateposts(self):
@@ -784,13 +787,13 @@ class Comment(db.Model):
 	def delete(self):
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_comment",self)
-		
+
 	@property
 	def children(self):
 		key=self.key()
 		comments=Comment.all().ancestor(self)
 		return [c for c in comments if c.parent_key()==key]
-	
+
 	def store(self, **kwargs):
 		rpc = datastore.GetRpcFromKwargs(kwargs)
 		self._populate_internal_entity()

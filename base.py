@@ -28,6 +28,7 @@ import micolog_template
 logging.info('module base reloaded')
 def urldecode(value):
 	return  urllib.unquote(urllib.unquote(value)).decode('utf8')
+    #return  urllib.unquote(value).decode('utf8')
 
 def urlencode(value):
 	return urllib.quote(value.encode('utf8'))
@@ -202,7 +203,7 @@ class Pager(object):
 	def fetch(self, p):
 		if hasattr(self.query,'__len__'):
 			max_offset=len(self.query)
-		else:		    
+		else:
 			max_offset = self.query.count()
 		n = max_offset / self.items_per_page
 		if max_offset % self.items_per_page != 0:
@@ -228,6 +229,9 @@ class Pager(object):
 class BaseRequestHandler(webapp.RequestHandler):
 	def __init__(self):
 		self.current='home'
+
+	def head(self, *args):
+		return self.get(*args)
 
 	def initialize(self, request, response):
 		webapp.RequestHandler.initialize(self, request, response)

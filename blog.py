@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import cgi, os,sys,math
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+import cgi, os,math
 import wsgiref.handlers
 import  google.appengine.api
 
@@ -534,10 +537,10 @@ class Post_comment(BaseRequestHandler):
 					   ''
 					   )
 			comment.ip=self.request.remote_addr
-			
+
 			if parent_id:
 				comment.parent=Comment.get_by_id(parent_id)
-				
+
 			comment.no=comment.entry.commentcount+1
 			try:
 				comment.save()

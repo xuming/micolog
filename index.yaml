@@ -25,6 +25,12 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: ctype
+  - name: entry
+  - name: date
+
+- kind: Comment
+  properties:
   - name: email
   - name: date
     direction: desc
@@ -82,6 +88,12 @@ indexes:
   - name: entrytype
   - name: post_id
     direction: desc
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: date
 
 - kind: Entry
   properties:

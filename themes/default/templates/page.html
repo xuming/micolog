@@ -14,8 +14,9 @@
 
 <div id="post-{{entry.key}}">
 <div class="nifty"><h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{entry.title}}">{{entry.title}}</a> <span class="date">{{entry.date|datetz:"F jS, Y"}}</span></h2></div>
-
+<div class="en_body">
 {{ entry.content }}
+</div>
 <div class="meta">{%if self.is_admin%}<a href="{{entry.edit_url}}">Edit this entry</a>  {%endif%}  </div>
 
 </div>

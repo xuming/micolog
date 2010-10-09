@@ -15,6 +15,7 @@ from base import *
 from model import *
 from micolog_plugin import *
 from urlparse import urlparse
+MAX_NUM=100
 
 def checkauth(pos=1):
 	def _decorate(method):
@@ -336,8 +337,8 @@ def metaWeblog_getPost(postid):
 	return post_struct(entry)
 
 @checkauth()
-def metaWeblog_getRecentPosts(blogid, num):
-	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
+def metaWeblog_getRecentPosts(blogid, num=20):
+	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, MAX_NUM))
 	return [post_struct(entry) for entry in entries]
 
 
@@ -462,7 +463,7 @@ def wp_getPage(blogid,pageid):
 
 @checkauth()
 def wp_getPages(blogid,num=20):
-	entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
+	entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, MAX_NUM))
 	return [page_struct(entry) for entry in entries]
 
 @checkauth(2)
@@ -579,7 +580,7 @@ def wp_getCommentStatusList(blogid):
 @checkauth()
 def wp_getPageList(blogid,num=20):
 	def func(blogid):
-		entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, 20))
+		entries = Entry.all().filter('entrytype =','page').order('-date').fetch(min(num, MAX_NUM))
 		for entry in entries:
 			yield {'page_id':str(entry.key().id()),'page_title':entry.title,'page_parent_id':0,'dateCreated': format_date(entry.date),'date_created_gmt': format_date(entry.date)}
 	return list(func(blogid))
@@ -728,7 +729,7 @@ def mt_publishPost(postid):
 
 @checkauth()
 def mt_getRecentPostTitles(blogid,num):
-	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, 20))
+	entries = Entry.all().filter('entrytype =','post').order('-date').fetch(min(num, MAX_NUM))
 	return [entry_title_struct(entry) for entry in entries]
 
 #------------------------------------------------------------------------------
@@ -743,7 +744,7 @@ def pingback_extensions_getPingbacks(self,url):
 		entrie = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
 		pings=[]
 		list=Comment.all().filter('entry =',entry).filter('ctype =',2)
-		
+
 		for ping in list:
 			pings.append(ping.weburl)
 		return pings

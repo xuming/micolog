@@ -35,13 +35,13 @@
 <form action="/post_comment" method="post" id="commentform">
 
 <p><input type="text" name="author" id="author" value="{{user_name}}" size="22" tabindex="1" />
-<label for="author"><small>Name (required)</small></label></p>
+<label for="author">Name <span style="color:red">(*)</span></label></p>
 
 <p><input type="text" name="email" id="email" value="{{user_email}}" size="22" tabindex="2" />
-<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+<label for="email">Mail(will not be published) <span style="color:red">(*)</span></small></label></p>
 
 <p><input type="text" name="url" id="url" value="{{user_url}}" size="22" tabindex="3" />
-<label for="url"><small>Website</small></label></p>
+<label for="url">Website</label></p>
 
 {%ifequal blog.comment_check_type 1%}
 <p id="checkarea">
