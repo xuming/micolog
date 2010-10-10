@@ -230,8 +230,8 @@ class BaseRequestHandler(webapp.RequestHandler):
 	def __init__(self):
 		self.current='home'
 
-	def head(self, *args):
-		return self.get(*args)
+##	def head(self, *args):
+##		return self.get(*args)
 
 	def initialize(self, request, response):
 		webapp.RequestHandler.initialize(self, request, response)
