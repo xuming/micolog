@@ -79,8 +79,8 @@
                     <option value="{{theme}}" {%ifequal blog.theme_name theme%}selected='selected'{%endifequal%}>{{theme}}</option>
                     {%endfor%}
 
-                    </select> 
-                       <a href="http://micolog.appspot.com/themes" target="_blank">Get more themes</a>
+                    </select>
+                       <a href="http://micolog.appspot.com/themes" target="_blank">{% trans "Get more themes"%}</a>
                </td>
                </tr>
                   <tr valign="top">
@@ -110,6 +110,13 @@
                </td>
                </tr>
 
+ <tr valign="top">
+                <th scope="row">{% trans "Avatar icon style:"%}</th>
+                <td>
+                   <input type="radio"   id="avatar_style0" name="avatar_style" {% ifequal blog.avatar_style 0%} checked="checked" {%endifequal%} value="0"/><label for="avatar_style0">{% trans "Default"%}</label>
+                   <input type="radio"   id="avatar_style1" name="avatar_style" {% ifequal blog.avatar_style 1%} checked="checked" {%endifequal%} value="1"/><label for="avatar_style1">{% trans "Identicon"%}</label>
+               </td>
+               </tr>
 
                    <tr valign="top" style="display:none">
                 <th scope="row">{% trans "Enable comment notify by mail:"%}</th>
@@ -154,7 +161,7 @@
 <input type="hidden" value="update" name="action"/>
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice,link_format" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback" name="bool_options"/>
-<input type="hidden" value="posts_per_page,comments_order,comments_per_page,comment_check_type" name="int_options"/>
+<input type="hidden" value="posts_per_page,comments_order,comments_per_page,comment_check_type,avatar_style" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>
 
 </p>

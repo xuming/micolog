@@ -170,6 +170,8 @@ class Blog(db.Model):
 	comments_per_page=db.IntegerProperty(default=20)
 	#comment check type 0-No 1-算术 2-验证码 3-客户端计算
 	comment_check_type=db.IntegerProperty(default=1)
+	#0 default 1 identicon
+	avatar_style=db.IntegerProperty(default=0)
 
 	blognotice=db.TextProperty(default='')
 
@@ -741,7 +743,11 @@ class Comment(db.Model):
 	def gravatar_url(self):
 
 		# Set your variables here
-		default = g_blog.baseurl+'/static/images/homsar.jpeg'
+		if g_blog.avatar_style==0:
+			default = g_blog.baseurl+'/static/images/homsar.jpeg'
+		else:
+			default='identicon'
+
 		if not self.email:
 			return default
 
@@ -750,8 +756,9 @@ class Comment(db.Model):
 		try:
 			# construct the url
 			imgurl = "http://www.gravatar.com/avatar/"
-			imgurl +=hashlib.md5(self.email).hexdigest()+"?"+ urllib.urlencode({
+			imgurl +=hashlib.md5(self.email.lower()).hexdigest()+"?"+ urllib.urlencode({
 				'd':default, 's':str(size),'r':'G'})
+
 			return imgurl
 		except:
 			return default

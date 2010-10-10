@@ -1,2 +1,2 @@
-set path=D:\Program Files\Google\google_appengine\gettext;%path%
+set path=E:\tools\xgettext;%path%;
 tools\make-messages.py -l zh_CN
