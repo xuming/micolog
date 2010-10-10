@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-10 16:56+0800\n"
-"PO-Revision-Date: 2010-10-10 17:00+0800\n"
+"PO-Revision-Date: 2010-10-10 17:05+0800\n"
 "Last-Translator: simon hsu <coolchyni@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -453,7 +453,7 @@ msgstr "上级目录"
 
 #: .\views\admin\category.html.py:57
 msgid "None"
-msgstr ""
+msgstr "不验证"
 
 #: .\views\admin\comments.html.py:7
 msgid "Manage Comments"
