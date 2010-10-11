@@ -90,8 +90,10 @@ class import_wordpress:
 										content=com.findtext(self.wpns+'comment_content'),
 										email=com.findtext(self.wpns+'comment_author_email'),
 										weburl=com.findtext(self.wpns+'comment_author_url'),
-										date=com.findtext(self.wpns+'comment_date')
+										date=com.findtext(self.wpns+'comment_date'),
+										ip=com.findtext(self.wpns+'comment_author_IP')
 										)
+					entry['comments'].append(comment)
 				self.entries.append(entry)
 			except:
 				logging.info("parse wordpress file error")

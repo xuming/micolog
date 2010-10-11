@@ -116,6 +116,11 @@ class waphandler(BaseRequestHandler):
 										comment.weburl=com['weburl']
 									except:
 										pass
+									try:
+										if len(com['ip'])>4:
+											comment.ip=com['ip']
+									except:
+										pass
 									comment.save()
 					finally:
 						queue=taskqueue.Queue("import")
