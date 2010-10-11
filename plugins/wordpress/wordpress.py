@@ -49,6 +49,10 @@ class waphandler(BaseRequestHandler):
 				memcache.set('imt',imt)
 				#else:
 				#	OptionSet.setValue('wpimport_data',imt)
+				try:
+					cmtimport=memcache.get("cmtimport")
+				except:
+					cmtimport=False
 
 				if import_data:
 					try:
@@ -101,27 +105,28 @@ class waphandler(BaseRequestHandler):
 								entry.save(True)
 							else:
 								entry.save()
-							for com in _entry['comments']:
-									try:
-										date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
-									except:
-										date=datetime.now()
-									comment=Comment(author=com['author'],
-													content=com['content'],
-													entry=entry,
-													date=date
-													)
-									try:
-										comment.email=com['email']
-										comment.weburl=com['weburl']
-									except:
-										pass
-									try:
-										if len(com['ip'])>4:
-											comment.ip=com['ip']
-									except:
-										pass
-									comment.save()
+							if cmtimport:
+								for com in _entry['comments']:
+										try:
+											date=datetime.strptime(com['date'][0:19],"%Y-%m-%d %H:%M:%S")
+										except:
+											date=datetime.now()
+										comment=Comment(author=com['author'],
+														content=com['content'],
+														entry=entry,
+														date=date
+														)
+										try:
+											comment.email=com['email']
+											comment.weburl=com['weburl']
+										except:
+											pass
+										try:
+											if len(com['ip'])>4:
+												comment.ip=com['ip']
+										except:
+											pass
+										comment.store()
 					finally:
 						queue=taskqueue.Queue("import")
 						queue.add(taskqueue.Task( url="/admin/wp_import"))
@@ -152,6 +157,9 @@ class wordpress(Plugin_importbase):
 			imt=import_wordpress(wpfile)
 			imt.parse()
 			#OptionSet.setValue('wpimport_data',imt)
+			cmtimport=page.parambool('importcomments')
+			memcache.set("cmtimport",cmtimport,time=3600)
+			
 
 			memcache.set("imt",imt)
 			queue.add(taskqueue.Task( url="/admin/wp_import"))
