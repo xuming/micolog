@@ -741,7 +741,7 @@ def pingback_extensions_getPingbacks(self,url):
 	slug=param[2]
 	slug=urldecode(slug)
 	try:
-		entrie = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
+		entry = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
 		pings=[]
 		list=Comment.all().filter('entry =',entry).filter('ctype =',2)
 
@@ -777,7 +777,7 @@ def pingback_ping(source_uri, target_uri):
 
 		g_blog.tigger_action("pre_ping",source_uri,target_uri)
 		response = fetch_result(source_uri)
-		logging.info('source_uri: '+source_uri+'target_uri:'+target_uri)
+		logging.info('source_uri: '+source_uri+' target_uri:'+target_uri)
 	except Exception ,e :
 		#logging.info(e.message)
 		logging.info('The source URL does not exist.%s'%source_uri)
@@ -792,7 +792,7 @@ def pingback_ping(source_uri, target_uri):
 
 	pingback_post(response,source_uri,target_uri,path_info)
 	try:
-
+		logging.info('Micolog pingback succeed!')
 		return "Micolog pingback succeed!"
 	except:
 		raise Fault(49,"Access denied.")
@@ -827,6 +827,7 @@ def get_excerpt(response, url_hint, body_limit=1024 * 512):
 		after = chunk[match.end():]
 		raw_body = '%s\0%s' % (strip_tags(before).replace('\0', ''),
 							   strip_tags(after).replace('\0', ''))
+		raw_body=raw_body.replace('\n', '').replace('\t', '')
 		body_match = re.compile(r'(?:^|\b)(.{0,120})\0(.{0,120})(?:\b|$)') \
 					   .search(raw_body)
 		if body_match:
@@ -871,6 +872,7 @@ def pingback_post(response,source_uri, target_uri, slug):
 	try:
 		comment.save()
 		g_blog.tigger_action("pingback_post",comment)
+		logging.info("PingBack Successfully Added ! From  %s"%source_uri)
 		memcache.delete("/"+entry.link)
 		return True
 	except:

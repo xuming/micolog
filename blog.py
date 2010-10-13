@@ -198,6 +198,10 @@ class entriesByTag(BasePublicPage):
 
 
 class SinglePost(BasePublicPage):
+	def head(self,slug=None,postid=None):
+		if g_blog.allow_pingback :
+			self.response.headers['X-Pingback']="%s/rpc"%str(g_blog.baseurl)
+
 	@cache()
 	def get(self,slug=None,postid=None):
 		if postid:

@@ -26,6 +26,12 @@ indexes:
 - kind: Comment
   properties:
   - name: ctype
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: ctype
   - name: entry
   - name: date
 
