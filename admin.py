@@ -547,6 +547,11 @@ class admin_entry(BaseRequestHandler):
 					vals.update({'result':True,'msg':smsg%{'link':str(urlencode( entry.link))},'entry':entry})
 
 					self.render2('views/admin/entry.html',vals)
+					if published and entry.allow_trackback and g_blog.allow_pingback:
+						try:
+							autoPingback(entry.fullurl,HTML=content)
+						except:
+							pass
 
 				except:
 					vals.update({'result':False,'msg':_('Error:Entry can''t been saved.')})
@@ -988,6 +993,7 @@ class WpHandler(BaseRequestHandler):
 
 		if(all):
 			entries = Entry.all().order('-date')
+			filename='micolog.%s.xml'%datetime.now().strftime('%Y-%m-%d')
 		else:
 			str_date_begin=self.param('date_begin')
 			str_date_end=self.param('date_end')
@@ -995,6 +1001,7 @@ class WpHandler(BaseRequestHandler):
 				date_begin=datetime.strptime(str_date_begin,"%Y-%m-%d")
 				date_end=datetime.strptime(str_date_end,"%Y-%m-%d")
 				entries = Entry.all().filter('date >=',date_begin).filter('date <',date_end).order('-date')
+				filename='micolog.%s.%s.xml'%(str(str_date_begin),str(str_date_end))
 			except:
 				self.render2('views/admin/404.html')
 				return
@@ -1003,6 +1010,7 @@ class WpHandler(BaseRequestHandler):
 		tags=Tag.all()
 
 		self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
+		self.response.headers['Content-Disposition'] = 'attachment; filename=%s'%filename
 		self.render2('views/wordpress.xml',{'entries':entries,'cates':cates,'tags':tags})
 
 class Upload(BaseRequestHandler):
