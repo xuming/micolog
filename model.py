@@ -513,7 +513,7 @@ class Entry(BaseModel):
 		self.tags=tags
 
 	def get_comments_by_page(self,index,psize):
-		return self.purecomments().fetch(psize,offset = (index-1) * psize)
+		return self.comments().fetch(psize,offset = (index-1) * psize)
 
 	@property
 	def strtags(self):
