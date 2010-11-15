@@ -1,0 +1,72 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block h_message %}
+  {%if postback%}
+    <div class="info {%if not result%}error{%endif%}">{{msg}}</div>
+  {%endif%}
+{% endblock %}
+ {% block content %}
+<form action="/admin/category" method="post" >
+   <div class="wrap">
+      <h2>{%ifequal action 'edit'%}{%trans "Edit category"%}{%else%}{%trans "Add category"%} {%endifequal%}</h2>
+      <div id="poststuff">
+
+<div id="submitlink" class="submitbox">
+
+<div id="previewview">
+</div>
+
+<div class="inside">
+<p>&nbsp;</p>
+</div>
+
+<p class="submit">
+<input type="submit" tabindex="4" value="{% trans "Save"%}" name="" class="button button-highlighted"/>
+</p>
+
+<div class="side-info">
+<h5>{%trans "Related"%}</h5>
+
+<ul>
+<li><a href="/admin/categories">{% trans "Manage All Categories"%}</a></li>
+
+
+</ul>
+</div>
+</div>
+
+<div id="post-body">
+<div class="stuffbox" id="namediv">
+<h3>{%trans "Name"%}</h3>
+<div class="inside">
+	<input type="text" id="name" value="{{category.name}}" tabindex="1" size="30" name="name"/><br/>
+    {% trans "The name is used to identify the category almost everywhere, for example under the post or in the category widget."%}</div>
+</div>
+
+<div class="stuffbox" id="addressdiv">
+<h3>{% trans "Slug"%}</h3>
+<div class="inside">
+	<input type="text" id="slug" value="{{category.slug}}" tabindex="1" size="30" name="slug"/><br/>
+    {% trans "The 'slug' is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens."%}</div>
+</div>
+
+<div class="stuffbox" id="addressdiv">
+<h3>{% trans "Parent Category"%}</h3>
+<div class="inside">
+    <select name="parentkey">
+       <option value=''>{%trans "None"%}</option>
+        {% for cate in categories%}
+       <option value="{{cate.key}}" {%ifequal category.parent_cat.key key%}selected="selected"{%endifequal%}>{{cate.name}}</option>
+        {%endfor%}
+    </select>
+</div>
+
+<input type="hidden" value="{{key}}" name="key"/>
+<input type="hidden" value="{{action}}" name="action"/>
+
+</div>
+</div>
+
+   </div>
+   </form>
+ {% endblock  %}

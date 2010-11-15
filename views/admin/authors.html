@@ -1,0 +1,50 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+ <form action="/admin/authors" method="post" >
+   <div class="wrap">
+
+      <h2>{%trans "Manage Authors"%} (<a href="/admin/author?action=add">{%trans "add new"%}</a>)</h2>
+      <div class="" style="padding:10px 5px 5px 5px"><B>{%trans "All Authors"%}</b><span style='color:gray'> ({{pager.count}}) </span></div>
+
+      <div class="clear"></div>
+
+	   <div class="tablenav">
+		  <div class="alignleft">
+		  <input type="submit" class="button-secondary delete" name="deleteit" value='{%trans "Delete"%}'/>
+		  </div>
+		  <div class="alignright">
+	        {% if pager.prev %}
+			<div class="alignleft"><a href="/admin/entries/page?page={{ pager.prev}}">{% trans "&laquo; prev" %}</a></div>
+			{% endif %}
+
+			{% if pager.next %}
+			<div class="alignright"><a href="/admin/entries/page?page={{ pager.next }}">{% trans "next &raquo;"%}</a></div>
+			{% endif %}	 <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
+         </div>
+
+		      <br class="clear"/>
+	   </div>
+	  <br class="clear"/>
+
+	   <table class="widefat">
+		<thead>
+			<tr>
+			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
+		<th style="width: 15%;">{%trans "Name"%}</th><th>Email</th><th>{%trans "IsAdmin"%}</th>	</tr>
+			</thead>
+			<tbody>
+            {%for author in authors%}
+		<tr valign="middle" id="link-{{category.key}}"><th class="check-column" scope="row"><input type="checkbox" value="{{author.key}}" name="checks"/></th>
+
+                           <td><strong><a class="row-title" title='Edit "{{author.dispname}}"' href="/admin/author?key={{author.key}}&amp;action=edit">{{author.dispname}}</a></strong><br/></td>
+                            <td>{{author.email}}</td>
+                            <td>{%if author.isadmin %} True{%else%}False{%endif%}</td>
+        		</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+
+   </div>
+</form>
+ {% endblock  %}

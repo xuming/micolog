@@ -1,0 +1,60 @@
+﻿{% load i18n %}
+{% extends "setup_base.html" %}
+{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap" class="current">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+	 <!-- Admin Full Width -->
+    <div id="m_admin">
+        <form method="post">
+            <div class="wrap">
+            <h2>{%trans "Sitemap Setup"%}</h2>
+
+            <table class="form-table">
+                 <tr valign="top">
+                <th scope="row">{% trans "Entries in sitemap:"%}</th>
+                <td><input type="text" size="8" value="{{ blog.sitemap_entries }}"  id="sitemap_entries" name="sitemap_entries"/>
+               </td>
+                </tr>
+
+
+
+                   <tr valign="top">
+                <th scope="row">{% trans "Include category:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.sitemap_include_category %} checked="checked" {%endif%}  id="sitemap_include_category" name="sitemap_include_category" />
+               </td>
+                </tr>
+
+                   <tr valign="top">
+                <th scope="row">{% trans "Include tag:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.sitemap_include_tag %} checked="checked" {%endif%}  id="sitemap_include_tag" name="sitemap_include_tag" />
+               </td>
+                </tr>
+               <tr valign="top">
+                <th scope="row">{% trans "Pinging Search Engine (Google):"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.sitemap_ping %} checked="checked" {%endif%}  id="sitemap_ping" name="sitemap_ping" />
+               </td>
+                </tr>
+
+
+            </table>
+
+
+
+<p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
+<input type="hidden" value="update" name="action"/>
+<input type="hidden" value="sitemap_include_category,sitemap_include_tag,sitemap_ping" name="bool_options"/>
+<input type="hidden" value="sitemap_entries" name="int_options"/>
+</p>
+
+  </div>
+
+        </form>
+    </div>
+    <!-- Featured Ends -->
+{% endblock %}

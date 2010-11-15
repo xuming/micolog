@@ -1,0 +1,8 @@
+queue:
+- name: default
+  rate: 1/s
+- name: mail-queue
+  rate: 2000/d
+  bucket_size: 10
+- name: import
+  rate: 1/s

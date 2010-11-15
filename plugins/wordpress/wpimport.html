@@ -1,0 +1,81 @@
+{% load i18n %}
+
+<script type="text/javascript">
+$(function() {
+    get_next();
+});
+
+$(document).ajaxError(function(){
+ $.unblockUI();
+ $('.blockUI').css('cursor','');
+ $('#importing').hide();
+ $('#wp_import').show();
+});
+function get_next()
+{
+  $.getJSON("/admin/wp_import", next_result);
+}
+ function stop()
+ {
+    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Stop importing now...</h3>' });
+ 	$.getJSON("/admin/wp_import?action=stop", function(json){
+ 		   $.unblockUI();
+ 		   $('.blockUI').css('cursor','');
+            $('#importing').hide();
+            $('#wp_import').show();
+ 		});
+ }
+function next_result(json)
+{
+    if(json[0]>-1)
+    {
+      	$('#importing').show().html('<input type="button" onclick="stop()" value="Stop it"> Importing...:<span style="color:red">'+json[0]+'%</span>: '+json[1])
+        if(json[0]<100)
+        {
+            $('#wp_import').hide();
+        }else
+        {$('#wp_import').show();
+         $('#importing').hide();
+        }
+        if (json[2])
+      	{
+             setTimeout("get_next()", 1000);
+
+      	}
+    }else{
+        $('#wp_import').show();
+    }
+}
+
+
+</script>
+<h3>Wordpress Import</h3>
+
+<div id="wp_import" style="display:none">
+
+<p>{%trans "Please select a file which exported from wordpress to import!"%}</p>
+
+	<form action="" method='post' enctype="multipart/form-data" >
+	<table class="form-table">
+
+	  <tr valign="top">
+                <th scope="row">{%trans "Wordpress export file (WXR file):"%}</th>
+                <td><input type="file" name="wpfile">
+               </td>
+                </tr>
+
+
+	</table>
+	<p><label for="importcomments" >{% trans "Import Include Comments"%}</label>
+	<input name="importcomments" id="importcomments"  style="width: auto;" type="checkbox" /></p>
+    <p>
+
+
+	<input type="submit" value="{% trans "Import"%}"/>{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
+    </p>
+</div>
+<div id="importing" style="display:none">
+</div>
+
+
+

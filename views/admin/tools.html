@@ -1,0 +1,139 @@
+{% load i18n %}
+{% extends "setup_base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+<script type="text/javascript">
+
+
+	$(document).ajaxError(function(request, settings){
+       $('#bmsg').html('Error<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	   $('.blockUI').css('cursor','');
+   });
+
+	 function init_blog()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Init data now...</h3>' });
+	 	$.getJSON("/admin/do/init_blog", function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+
+	 function update_link()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Rebuild URLs now...</h3>' });
+	 	$.getJSON("/admin/do/updatelink",{'linkfmt':$('#link_format').val()}, function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
+
+	 		});
+	 }
+	 function update_comments()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh comments now...</h3>' });
+	 	$.getJSON("/admin/do/updatecomments", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+	 function update_commentno()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh comment number now...</h3>' });
+	 	$.getJSON("/admin/do/updatecommentno", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+	function update_archives()
+	{
+	   $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh archives now...</h3>' });
+		$.getJSON("/admin/do/update_archives", function(json){
+			   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+			   $('.blockUI').css('cursor','');
+	
+			});
+	}
+	 function update_tags()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Refresh tags now...</h3>' });
+	 	$.getJSON("/admin/do/update_tags", function(json){
+	 		   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		   $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+
+</script>
+
+{% endblock %}
+
+
+{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools" class="current">{%trans "Tools" %}</a></li>
+{% endblock %}
+
+ {% block content %}
+
+
+    <div class="wrap">
+            <h2>{%trans "Tools"%}</h2>
+            </div>
+<p style="color:red">{%trans "Careless use of it will be dangerous!"%}</p>
+<div style="">
+<div class="grid">
+<input type='button'  class="runbtn" value='{% trans "Run"%}' id='update_tags' onclick="javascript:if (confirm('Do you really want to do this action?')) update_tags(); else return false;"/>
+<b>{% trans "Update tags"%}</b>
+<p>{%trans "It will refresh all tags for each entry."%}</p>
+</div>
+
+<div class="grid">
+<input type='button'  class="runbtn" value='{% trans "Run"%}' id='init_blog' onclick="javascript:if (confirm('Do you really want to do this action?')) init_blog(); else return false;"/>
+
+<b>{% trans "Init datas"%}</b>
+<p>{%trans "It will delete  all posts, pages and comments."%}</p>
+
+</div>
+<div class="grid">
+<input type='button' class="runbtn" value='{% trans "Run"%}' id='update_comments' onclick="javascript:if (confirm('Do you really want to do this action?')) update_comments(); else return false;"/>
+
+<b>{% trans "Update comments"%}</b>
+<p>{%trans "It will refresh the number of comments for each entry."%}</p>
+
+</div>
+<div class="grid">
+<input type='button' class="runbtn" value='{% trans "Run"%}' id='update_commentno' onclick="javascript:if (confirm('Do you really want to do this action?')) update_commentno(); else return false;"/>
+
+<b>{% trans "Update comment number"%}</b>
+<p>{%trans "It will refresh the number for each comment."%}</p>
+
+</div>
+<div class="grid">
+<input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_link' onclick="javascript:if (confirm('Do you really want to do this action?')) update_link(); else return false;"/>
+
+<b>{% trans "Rebuild URL"%}</b>
+<p>{%trans "The URL of all entries (post or page) will be rebuild."%}</p>
+<p>
+{%trans "Permalink"%}:
+<input type='text' id='link_format' value='{{self.blog.link_format}}' style='width:550px'/>
+<br>{%trans "Available parameters:"%} %(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s<br>
+</p>
+</div>
+<div class="grid">
+<input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_archives' onclick="javascript:if (confirm('Do you really want to do this action?')) update_archives(); else return false;"/>
+
+
+<b>{% trans "Update archives"%}</b>
+<p>{%trans "It will update the monthyear of entries."%}</p>
+</div>
+
+</div>
+</div>
+
+{% endblock %}

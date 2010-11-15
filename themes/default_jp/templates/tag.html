@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+{% block title %} {{category.name}} - {{blog.title}} {% endblock %}
+{% block content%}
+<div class="ctop"></div>
+<div class="box">
+
+
+<h2>{{tag}}</h2>
+<ul>
+{% for entry in entries %}
+<li> <a href="/{{entry.link}}">{{entry.title}}</a></li>
+{% endfor %}
+</ul>
+
+
+
+
+	<div class="navigation">
+			{% if pager.prev %}
+			<div class="alignleft"><a href="?page={{ pager.prev}}">&laquo; 前へ</a></div>
+			{% endif %}
+			{% if pager.next %}
+			<div class="alignright"><a href="?page={{ pager.next }}">次へ &raquo;</a></div>
+			{% endif %}
+		</div>
+
+</div>
+<div class="cbottom"></div>
+	<div class="space"></div>
+</div> 
+{% include "sidebar.html" %}
+{% endblock %}

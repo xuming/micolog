@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+		>
+<channel>
+	<title>评论：{{ blog.title|escape }} </title>
+	<atom:link href="{{ blog.baseurl }}/feed/comments" rel="self" type="application/rss+xml" />
+	<link>{{ blog.baseurl }}</link>
+	<description>{{ blog.subtitle|escape }}~</description>
+	<language>zh-cn</language>
+	<lastBuildDate>{{last_updated}}</lastBuildDate>
+	<sy:updatePeriod>daily</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>Micolog-Python 0.7</generator>
+{% for comment in comments %}	<item>
+		<title><![CDATA[由：{{comment.author}} 在 {{comment.entry.title|escape}}]]></title>
+		<link>{{ blog.baseurl }}/{{comment.entry.link|escape}}#comment-{{comment.key.id}}</link>
+		<dc:creator>{{comment.author}}</dc:creator>
+		<pubDate>{{comment.formatted_date}}</pubDate>
+		<guid isPermaLink="false">{{ blog.baseurl }}/?p={{entry.post_id}}#comment-{{comment.key.id}}</guid>
+		<description><![CDATA[{{comment.shortcontent}}]]></description>
+		<content:encoded><![CDATA[{{comment.content}}
+]]></content:encoded>
+	</item>
+{% endfor %}
+</channel>
+</rss>

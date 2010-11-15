@@ -1,0 +1,39 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+ <form action="/admin/links" method="post" >
+   <div class="wrap">
+
+      <h2>{% trans "Manage Links" %} (<a href="/admin/link?action=add">{%trans "add new"%}</a>)</h2>
+      <div class="clear"></div>
+
+	   <div class="tablenav">
+		  <div class="alignleft">
+		  <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}"/>
+		  </div>
+		<br class="clear"/>
+	   </div>
+	  <br class="clear"/>
+
+	   <table class="widefat">
+		<thead>
+			<tr>
+			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=linkcheck]').attr('checked',this.checked);"/></th>
+		<th style="width: 15%;">{%trans "Name"%}</th><th>{%trans "URL"%}</th><th>{%trans "LinkComment"%}</th>
+			</tr>
+			</thead>
+			<tbody>
+            {%for link in links%}
+		<tr valign="middle" id="link-{{link.key.id}}">
+			<th class="check-column" scope="row"><input type="checkbox" value="{{link.key.id}}" name="linkcheck"/></th>
+			<td><strong><a class="row-title" title='Edit "{{link.linktext}}"' href="/admin/link?id={{link.key.id}}&amp;action=edit">{{link.linktext}}</a></strong><br/></td>
+			<td><a title="Visit {{link.linktext}}" href="{{link.href}}">{{link.href}}</a></td>
+			<td>{{link.linkcomment}}</td>
+		</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+
+   </div>
+</form>
+ {% endblock  %}

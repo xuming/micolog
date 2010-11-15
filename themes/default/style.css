@@ -1,0 +1,126 @@
+/*
+Theme Name: Simple v2
+Theme URI: http://bob.my/wordpress-theme-simple-version-2-is-out/
+Description: Simple one ;)
+Version: 2.0
+Author: Bob Jiwakacau
+Author URI: http://bob.my/
+Tags: blue, white, fixed width, two columns, widgets, rounded corners
+*/
+
+/*...... body ........*/
+* { margin: 0px; padding: 0px; list-style:none; text-decoration:none; }
+body { background:url(images/topbkg.gif) repeat-x; font:0.69em Verdana, Arial, Helvetica, sans-serif; color:#333;}
+
+/*...... links ........*/
+a { color:#2583ad;font-size:1.1em}
+a:hover { color:#000;}
+
+/*...... main and sticky footer ........*/
+html, body { height: 100%; }
+#main { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -31px; }
+
+/*...... h2/h3 ........*/
+h2 { font:1.58em Georgia, serif; display:block; }
+h3 { font:1.58em Georgia, serif; padding:5px; margin-bottom:10px;}
+.clear { clear:both;}
+
+/*...... WRAPPER ........*/
+#wrapper { width:910px; margin:auto; }
+#top { height:31px; width:910px; }
+
+/*...... logo { with logo or text just remove one of them} ........*/
+#logo { float:left; width:200px; height:30px; }
+#logo h1 {  font-size:10px; }
+#logo h1 a { color:white;
+display:block;
+font-family:comic Sans MS;
+font-size:20px;
+height:30px; }
+/*#logo h1 { font:normal 20px Georgia, Times, serif; line-height:30px; }
+#logo h1 a { color:#fff;}
+#logo h1 a:hover { color:#e4f2fd;}*/
+
+/*...... top menu ........*/
+#menu { width:700px; float:right; height:30px; color:#ccc; }
+#menu ul { margin-top:5px; float:right;}
+#menu ul li { float:left; height:20px; margin:0 5px 0 0; display: inline; line-height:20px; }
+#menu ul li a { display: block; padding:0 10px 0 10px; color:#ccc; }
+#menu ul li a:hover{ color:#fff;}
+#menu ul li.current_page_item {background: #000 url(images/mright.gif) no-repeat right;}
+#menu ul li.current_page_item a{background: url(images/mleft.gif) no-repeat left; }
+#menu ul li#searchbox { width: 152px; height: 20px; background: url(images/go.gif) no-repeat; margin-right:0px;  }
+#menu ul li#searchbox #s { float: left; margin: 4px 0 0 6px; border: 0; width: 110px; background: none; color:#333; font-size:10px; }
+#menu ul li#searchbox #go { float: right; width:25px; height:20px;  }
+
+/*...... content ........*/
+#split { width:700px; float:left;}
+#content { width:930px; margin:auto; padding-top:10px;}
+#content p { padding-bottom:10px;}
+
+/*...... entry ........*/
+.ctop { width:701px; height:17px; background:url(images/ctop.gif) no-repeat; margin-bottom:-12px;}
+.cbottom { width:701px; height:17px; background:url(images/cbottom.gif) no-repeat; margin-top:-12px; }
+.box { width:680px; padding:10px; background:#fdfdfd; border-left:1px solid  #f0f0f0; border-right:1px solid  #f0f0f0;}
+.box span.date { font-size:11px; font-weight:normal; padding-left:10px; }
+.box p.dpost { display:block; background:#f6f6f6; padding:5px 5px 5px 10px; margin:10px 0 0 0; clear:both;}
+.box p.dpost a { font-weight:normal; }
+.box p a { font-weight:bold;}
+.box p { }
+.en_body{padding:8px;font-size:1.1em;line-height:1.6}
+.meta { display:block; background:#f6f6f6; padding:10px; margin:10px 0 5px 0; }
+.meta p { padding-bottom:10px;}
+.space { display:block; height:15px;}
+.nifty { display:block; padding:10px; margin-bottom:5px; background:#e4f2fd; border:1px solid #f0f0f0;}
+.box img { border:1px solid #dadada; padding:3px;}
+.box img.wp-smiley { border:none; vertical-align:middle;}
+
+/*...... sidebar ........*/
+.sidebar { border:1px solid  #f0f0f0; width:190px; float:right; padding:12px; margin-top:5px; margin-bottom:20px;}
+.sidebar h2 { display:block; padding:5px; margin-bottom:10px; background:#e4f2fd; border:1px solid #f0f0f0;}
+.sidebar ul { }
+.sidebar ul li { padding-bottom:10px;}
+.sidebar ul li a { background:url(images/bullet.gif) no-repeat 0 3px; padding-left:15px; display:block;}
+
+/*...... misc ........*/
+img.centered { display: block; margin-left: auto; margin-right: auto; }
+img.alignright { padding: 4px; margin: 0 0 2px 7px; display: inline; }
+img.alignleft { padding: 4px; margin: 0 7px 2px 0; display: inline; }
+img.centered a:link, img.alignright a:link, img.alignleft a:link { border:none;}
+.alignright { float: right; }
+.alignleft { float: left }
+html>body .box ul { margin-left: 0px; padding: 0 0 0 30px; list-style: none; padding-left: 10px; text-indent: -10px; }
+html>body .box li { margin: 7px 0 8px 10px; }
+.box ul li:before{ content: "\00BB \0020"; }
+blockquote { font: 1.1em Courier New, Courier, Fixed; display:block; padding:5px 5px 0 5px; border:1px solid #dadada; margin-bottom:10px; background:#f8f8f4;}
+acronym, abbr, span.caps { font-size: 0.9em; letter-spacing: .07em; }
+.box .smallattachment { text-align: center; float: left; width: 128px; margin: 5px 5px 5px 0px; }
+.box .attachment { text-align: center; margin: 5px 0px;}
+.wp-caption { border: 1px solid #ddd; text-align: center; background-color: #f3f3f3; padding-top: 4px; margin: 10px; -moz-border-radius: 3px; -khtml-border-radius: 3px;
+	-webkit-border-radius: 3px; border-radius: 3px; }
+.wp-caption img { border: 0 none; }
+.wp-caption-dd { font-size: 11px; line-height: 17px; padding: 0 4px 5px; }
+
+/*...... comments ........*/
+h3#comments, h3#respond { font:1.3em Georgia, serif; margin-bottom:30px; background:#fcfcfc; display:block; padding:5px; border-bottom:1px dashed #ccc; text-transform:uppercase; }
+.box ol.commentlist { width:670px; clear:both; padding: 0 0 0 -25px;  }
+.box ol.commentlist li.alt { background:#fafafa; color:#333; padding:5px; margin-bottom:5px; list-style:none;  }
+.box ol.commentlist li { color:#333; padding:5px; margin-bottom:5px;  }
+.box ol.commentlist li .gravatar { float:left; border:3px double #dadada; width:55px; margin-right:5px;}
+.box ol.commentlist li .gravatar img { border:none;}
+.box ol.commentlist li .comments { float:right; width:580px; }
+.box ol.commentlist li .comments p { padding-top:10px;}
+#commentform { margin-left:10px;}
+#author,#email,#url,#comment { color: #333; border: 1px solid #d7d7d7; width:400px; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
+#author:focus,#email:focus,#url:focus,#author.sffocus ,#email.sffocus ,#url.sffocus  { color: #000; border: 1px solid #afc9de; width:400px;  padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
+#comment { width:520px;}
+#comment:focus,#comment.sffocus { color: #000; border: 1px solid #afc9de; width:520px; display:block; padding: 4px; margin-bottom: 0.6em; background: #fff url(images/inputbg.gif) repeat-x top left;}
+
+/*...... footer ........*/
+#footer { background:url(images/foobkg.gif) repeat-x; clear: both; position: relative; z-index: 10; height: 31px; }
+.footer, #push { height:30px; width:905px; margin:auto; padding-top:1px; }
+#footer p { line-height:31px; color:#fff;}
+#footer p a { color:#cccccc;}
+#footer p.fooleft { float:left;}
+#footer p.fooright { float:right; text-indent:-9999px;}
+#footer p.fooright a { display:block; background:url(images/top.gif) no-repeat 0 8px; width:27px; height:31px;}

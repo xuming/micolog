@@ -1,0 +1,49 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+<script type="text/javascript">
+	$(document).ajaxError(function(request, settings){
+       $('#bmsg').html('Error<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	   $('.blockUI').css('cursor','');
+   });
+
+	 function clear_cache()
+	 {
+	    $.blockUI({ message: '<h3 id="bmsg"><img src="/static/images/busy.gif" /> Clearing cache data now...</h3>' });
+	 	$.getJSON("/admin/do/cacheclear", function(json){
+	 		  $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
+	 		  $('.blockUI').css('cursor','');
+
+	 		});
+	 }
+</script>
+ {% endblock  %}
+ {% block content %}
+   <h3>{% trans "Cache status"%}</h3>
+   {{cache}}
+   <h3>{% trans "Clear cache"%}</h3>
+<div style="">
+<div class="grid">
+<input type='button' value='{% trans "Clear cache"%}' id='clear_cache' onclick='clear_cache()'/>  {% trans "Clear cache data."%}
+
+</div>
+ <h3>{% trans "Environ"%} </h3>
+ <table class="widefat">
+ <thead>
+ <tr>
+ <th>Name</th><th>value</th>
+ </tr>
+ </thead>
+ <tbody>
+    {%for env in environ%}
+    <tr>
+    <td>{{env}}</td>
+    <td>
+       {{environ|dict_value:env}}
+    </td>
+    </tr>
+   {%endfor%}
+ </tbody>
+  </table>
+ {% endblock  %}

@@ -1,0 +1,31 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+   <div class="wrap">
+<h2>{% trans "Manage Plugins"%}</h2>
+<p>
+<a href="http://micolog.appspot.com/plugins" target="_blank">Get more plugins</a>
+</p>
+<table class="widefat" cellspacing="0">
+<tr><th>{% trans "Plugin"%}</th><th>{% trans "Version"%}</th><th>{% trans "Description"%}</th><th>{% trans "Author"%}</th><th>{% trans "Active Status"%}</th></tr>
+{%for plugin in plugins%}
+<tr>
+<td><a href="/admin/plugins/{{plugin.iname}}">{{plugin.name}}</a></td>
+<td><a href="{{plugin.uri}}" target="_blank">{{plugin.version}}</a></td>
+<td>{{plugin.description}}</td>
+<td><a href="{{plugin.authoruri}}" target="_blank">{{plugin.author}}</a></td>
+<td>
+{%if plugin.active%}
+<form action="?action=deactivate&plugin={{plugin.iname}}" method="post">
+<input type="submit" value="{% trans "Deactivate"%}"/>
+{%else%}
+<form action="?action=activate&plugin={{plugin.iname}}" method="post">
+<input type="submit" value="{% trans "Activate"%}"/>
+{%endif%}
+</form>
+</td>
+</tr>
+{%endfor%}
+</table>
+</div>
+ {% endblock  %}

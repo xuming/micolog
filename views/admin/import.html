@@ -1,0 +1,72 @@
+﻿{% load i18n %}
+{% extends "setup_base.html" %}
+{% block header %}
+<script src='/static/js/jquery.blockUI.js' type="text/javascript"></script>
+<script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<style>
+#ui-datepicker-div{border:1px solid ;padding:10px ;background-color:white}
+.ui-datepicker-prev{float:left}
+.ui-datepicker-next{float:right}
+.ui-datepicker-next,.ui-datepicker-prev{
+background-color:beige;
+border:1px solid gray;
+display:block;
+padding:0 5px;
+cursor:pointer;
+}
+.ui-datepicker-title{}
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+   $("#date_begin").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
+    $("#date_end").datepicker({duration:'', dateFormat: 'yy-mm-dd'});
+   });
+
+
+
+
+</script>
+
+{% endblock %}
+{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import" class="current">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
+{% endblock %}
+
+ {% block content %}
+
+    <div class="wrap">
+            <h2>{%trans "Export/Import for wordpress"%}</h2>
+            <h3>{%trans "Export"%}</h3>
+            <p>{%trans "Export as  WordPress eXtended RSS file"%}</p>
+            <form action="/admin/export/micolog.xml" method='get'>
+              {%trans "Export from Date:"%}<input type="text" id="date_begin" name="date_begin" disabled  />
+              {%trans "to Date:"%}<input type="text" id="date_end" name="date_end"  disabled />{%trans "'s posts"%}<br /><br />
+                <input type="checkbox" name="all" value="on" checked
+                onclick="javascript:
+              if(this.checked){
+                form.date_begin.disabled=true;
+                form.date_end.disabled=true;
+
+              }else{
+                form.date_begin.disabled=false;
+                form.date_end.disabled=false;
+                }"; />{%trans "Export all posts"%}<br />
+                <input type="submit" value={%trans "Export"%} />
+            </form>
+<h3>{%trans "Import"%}</h3>
+<p>If you have posts or comments in another system, Micolog can import those into this blog. To get started, choose a system to import from below:</p>
+<table class="widefat" cellspacing="0">
+{%for item in importitems%}
+<tr>
+  <td><a href="/admin/plugins/{{item.iname}}">{{item.import_name}}</a></td><td>{{item.import_description}}</td>
+<tr>
+{%endfor%}
+</table>
+
+
+</div>
+
+{% endblock %}
