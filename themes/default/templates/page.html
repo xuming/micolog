@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+{% block head_block %}
+{% if entry %}
+{%if entry.strtags%}<meta name="Keywords" content="{{entry.strtags}}">{%endif%}
+{%if entry.excerpt%} <meta name="Description" content="{{entry.excerpt}}">{%endif%}
+{% endif %}
+{% endblock %}
+{% block content%}
+<div class="ctop"></div>
+<div class="box">
+
+{% if entry %}
+
+<div id="post-{{entry.key}}">
+<div class="nifty"><h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{entry.title}}">{{entry.title}}</a> <span class="date">{{entry.date|datetz:"F jS, Y"}}</span></h2></div>
+<div class="en_body">
+{{ entry.content }}
+</div>
+<div class="meta">{%if self.is_admin%}<a href="{{entry.edit_url}}">Edit this entry</a>  {%endif%}  </div>
+
+</div>
+</div>
+<div class="cbottom"></div>
+<div class="space"></div>
+
+
+<div class="ctop"></div>
+<div class="box">
+{% include "comments.html" %}
+</div>
+<div class="cbottom"></div>
+<div class="space"></div>
+
+{%endif%}
+</div>
+{% include "sidebar.html" %}
+{% endblock %}

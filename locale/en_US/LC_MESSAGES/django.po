@@ -1,0 +1,973 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-10-10 17:01+0800\n"
+"PO-Revision-Date: 2010-02-01 11:12+0800\n"
+"Last-Translator: xuming <coolchyni@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\admin.py:95 .\admin.py:97 .\admin.py:106 .\admin.py:108 
+msgid "This operate has not defined!"
+msgstr ""
+
+#: .\admin.py:117 
+msgid "\"Cache cleared successful\""
+msgstr ""
+
+#: .\admin.py:126 
+msgid "\"All comments updated\""
+msgstr ""
+
+#: .\admin.py:132 
+msgid "\"All comments number Updates.\""
+msgstr ""
+
+#: .\admin.py:154 
+msgid "\"Link formated succeed\""
+msgstr ""
+
+#: .\admin.py:156 
+msgid "\"Please input url format.\""
+msgstr ""
+
+#: .\admin.py:168 
+msgid "\"Init has succeed.\""
+msgstr ""
+
+#: .\admin.py:182 
+msgid "\"All tags for entry have been updated.\""
+msgstr ""
+
+#: .\admin.py:207 
+msgid "\"All entries have been updated.\""
+msgstr ""
+
+#: .\admin.py:470 
+msgid "Please input title and content."
+msgstr ""
+
+#: .\admin.py:501 .\admin.py:544 
+#, python-format
+msgid "Saved ok. <a href=\"/%(link)s\" target=\"_blank\">View it now!</a>"
+msgstr ""
+
+#: .\admin.py:503 .\admin.py:546 
+msgid "Saved ok."
+msgstr ""
+
+#: .\admin.py:552 
+msgid "Error:Entry cant been saved."
+msgstr ""
+
+#: .\admin.py:723 
+msgid "Please input name and url."
+msgstr ""
+
+#: .\admin.py:743 
+msgid "Error:Link cant been saved."
+msgstr ""
+
+#: .\admin.py:792 .\admin.py:807 
+msgid "Please input name and slug."
+msgstr ""
+
+#: .\admin.py:811 
+msgid "A circle declaration found."
+msgstr ""
+
+#: .\admin.py:891 
+msgid "Please input dispname and email."
+msgstr ""
+
+#: .\admin.py:913 
+msgid "Error:Author cant been saved."
+msgstr ""
+
+#: .\admin.py:948 .\admin.py:969 
+#, python-format
+msgid ""
+"<div>Plugin '%(name)s' havn't actived!</div><br><form method=\"post\" action="
+"\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/"
+"plugins/%(iname)s\"><input type=\"submit\" value=\"Activate Now\"/></form>"
+msgstr ""
+
+#: .\base.py:133 .\tools\pingback.py:55 
+msgid "source URL does not exist"
+msgstr ""
+
+#: .\base.py:134 .\tools\pingback.py:56 
+msgid "The source URL does not contain a link to the target URL"
+msgstr ""
+
+#: .\base.py:135 .\tools\pingback.py:57 
+msgid "The specified target URL does not exist"
+msgstr ""
+
+#: .\base.py:136 .\tools\pingback.py:58 
+msgid "The specified target URL cannot be used as a target"
+msgstr ""
+
+#: .\base.py:137 .\tools\pingback.py:59 
+msgid "The pingback has already been registered"
+msgstr ""
+
+#: .\base.py:138 .\tools\pingback.py:60 
+msgid "Access Denied"
+msgstr ""
+
+#: .\base.py:175 .\tools\pingback.py:97 
+msgid "An unknown server error (%s) occurred"
+msgstr ""
+
+#: .\blog.py:493 .\blog.py:495 .\blog.py:499 .\blog.py:501 
+msgid "Your check code is invalid ."
+msgstr ""
+
+#: .\blog.py:512 .\blog.py:514 
+msgid "Please input name, email and comment ."
+msgstr ""
+
+#: .\blog.py:560 
+msgid "Comment not allowed."
+msgstr ""
+
+#: .\blog.py:562 
+msgid "Comment not allowed ."
+msgstr ""
+
+#: .\blog.py:643 
+msgid "this is a test"
+msgstr ""
+
+#: .\model.py:434 
+msgid "..more"
+msgstr ""
+
+#: .\model.py:901 
+msgid "Hello world!"
+msgstr ""
+
+#: .\model.py:902 
+msgid ""
+"<p>Welcome to micolog. This is your first post. Edit or delete it, then "
+"start blogging!</p>"
+msgstr ""
+
+#: .\model.py:904 
+msgid "Xuming's blog"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup.html.py:4 .\plugins\sys_plugin\setup2.html.py:31
+#:  .\views\admin\setup.html.py:122
+msgid "Enable comment notify by mail:"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup.html.py:7 .\plugins\sys_plugin\setup2.html.py:34
+#: 
+msgid "Message to me:"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup.html.py:11 
+#: .\plugins\sys_plugin\setup2.html.py:38
+msgid "Message to commenter:"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup2.html.py:8 .\views\admin\import.html.py:32 
+#: .\views\admin\setup.html.py:4 .\views\admin\setup_base.html.py:8
+#: .\views\admin\sitemap.html.py:4 .\views\admin\tools.html.py:76
+msgid "Basic"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup2.html.py:9 .\views\admin\import.html.py:33 
+#: .\views\admin\setup.html.py:5 .\views\admin\setup_base.html.py:9
+#: .\views\admin\sitemap.html.py:5 .\views\admin\tools.html.py:77
+msgid "Import/Export"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup2.html.py:10 .\views\admin\import.html.py:34 
+#: .\views\admin\setup.html.py:6 .\views\admin\setup_base.html.py:10
+#: .\views\admin\sitemap.html.py:6 .\views\admin\tools.html.py:78
+msgid "Sitemap"
+msgstr ""
+
+#: .\plugins\sys_plugin\setup2.html.py:11 .\views\admin\import.html.py:35 
+#: .\views\admin\setup.html.py:7 .\views\admin\setup_base.html.py:11
+#: .\views\admin\sitemap.html.py:7 .\views\admin\tools.html.py:79
+#: .\views\admin\tools.html.py:86
+msgid "Tools"
+msgstr ""
+
+#: .\plugins\sys_plugin\sys_plugin.py:70 
+msgid "Notify"
+msgstr ""
+
+#: .\plugins\wordpress\wpimport.html.py:56 
+msgid "Please select a file which exported from wordpress to import!"
+msgstr ""
+
+#: .\plugins\wordpress\wpimport.html.py:62 
+msgid "Wordpress export file (WXR file):"
+msgstr ""
+
+#: .\plugins\wordpress\wpimport.html.py:71 .\views\admin\import.html.py:59 
+msgid "Import"
+msgstr ""
+
+#: .\views\admin\author.html.py:11 
+msgid "Edit Author"
+msgstr ""
+
+#: .\views\admin\author.html.py:11 
+msgid "Add Author"
+msgstr ""
+
+#: .\views\admin\author.html.py:28 .\views\admin\category.html.py:28 
+#: .\views\admin\entry.html.py:188 .\views\admin\link.html.py:28
+msgid "Related"
+msgstr ""
+
+#: .\views\admin\author.html.py:31 
+msgid "Manage All Authors"
+msgstr ""
+
+#: .\views\admin\author.html.py:40 
+msgid "Display Name"
+msgstr ""
+
+#: .\views\admin\author.html.py:43 
+msgid "The name is used to display."
+msgstr ""
+
+#: .\views\admin\authors.html.py:7 
+msgid "Manage Authors"
+msgstr ""
+
+#: .\views\admin\authors.html.py:7 .\views\admin\categories.html.py:7 
+#: .\views\admin\links.html.py:7 .\views\admin\pages.html.py:7
+#: .\views\admin\posts.html.py:7
+msgid "add new"
+msgstr ""
+
+#: .\views\admin\authors.html.py:8 
+msgid "All Authors"
+msgstr ""
+
+#: .\views\admin\authors.html.py:14 .\views\admin\categories.html.py:14 
+#: .\views\admin\comments.html.py:26 .\views\admin\filemanager.html.py:53
+#: .\views\admin\links.html.py:12 .\views\admin\pages.html.py:14
+#: .\views\admin\posts.html.py:15
+msgid "Delete"
+msgstr ""
+
+#: .\views\admin\authors.html.py:18 .\views\admin\categories.html.py:18 
+#: .\views\admin\comments.html.py:30 .\views\admin\filemanager.html.py:57
+#: .\views\admin\pages.html.py:18 .\views\admin\posts.html.py:20
+msgid "&laquo; prev"
+msgstr ""
+
+#: .\views\admin\authors.html.py:22 .\views\admin\categories.html.py:22 
+#: .\views\admin\comments.html.py:34 .\views\admin\filemanager.html.py:61
+#: .\views\admin\pages.html.py:22 .\views\admin\posts.html.py:24
+msgid "next &raquo;"
+msgstr ""
+
+#: .\views\admin\authors.html.py:23 .\views\admin\categories.html.py:24 
+#: .\views\admin\comments.html.py:35 .\views\admin\filemanager.html.py:62
+#: .\views\admin\pages.html.py:23 .\views\admin\posts.html.py:26
+msgid "  Page %(pindex)s"
+msgstr ""
+
+#: .\views\admin\authors.html.py:34 .\views\admin\categories.html.py:37 
+#: .\views\admin\category.html.py:40 .\views\admin\link.html.py:40
+#: .\views\admin\links.html.py:22
+msgid "Name"
+msgstr ""
+
+#: .\views\admin\authors.html.py:34 
+msgid "IsAdmin"
+msgstr ""
+
+#: .\views\admin\base.html.py:31 
+msgid "Micolog Dashboard"
+msgstr ""
+
+#: .\views\admin\base.html.py:31 
+msgid "Logout"
+msgstr ""
+
+#: .\views\admin\base.html.py:60 
+msgid "Write"
+msgstr ""
+
+#: .\views\admin\base.html.py:61 
+msgid "Posts"
+msgstr ""
+
+#: .\views\admin\base.html.py:62 
+msgid "Pages"
+msgstr ""
+
+#: .\views\admin\base.html.py:63 
+msgid "Links"
+msgstr ""
+
+#: .\views\admin\base.html.py:64 
+msgid "Categories"
+msgstr ""
+
+#: .\views\admin\base.html.py:65 
+msgid "Comments"
+msgstr ""
+
+#: .\views\admin\base.html.py:66 .\views\admin\entry.html.py:108 
+#: .\views\admin\upload.html.py:5
+msgid "Files"
+msgstr ""
+
+#: .\views\admin\base.html.py:69 
+msgid "Configuration"
+msgstr ""
+
+#: .\views\admin\base.html.py:70 
+msgid "Plugins"
+msgstr ""
+
+#: .\views\admin\base.html.py:72 
+msgid "Cache"
+msgstr ""
+
+#: .\views\admin\base.html.py:73 
+msgid "Authors"
+msgstr ""
+
+#: .\views\admin\base.html.py:78 
+msgid "help"
+msgstr ""
+
+#: .\views\admin\categories.html.py:7 
+msgid "Manage Categories"
+msgstr ""
+
+#: .\views\admin\categories.html.py:8 
+msgid "All Categories"
+msgstr ""
+
+#: .\views\admin\categories.html.py:37 .\views\admin\category.html.py:47 
+#: .\views\admin\entry.html.py:267
+msgid "Slug"
+msgstr ""
+
+#: .\views\admin\categories.html.py:37 
+msgid "Parent"
+msgstr ""
+
+#: .\views\admin\category.html.py:11 
+msgid "Edit category"
+msgstr ""
+
+#: .\views\admin\category.html.py:11 
+msgid "Add category"
+msgstr ""
+
+#: .\views\admin\category.html.py:24 .\views\admin\entry.html.py:169 
+#: .\views\admin\link.html.py:24
+msgid "Save"
+msgstr ""
+
+#: .\views\admin\category.html.py:31 
+msgid "Manage All Categories"
+msgstr ""
+
+#: .\views\admin\category.html.py:43 
+msgid ""
+"The name is used to identify the category almost everywhere, for example "
+"under the post or in the category widget."
+msgstr ""
+
+#: .\views\admin\category.html.py:50 
+msgid ""
+"The 'slug' is the URL-friendly version of the name. It is usually all "
+"lowercase and contains only letters, numbers, and hyphens."
+msgstr ""
+
+#: .\views\admin\category.html.py:54 
+msgid "Parent Category"
+msgstr ""
+
+#: .\views\admin\category.html.py:57 
+msgid "None"
+msgstr ""
+
+#: .\views\admin\comments.html.py:7 
+msgid "Manage Comments"
+msgstr ""
+
+#: .\views\admin\comments.html.py:8 
+msgid "All Comments"
+msgstr ""
+
+#: .\views\admin\comments.html.py:11 
+msgid "Filter:"
+msgstr ""
+
+#: .\views\admin\comments.html.py:13 .\views\admin\comments.html.py:46 
+#: .\views\admin\plugins.html.py:10 .\views\admin\posts.html.py:37
+msgid "Author"
+msgstr ""
+
+#: .\views\admin\comments.html.py:18 
+msgid "Do"
+msgstr "Do it"
+
+#: .\views\admin\comments.html.py:46 .\views\admin\pages.html.py:34 
+#: .\views\admin\posts.html.py:37
+msgid "Date"
+msgstr ""
+
+#: .\views\admin\comments.html.py:46 
+msgid "Content"
+msgstr ""
+
+#: .\views\admin\comments.html.py:46 
+msgid "Email"
+msgstr ""
+
+#: .\views\admin\comments.html.py:46 
+msgid "IP"
+msgstr ""
+
+#: .\views\admin\comments.html.py:46 
+msgid "Entry"
+msgstr ""
+
+#: .\views\admin\entry.html.py:131 
+msgid "New Post"
+msgstr ""
+
+#: .\views\admin\entry.html.py:131 
+msgid "New Page"
+msgstr ""
+
+#: .\views\admin\entry.html.py:143 
+msgid "Write Post"
+msgstr ""
+
+#: .\views\admin\entry.html.py:145 
+msgid "Write Page"
+msgstr ""
+
+#: .\views\admin\entry.html.py:155 
+msgid "Category"
+msgstr ""
+
+#: .\views\admin\entry.html.py:171 
+msgid "UnPublish"
+msgstr ""
+
+#: .\views\admin\entry.html.py:173 
+msgid "Publish"
+msgstr ""
+
+#: .\views\admin\entry.html.py:180 
+msgid "Sticky it."
+msgstr ""
+
+#: .\views\admin\entry.html.py:182 .\views\admin\posts.html.py:37 
+msgid "allow comment"
+msgstr ""
+
+#: .\views\admin\entry.html.py:184 
+msgid "allow trackback"
+msgstr ""
+
+#: .\views\admin\entry.html.py:191 
+msgid "Manage All Posts"
+msgstr ""
+
+#: .\views\admin\entry.html.py:192 
+msgid "Manage All Pages"
+msgstr ""
+
+#: .\views\admin\entry.html.py:203 
+msgid "Use as  external page"
+msgstr ""
+
+#: .\views\admin\entry.html.py:207 .\views\admin\pages.html.py:34 
+#: .\views\admin\posts.html.py:37
+msgid "Title"
+msgstr ""
+
+#: .\views\admin\entry.html.py:220 
+msgid "External page address"
+msgstr ""
+
+#: .\views\admin\entry.html.py:224 
+msgid "Target"
+msgstr ""
+
+#: .\views\admin\entry.html.py:237 
+msgid "Post"
+msgstr ""
+
+#: .\views\admin\entry.html.py:239 
+msgid "Page"
+msgstr ""
+
+#: .\views\admin\entry.html.py:275 
+msgid "Tag"
+msgstr ""
+
+#: .\views\admin\entry.html.py:285 
+msgid "Password"
+msgstr ""
+
+#: .\views\admin\entry.html.py:295 
+msgid "Options"
+msgstr ""
+
+#: .\views\admin\entry.html.py:298 
+msgid "Page level:"
+msgstr ""
+
+#: .\views\admin\entry.html.py:300 
+msgid "Page order:"
+msgstr ""
+
+#: .\views\admin\entry.html.py:310 
+msgid "Excerpt"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:31 
+msgid "Upload a file"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:37 
+msgid "Upload"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:46 
+msgid "Manage Files"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:47 
+msgid "All Files"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:72 
+msgid "File Name"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:73 .\views\admin\upload.html.py:98 
+msgid "Size"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:74 
+msgid "Upload Date"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:76 
+msgid "Url"
+msgstr ""
+
+#: .\views\admin\filemanager.html.py:77 
+msgid "Download"
+msgstr ""
+
+#: .\views\admin\import.html.py:41 
+msgid "Export/Import for wordpress"
+msgstr ""
+
+#: .\views\admin\import.html.py:42 .\views\admin\import.html.py:57 
+msgid "Export"
+msgstr ""
+
+#: .\views\admin\import.html.py:43 
+msgid "Export as  WordPress eXtended RSS file"
+msgstr ""
+
+#: .\views\admin\import.html.py:45 
+msgid "Export from Date:"
+msgstr ""
+
+#: .\views\admin\import.html.py:46 
+msgid "to Date:"
+msgstr ""
+
+#: .\views\admin\import.html.py:46 
+msgid "'s posts"
+msgstr ""
+
+#: .\views\admin\import.html.py:56 
+msgid "Export all posts"
+msgstr ""
+
+#: .\views\admin\link.html.py:11 
+msgid "Edit link"
+msgstr ""
+
+#: .\views\admin\link.html.py:11 
+msgid "Add Link"
+msgstr ""
+
+#: .\views\admin\link.html.py:31 
+msgid "Manage All Links"
+msgstr ""
+
+#: .\views\admin\link.html.py:43 
+msgid "Example: Nifty blogging software"
+msgstr ""
+
+#: .\views\admin\link.html.py:47 
+msgid "Web Address"
+msgstr ""
+
+#: .\views\admin\link.html.py:50 
+msgid ""
+"Example: <code>http://xuming.net</code> - don't forget the <code>http://</"
+"code>"
+msgstr ""
+
+#: .\views\admin\link.html.py:54 .\views\admin\links.html.py:22 
+msgid "LinkComment"
+msgstr ""
+
+#: .\views\admin\link.html.py:57 
+msgid "Example: Xuming's Blog"
+msgstr ""
+
+#: .\views\admin\links.html.py:7 
+msgid "Manage Links"
+msgstr ""
+
+#: .\views\admin\links.html.py:22 
+msgid "URL"
+msgstr ""
+
+#: .\views\admin\pages.html.py:7 
+msgid "Manage Pages"
+msgstr ""
+
+#: .\views\admin\pages.html.py:8 
+msgid "All Pages"
+msgstr ""
+
+#: .\views\admin\pages.html.py:34 .\views\admin\posts.html.py:37 
+msgid "Status"
+msgstr ""
+
+#: .\views\admin\pages.html.py:40 .\views\admin\posts.html.py:43 
+msgid "edit"
+msgstr ""
+
+#: .\views\admin\pages.html.py:42 .\views\admin\posts.html.py:46 
+msgid "Published"
+msgstr ""
+
+#: .\views\admin\pages.html.py:42 .\views\admin\posts.html.py:46 
+msgid "Unpublished"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:5 
+msgid "Manage Plugins"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:10 
+msgid "Plugin"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:10 
+msgid "Version"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:10 
+msgid "Description"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:10 
+msgid "Active Status"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:20 
+msgid "Deactivate"
+msgstr ""
+
+#: .\views\admin\plugins.html.py:23 
+msgid "Activate"
+msgstr ""
+
+#: .\views\admin\posts.html.py:7 
+msgid "Manage Posts"
+msgstr ""
+
+#: .\views\admin\posts.html.py:9 
+msgid "All Posts"
+msgstr ""
+
+#: .\views\admin\setup.html.py:14 
+msgid "Setup and Configuraiton for this Blog"
+msgstr ""
+
+#: .\views\admin\setup.html.py:18 
+msgid "Blog Title:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:24 
+msgid "Sub Title:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:27 
+msgid "In a few words, explain what this blog is about."
+msgstr ""
+
+#: .\views\admin\setup.html.py:31 
+msgid "Blog notice:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:37 
+msgid "Default Link Structure:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:40 .\views\admin\setup.html.py:47 
+msgid "Allowed variants: "
+msgstr ""
+
+#: .\views\admin\setup.html.py:44 
+msgid "Permalink Structure:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:51 
+msgid "Domain:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:57 
+msgid "Micolog Address(URL):"
+msgstr ""
+
+#: .\views\admin\setup.html.py:63 
+msgid "RSS Feed URL:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:68 
+msgid "Time delta:(Hours)"
+msgstr ""
+
+#: .\views\admin\setup.html.py:75 
+msgid "Theme:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:83 
+msgid "Get more themes"
+msgstr ""
+
+#: .\views\admin\setup.html.py:87 
+msgid "Posts per page:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:92 
+msgid "Comments order:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:94 
+msgid "ASC"
+msgstr ""
+
+#: .\views\admin\setup.html.py:95 
+msgid "DESC"
+msgstr ""
+
+#: .\views\admin\setup.html.py:99 
+msgid "Comment Check Type:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:102 
+msgid "Arithmetic"
+msgstr ""
+
+#: .\views\admin\setup.html.py:103 
+msgid "Graph"
+msgstr ""
+
+#: .\views\admin\setup.html.py:104 
+msgid "Client Arithmetic"
+msgstr ""
+
+#: .\views\admin\setup.html.py:108 
+msgid "Comments per page:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:114 
+msgid "Avatar icon style:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:116 
+msgid "Default"
+msgstr ""
+
+#: .\views\admin\setup.html.py:117 
+msgid "Identicon"
+msgstr ""
+
+#: .\views\admin\setup.html.py:127 
+msgid "Enable memcache:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:132 
+msgid "Allow Trackback:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:138 
+msgid "Allow Pingback:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:143 
+msgid "Xmlrpc  setting"
+msgstr ""
+
+#: .\views\admin\setup.html.py:144 
+msgid ""
+"Setup the username and password for RPC call. These will be used by client "
+"tools (e.g. Windows live writer). "
+msgstr ""
+
+#: .\views\admin\setup.html.py:147 
+msgid "User name:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:153 
+msgid "Password:"
+msgstr ""
+
+#: .\views\admin\setup.html.py:160 .\views\admin\sitemap.html.py:49 
+msgid "Save Changes"
+msgstr ""
+
+#: .\views\admin\sitemap.html.py:16 
+msgid "Sitemap Setup"
+msgstr ""
+
+#: .\views\admin\sitemap.html.py:20 
+msgid "Entries in sitemap:"
+msgstr ""
+
+#: .\views\admin\sitemap.html.py:28 
+msgid "Include category:"
+msgstr ""
+
+#: .\views\admin\sitemap.html.py:34 
+msgid "Include tag:"
+msgstr ""
+
+#: .\views\admin\sitemap.html.py:39 
+msgid "Pinging Search Engine (Google):"
+msgstr ""
+
+#: .\views\admin\status.html.py:23 
+msgid "Cache status"
+msgstr ""
+
+#: .\views\admin\status.html.py:25 .\views\admin\status.html.py:28 
+msgid "Clear cache"
+msgstr ""
+
+#: .\views\admin\status.html.py:28 
+msgid "Clear cache data."
+msgstr ""
+
+#: .\views\admin\status.html.py:31 
+msgid "Environ"
+msgstr ""
+
+#: .\views\admin\tools.html.py:88 
+msgid "Careless use of it will be dangerous!"
+msgstr ""
+
+#: .\views\admin\tools.html.py:91 .\views\admin\tools.html.py:97 
+#: .\views\admin\tools.html.py:104 .\views\admin\tools.html.py:111
+#: .\views\admin\tools.html.py:118 .\views\admin\tools.html.py:129
+msgid "Run"
+msgstr ""
+
+#: .\views\admin\tools.html.py:92 
+msgid "Update tags"
+msgstr ""
+
+#: .\views\admin\tools.html.py:93 
+msgid "It will refresh all tags for each entry."
+msgstr ""
+
+#: .\views\admin\tools.html.py:99 
+msgid "Init datas"
+msgstr ""
+
+#: .\views\admin\tools.html.py:100 
+msgid "It will delete  all posts, pages and comments."
+msgstr ""
+
+#: .\views\admin\tools.html.py:106 
+msgid "Update comments"
+msgstr ""
+
+#: .\views\admin\tools.html.py:107 
+msgid "It will refresh the number of comments for each entry."
+msgstr ""
+
+#: .\views\admin\tools.html.py:113 
+msgid "Update comment number"
+msgstr ""
+
+#: .\views\admin\tools.html.py:114 
+msgid "It will refresh the number for each comment."
+msgstr ""
+
+#: .\views\admin\tools.html.py:120 
+msgid "Rebuild URL"
+msgstr ""
+
+#: .\views\admin\tools.html.py:121 
+msgid "The URL of all entries (post or page) will be rebuild."
+msgstr ""
+
+#: .\views\admin\tools.html.py:123 
+msgid "Permalink"
+msgstr ""
+
+#: .\views\admin\tools.html.py:125 
+msgid "Available parameters:"
+msgstr ""
+
+#: .\views\admin\tools.html.py:132 
+msgid "Update archives"
+msgstr ""
+
+#: .\views\admin\tools.html.py:133 
+msgid "It will update the monthyear of entries."
+msgstr ""
+
+#: .\views\admin\upload.html.py:29 
+msgid "Error: invalid file extension"
+msgstr ""
+
+#: .\views\admin\upload.html.py:53 .\views\admin\upload.html.py:101 
+msgid "Add"
+msgstr ""
+
+#: .\views\admin\upload.html.py:92 
+msgid "New file"
+msgstr ""
+
+#: .\views\admin\upload.html.py:98 
+msgid "Filename"
+msgstr ""
+
+#: .\views\admin\upload.html.py:98 
+msgid "Operater"
+msgstr ""

@@ -1,0 +1,96 @@
+#history
+
+2010/10/10 0.7 release
+
+Add Italian language package
+Add spanish language package
+Add Japanese language package
+Add comment order property
+update feed format as rss2.0
+fix pingback bug
+fix xml-rpc datetime bug
+fix chinese slug bug
+fix categires delete bug
+change entry order as time 
+more...
+
+0.7RC2
+
+Add parent category support
+Add parent comment support
+Wordpress Api support
+More plugin function
+
+0.7RC1
+
+File upload
+Plugin Spport
+Sitemap support
+Multi author support
+
+
+#更新历史
+
+2010/10/10 0.7 release 版本发布
+增加日语模板和日语语言包
+增加意大利语言包
+增加西班牙语言包
+增加，评论列表序号显示，首次使用时，用户需在tools列表手动更新；
+添加，文章引用自动通知，需要在设置栏选择允许pingback，使用重传机制，减少因GAE的暂时故障出现差漏；增加查询对方引用情况的内容正确解码；
+添加文章引用通告和评论的独立查询；
+管理页面文章新建页增加标签列表鼠标选取；
+增加头像显示方式选项
+
+修正，Windows Live Writer客户端“引用通告”默认字符导致误发引用通告请求，和接受通过解析 Bug
+修正，XML-RPC发布文章时间自定义；
+修改网站文章源和评论源（FEED）为RSS 2.0版本；
+修复，保存文章slug不能为中文的错误
+修复，删除父目录后无法进行目录管理的问题
+文章的上一篇，下一篇改为按时间计算，而不是Postid
+美化了一下默认的主题
+去除了主题xuming
+
+0.7RC2
+
+修改归档处理，提高了归档效率
+调整后台管理界面增加了Plugin.register_setupmenu函数用来向后台设置界面增加菜单项目
+将评论提醒功能移动到sys_plugin实现，并且支持评论回复提醒
+增加多级评论和多级目录
+修正wp_import插件只能导入目录和导入文件过小的问题
+修正tinymce编辑器在IE6下无法保存文章问题
+增加plugin.register_handlerlist 支持使用BaseRequestHandler来扩展处理URL
+修复相关文章会显示未发布文章错误
+BasePublicPage增加方法sticky_entrys用于获取置顶文章
+Entry实体增加mod_date字段,用于记录最后修改时间
+修复sitemap更新问题
+
+
+0.7RC1
+
+文件上传
+插件支持
+支持sitemap
+支持多用户写作
+增加highsyntax插件
+api_rpc.py增加对system.listmethod,system.methodSignature,system.methodHelp的支持
+修复导入插件安全漏洞
+api_rpc.py模块增加多个函数，全面支持metaweblog和wpapi 增加文章sticky属性
+修正了使用xmlrpc方式删除文章时，不删除相关评论的问题
+将wordpress导入插件做成独立的插件，不在依赖admin.py中的方法
+增加验证码模式3，提供与旧版本的兼容，xmlprc模块增加了一系列函数
+修正归档问题，去除函数Entry.publish,使用Entry.save(True)代替
+更正删除目录后使用wlw无法获取最新文章问题
+修改增加中文目录时的解析错误
+修改api_rpc.py,更新了对xmlrpc的支持，使用wordpresslib.py测试通过
+增加highsyntax插件
+将图片插入路径修改为绝对路径
+
+
+
+修复，保存文章slug不能为中文的错误
+修复，删除父目录后无法进行目录管理的问题
+文章的上一篇，下一篇改为按时间计算，而不是Postid
+
+修复 邮箱的第一个字母大写时，Micolog 头像显示的问题
+
+添加Avatar默认头像风格选择

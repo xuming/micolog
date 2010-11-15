@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head profile="http://gmpg.org/xfn/11">
+{%mf head%}
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8;" />
+<title>{% block title %} {{ blog.title}}{% endblock %}</title>
+<link rel="stylesheet" href="/themes/{{ blog.theme_name }}/style.css" type="text/css" media="screen" />
+<link rel="alternate" type="application/rss+xml" title="{{ blog.title }} RSS Feed" href="{{ blog.feedurl }}" />
+<link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
+<script type="text/javascript" src="/themes/{{ blog.theme_name }}/rounded_corners_lite.inc.js"></script>
+<script type="text/javascript" src="/static/js/jquery-1.3.2.min.js"></script>
+{% block head_block %}{% endblock %}
+<script type="text/JavaScript">
+window.onload = function()
+{
+settings = {
+tl: { radius: 5 },
+tr: { radius: 5 },
+bl: { radius: 5 },
+br: { radius: 5 },
+antiAlias: true,
+autoPad: true,
+validTags: ["div"]
+}
+var myBoxObject = new curvyCorners(settings, "nifty");
+myBoxObject.applyCornersToAll();
+var myBoxObject = new curvyCorners(settings, "meta");
+myBoxObject.applyCornersToAll();
+var myBoxObject = new curvyCorners(settings, "sidebar");
+myBoxObject.applyCornersToAll();
+}
+</script>
+
+{%endmf%}
+</head>
+
+<body>
+<div id="main">
+<div id="wrapper">
+
+<div id="top">
+<div id="logo"><h1><a href="{{blog.baseurl}}/" title="{{blog.title}}">{{blog.title}}</a></h1>
+</div>
+
+<div id="menu">
+<ul>
+		<li class="{%if ishome%}current_page_item{%else%}page_item{%endif%}" >
+			<a  href="{{ blog.baseurl }}"  >Home</a>
+		</li>
+		{{self.m_list_pages}}
+    <li class="page_item" ><a href="{{blog.feedurl}}">(RSS)</a></li>
+    {% block topmenu %}{% endblock %}
+
+    {%if self.is_admin or self.author%}
+     <li><a href="/admin">Admin</a> </li>
+    {%endif%}
+      <li>
+     {%if self.is_login%}
+
+       <a href="{{self.logouturl}}">Logout</a>
+
+     {%else%}
+       <a href="/admin">Login</a>
+
+     {%endif%}
+         </li>
+{%mf nav_menu%}
+{%endmf%}
+<li id="searchbox">
+
+<form method="get" id="searchform" action="http://www.google.com/search">
+		<input type="text" value="Search..." onfocus="if (this.value == 'Search...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search...';}" name="as_q" id="s" />
+		<input type="image" src="/themes/{{ blog.theme_name }}/images/transparent.gif" id="go" alt="Search" title="Search" />
+		<input name="as_sitesearch" value="{{blog.domain}}" type="hidden">
+
+		</form>
+
+</li>
+
+</ul>
+</div>
+
+</div>
+<div id="content">
+<div id="split">
+
+{%block content %}{%endblock%}
+
+
+</div>
+</div>
+</div>
+
+
+<div id="push"></div>
+<div id="footer">
+{%mf footer%}
+	<div class="footer">
+			<p class="fooleft">{{blog.title}} is proudly powered by <a href="http://xuming.net">Micolog</a>. Theme by <a href="http://bob.my/" title="Simple">Bob</a>
+		</p>
+		<p class="fooright"><a href="#top" title="Top">top</a></p>
+	</div>
+{%endmf%}
+</div>
+</body>
+</html>

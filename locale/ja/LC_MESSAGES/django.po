@@ -1,0 +1,1058 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: micolog 0.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-05-04 11:06+0800\n"
+"PO-Revision-Date: 2010-09-25 11:26+0800\n"
+"Last-Translator: simon hsu <coolchyni@gmail.com>\n"
+"Language-Team: micolog <coolchyni@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: admin.py:79
+#: admin.py:81
+#: admin.py:90
+#: admin.py:92
+msgid "This operate has not defined!"
+msgstr "無効な操作です"
+
+#: admin.py:99
+msgid "\"Cache cleared successful\""
+msgstr "\"キャッシュ削除完了\""
+
+#: admin.py:107
+msgid "\"All comments updated\""
+msgstr "\"全コメントが更新されました。\""
+
+#: admin.py:128
+msgid "\"Link formated succeed\""
+msgstr "\"リンクフォーマット完了\""
+
+#: admin.py:130
+msgid "\"Please input url format.\""
+msgstr "\"URLを入力してください。\""
+
+#: admin.py:141
+msgid "\"Init has succeed.\""
+msgstr "\"初期化成功\""
+
+#: admin.py:154
+msgid "\"All tags for entry have been updated.\""
+msgstr "\"全タグが更新されました。\""
+
+#: admin.py:163
+msgid "\"All entries have been updated.\""
+msgstr "\"全記事が更新されました。\""
+
+#: admin.py:423
+msgid "Please input title and content."
+msgstr "タイトルと記事を入力してください。"
+
+#: admin.py:454
+#: admin.py:490
+#, python-format
+msgid "Saved ok. <a href=\"/%(link)s\" target=\"_blank\">View it now!</a>"
+msgstr "保存できました。 <a href=\"/%(link)s\" target=\"_blank\">すぐに見る!</a>"
+
+#: admin.py:456
+#: admin.py:492
+msgid "Saved ok."
+msgstr "保存できました。"
+
+#: admin.py:497
+msgid "Error:Entry cant been saved."
+msgstr "エラー：記事を保存できませんでした。"
+
+#: admin.py:659
+msgid "Please input name and url."
+msgstr "名前とURLを入力してください。"
+
+#: admin.py:679
+msgid "Error:Link cant been saved."
+msgstr "エラー：リンクを保存できませんでした。"
+
+#: admin.py:728
+#: admin.py:743
+msgid "Please input name and slug."
+msgstr "Slugを入力してください。"
+
+#: admin.py:747
+msgid "A circle declaration found."
+msgstr "circle declaration"
+
+#: admin.py:827
+msgid "Please input dispname and email."
+msgstr "氏名とE-mailアドレスを入力してください。"
+
+#: admin.py:849
+msgid "Error:Author cant been saved."
+msgstr "エラー：作者を保存できませんでした。"
+
+#: admin.py:884
+#: admin.py:905
+#, python-format
+msgid "<div>Plugin '%(name)s' havn't actived!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s\"><input type=\"submit\" value=\"Activate Now\"/></form>"
+msgstr ""
+"<div>プラグイン '%(name)s' を実行できませんでした。!</div><br><form method=\"post\" action=\"/admin/plugins?action=activate&amp;plugin=%(iname)s&amp;return=/admin/plugins/%(iname)s\">\n"
+"<input type=\"submit\" value=\"実行\"/></form>"
+
+#: base.py:132
+#: tools/pingback.py:55
+msgid "source URL does not exist"
+msgstr "ソースURLは存在しません。"
+
+#: base.py:133
+#: tools/pingback.py:56
+msgid "The source URL does not contain a link to the target URL"
+msgstr "ソースURLにそのURLはありません。"
+
+#: base.py:134
+#: tools/pingback.py:57
+msgid "The specified target URL does not exist"
+msgstr "そのURLは存在しません。"
+
+#: base.py:135
+#: tools/pingback.py:58
+msgid "The specified target URL cannot be used as a target"
+msgstr "そのURLは使用できません。"
+
+#: base.py:136
+#: tools/pingback.py:59
+msgid "The pingback has already been registered"
+msgstr "pingバックは認証されました。"
+
+#: base.py:137
+#: tools/pingback.py:60
+msgid "Access Denied"
+msgstr "アクセス制限"
+
+#: base.py:174
+#: tools/pingback.py:97
+#, python-format
+msgid "An unknown server error (%s) occurred"
+msgstr "不明なサーバーエラーです。：(%s)"
+
+#: blog.py:487
+#: blog.py:489
+#: blog.py:493
+#: blog.py:495
+msgid "Your check code is invalid ."
+msgstr "クッキーエラー"
+
+#: blog.py:506
+#: blog.py:508
+msgid "Please input name, email and comment ."
+msgstr "氏名とE-mailアドレスとコメントを入力してください。"
+
+#: blog.py:551
+msgid "Comment not allowed."
+msgstr "コメントエラーです。"
+
+#: blog.py:553
+msgid "Comment not allowed ."
+msgstr "コメントエラーです。"
+
+#: blog.py:634
+msgid "this is a test"
+msgstr "これはテストです。"
+
+#: model.py:427
+msgid "..more"
+msgstr "続きを読む"
+
+#: model.py:837
+msgid "Hello world!"
+msgstr "micologにようこそ！！"
+
+#: model.py:838
+msgid "<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>"
+msgstr "<p>micologをご利用いただきましてありがとうございます。これは最初の記事になります。micologでブログの世界を旅しましょう！</p>"
+
+#: model.py:840
+msgid "Xuming's blog"
+msgstr "xuming'sブログ"
+
+#: plugins/sys_plugin/setup.html:4
+#: plugins/sys_plugin/setup2.html:31
+#: views/admin/setup.html:115
+msgid "Enable comment notify by mail:"
+msgstr "コメントを送信できません。"
+
+#: plugins/sys_plugin/setup.html:7
+#: plugins/sys_plugin/setup2.html:34
+msgid "Message to me:"
+msgstr "自分にもメッセージを送る。"
+
+#: plugins/sys_plugin/setup.html:11
+#: plugins/sys_plugin/setup2.html:38
+msgid "Message to commenter:"
+msgstr "コメントをくれた人にもメッセージを送る。"
+
+#: plugins/sys_plugin/setup2.html:8
+#: views/admin/import.html:32
+#: views/admin/setup.html:4
+#: views/admin/setup_base.html:8
+#: views/admin/sitemap.html:4
+#: views/admin/tools.html:67
+msgid "Basic"
+msgstr "基本設定"
+
+#: plugins/sys_plugin/setup2.html:9
+#: views/admin/import.html:33
+#: views/admin/setup.html:5
+#: views/admin/setup_base.html:9
+#: views/admin/sitemap.html:5
+#: views/admin/tools.html:68
+msgid "Import/Export"
+msgstr "インポート/エクスポート"
+
+#: plugins/sys_plugin/setup2.html:10
+#: views/admin/import.html:34
+#: views/admin/setup.html:6
+#: views/admin/setup_base.html:10
+#: views/admin/sitemap.html:6
+#: views/admin/tools.html:69
+msgid "Sitemap"
+msgstr "サイトマップ"
+
+#: plugins/sys_plugin/setup2.html:11
+#: views/admin/import.html:35
+#: views/admin/setup.html:7
+#: views/admin/setup_base.html:11
+#: views/admin/sitemap.html:7
+#: views/admin/tools.html:70
+#: views/admin/tools.html.py:77
+msgid "Tools"
+msgstr "ツール"
+
+#: plugins/sys_plugin/sys_plugin.py:70
+msgid "Notify"
+msgstr "通知"
+
+#: plugins/wordpress/wpimport.html:56
+msgid "Please select a file which exported from wordpress to import!"
+msgstr "WORDPRESSからエクスポートしたファイルを選択してmicologにインポートしてください。"
+
+#: plugins/wordpress/wpimport.html:62
+msgid "Wordpress export file (WXR file):"
+msgstr "Wordpress　エクスポートファイル(WXR形式):"
+
+#: plugins/wordpress/wpimport.html:71
+#: views/admin/import.html:59
+msgid "Import"
+msgstr "インポート"
+
+#: views/admin/author.html:11
+msgid "Edit Author"
+msgstr "作者編集"
+
+#: views/admin/author.html:11
+msgid "Add Author"
+msgstr "作者追加"
+
+#: views/admin/author.html:28
+#: views/admin/category.html:28
+#: views/admin/entry.html:188
+#: views/admin/link.html:28
+msgid "Related"
+msgstr "関連"
+
+#: views/admin/author.html:31
+msgid "Manage All Authors"
+msgstr "全作者管理"
+
+#: views/admin/author.html:40
+msgid "Display Name"
+msgstr "名称"
+
+#: views/admin/author.html:43
+msgid "The name is used to display."
+msgstr "この名称は使用されています。"
+
+#: views/admin/authors.html:7
+msgid "Manage Authors"
+msgstr "作者管理"
+
+#: views/admin/authors.html:7
+#: views/admin/categories.html:7
+#: views/admin/links.html:7
+#: views/admin/pages.html:7
+#: views/admin/posts.html:7
+msgid "add new"
+msgstr "新規作成"
+
+#: views/admin/authors.html:8
+msgid "All Authors"
+msgstr "全作者"
+
+#: views/admin/authors.html:14
+#: views/admin/categories.html:14
+#: views/admin/comments.html:26
+#: views/admin/filemanager.html:53
+#: views/admin/links.html:12
+#: views/admin/pages.html:14
+#: views/admin/posts.html:15
+msgid "Delete"
+msgstr "削除"
+
+#: views/admin/authors.html:18
+#: views/admin/categories.html:18
+#: views/admin/comments.html:30
+#: views/admin/filemanager.html:57
+#: views/admin/pages.html:18
+#: views/admin/posts.html:20
+msgid "&laquo; prev"
+msgstr "&laquo; 前へ"
+
+#: views/admin/authors.html:22
+#: views/admin/categories.html:22
+#: views/admin/comments.html:34
+#: views/admin/filemanager.html:61
+#: views/admin/pages.html:22
+#: views/admin/posts.html:24
+msgid "next &raquo;"
+msgstr "次へ &raquo;"
+
+#: views/admin/authors.html:23
+#: views/admin/categories.html:24
+#: views/admin/comments.html:35
+#: views/admin/filemanager.html:62
+#: views/admin/pages.html:23
+#: views/admin/posts.html:26
+#, python-format
+msgid "  Page %(pindex)s"
+msgstr "  %(pindex)sページ"
+
+#: views/admin/authors.html:34
+#: views/admin/categories.html:37
+#: views/admin/category.html:40
+#: views/admin/link.html:40
+#: views/admin/links.html:22
+msgid "Name"
+msgstr "名称"
+
+#: views/admin/authors.html:34
+msgid "IsAdmin"
+msgstr "管理人"
+
+#: views/admin/base.html:31
+msgid "Micolog Dashboard"
+msgstr "Micologコントロールパネル"
+
+#: views/admin/base.html:31
+msgid "Logout"
+msgstr "ログアウト"
+
+#: views/admin/base.html:60
+msgid "Write"
+msgstr "記事を書く"
+
+#: views/admin/base.html:61
+msgid "Posts"
+msgstr "記事"
+
+#: views/admin/base.html:62
+msgid "Pages"
+msgstr "ページ"
+
+#: views/admin/base.html:63
+msgid "Links"
+msgstr "リンク"
+
+#: views/admin/base.html:64
+msgid "Categories"
+msgstr "カテゴリー"
+
+#: views/admin/base.html:65
+msgid "Comments"
+msgstr "コメント"
+
+#: views/admin/base.html:66
+#: views/admin/entry.html:108
+#: views/admin/upload.html:5
+msgid "Files"
+msgstr "ファイル"
+
+#: views/admin/base.html:69
+msgid "Configuration"
+msgstr "設定"
+
+#: views/admin/base.html:70
+msgid "Plugins"
+msgstr "プラグイン"
+
+#: views/admin/base.html:72
+msgid "Cache"
+msgstr "キャッシュ"
+
+#: views/admin/base.html:73
+msgid "Authors"
+msgstr "作者"
+
+#: views/admin/base.html:78
+msgid "help"
+msgstr "ヘルプ"
+
+#: views/admin/categories.html:7
+msgid "Manage Categories"
+msgstr "カテゴリー管理"
+
+#: views/admin/categories.html:8
+msgid "All Categories"
+msgstr "全カテゴリー"
+
+#: views/admin/categories.html:37
+#: views/admin/category.html:47
+#: views/admin/entry.html:266
+msgid "Slug"
+msgstr "Slug"
+
+#: views/admin/categories.html:37
+msgid "Parent"
+msgstr "親階層"
+
+#: views/admin/category.html:11
+msgid "Edit category"
+msgstr "カテゴリー編集"
+
+#: views/admin/category.html:11
+msgid "Add category"
+msgstr "カテゴリー追加"
+
+#: views/admin/category.html:24
+#: views/admin/entry.html:169
+#: views/admin/link.html:24
+msgid "Save"
+msgstr "保存"
+
+#: views/admin/category.html:31
+msgid "Manage All Categories"
+msgstr "全カテゴリー管理"
+
+#: views/admin/category.html:43
+msgid "The name is used to identify the category almost everywhere, for example under the post or in the category widget."
+msgstr "名前はカテゴリーを特定するために様々な場所で使用されます。"
+
+#: views/admin/category.html:50
+msgid "The 'slug' is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens."
+msgstr "\"slug\"はurlをわかり易い表記にしたものです。日本語表記も可能です。"
+
+#: views/admin/category.html:54
+msgid "Parent Category"
+msgstr "親カテゴリー"
+
+#: views/admin/category.html:57
+msgid "None"
+msgstr "None"
+
+#: views/admin/comments.html:7
+msgid "Manage Comments"
+msgstr "コメント管理"
+
+#: views/admin/comments.html:8
+msgid "All Comments"
+msgstr "全コメント"
+
+#: views/admin/comments.html:11
+msgid "Filter:"
+msgstr "フィルター："
+
+#: views/admin/comments.html:13
+#: views/admin/comments.html.py:46
+#: views/admin/plugins.html:10
+#: views/admin/posts.html:37
+msgid "Author"
+msgstr "作者"
+
+#: views/admin/comments.html:18
+msgid "Do"
+msgstr "実行"
+
+#: views/admin/comments.html:46
+#: views/admin/pages.html:34
+#: views/admin/posts.html:37
+msgid "Date"
+msgstr "日付"
+
+#: views/admin/comments.html:46
+msgid "Content"
+msgstr "内容"
+
+#: views/admin/comments.html:46
+msgid "Email"
+msgstr "E-mail"
+
+#: views/admin/comments.html:46
+msgid "IP"
+msgstr "IP"
+
+#: views/admin/comments.html:46
+msgid "Entry"
+msgstr "記事"
+
+#: views/admin/entry.html:131
+msgid "New Post"
+msgstr "新規記事"
+
+#: views/admin/entry.html:131
+msgid "New Page"
+msgstr "新規ページ"
+
+#: views/admin/entry.html:143
+msgid "Write Post"
+msgstr "記事作成"
+
+#: views/admin/entry.html:145
+msgid "Write Page"
+msgstr "ページ作成"
+
+#: views/admin/entry.html:155
+msgid "Category"
+msgstr "カテゴリー"
+
+#: views/admin/entry.html:171
+msgid "UnPublish"
+msgstr "未公開"
+
+#: views/admin/entry.html:173
+msgid "Publish"
+msgstr "公開"
+
+#: views/admin/entry.html:180
+msgid "Sticky it."
+msgstr "トップ表示"
+
+#: views/admin/entry.html:182
+#: views/admin/posts.html:37
+msgid "allow comment"
+msgstr "コメント許可"
+
+#: views/admin/entry.html:184
+msgid "allow trackback"
+msgstr "トラックバック許可"
+
+#: views/admin/entry.html:191
+msgid "Manage All Posts"
+msgstr "全記事管理"
+
+#: views/admin/entry.html:192
+msgid "Manage All Pages"
+msgstr "全ページ管理"
+
+#: views/admin/entry.html:203
+msgid "Use as  external page"
+msgstr "外部ページ使用"
+
+#: views/admin/entry.html:207
+#: views/admin/pages.html:34
+#: views/admin/posts.html:37
+msgid "Title"
+msgstr "タイトル"
+
+#: views/admin/entry.html:220
+msgid "External page address"
+msgstr "外部ページアドレス"
+
+#: views/admin/entry.html:224
+msgid "Target"
+msgstr "ターゲット"
+
+#: views/admin/entry.html:236
+msgid "Post"
+msgstr "記事"
+
+#: views/admin/entry.html:238
+msgid "Page"
+msgstr "ページ"
+
+#: views/admin/entry.html:274
+msgid "Tag"
+msgstr "タグ"
+
+#: views/admin/entry.html:283
+msgid "Password"
+msgstr "パスワード"
+
+#: views/admin/entry.html:293
+msgid "Options"
+msgstr "オプション"
+
+#: views/admin/entry.html:296
+msgid "Page level:"
+msgstr "ページレベル"
+
+#: views/admin/entry.html:298
+msgid "Page order:"
+msgstr "ページ順序:"
+
+#: views/admin/entry.html:308
+msgid "Excerpt"
+msgstr "要約"
+
+#: views/admin/filemanager.html:31
+msgid "Upload a file"
+msgstr "ファイルをアップロード"
+
+#: views/admin/filemanager.html:37
+msgid "Upload"
+msgstr "アップロード"
+
+#: views/admin/filemanager.html:46
+msgid "Manage Files"
+msgstr "ファイル管理"
+
+#: views/admin/filemanager.html:47
+msgid "All Files"
+msgstr "全ファイル"
+
+#: views/admin/filemanager.html:72
+msgid "File Name"
+msgstr "ファイル名称"
+
+#: views/admin/filemanager.html:73
+#: views/admin/upload.html:98
+msgid "Size"
+msgstr "サイズ"
+
+#: views/admin/filemanager.html:74
+msgid "Upload Date"
+msgstr "アップロード日時"
+
+#: views/admin/filemanager.html:76
+msgid "Url"
+msgstr "Url"
+
+#: views/admin/filemanager.html:77
+msgid "Download"
+msgstr "ダウンロード"
+
+#: views/admin/import.html:41
+msgid "Export/Import for wordpress"
+msgstr "wordpressにエクスポート/インポート"
+
+#: views/admin/import.html:42
+#: views/admin/import.html.py:57
+msgid "Export"
+msgstr "エクスポート"
+
+#: views/admin/import.html:43
+msgid "Export as  WordPress eXtended RSS file"
+msgstr "wordpress形式にエクスポート"
+
+#: views/admin/import.html:45
+msgid "Export from Date:"
+msgstr "エクスポート:から"
+
+#: views/admin/import.html:46
+msgid "to Date:"
+msgstr "まで"
+
+#: views/admin/import.html:46
+msgid "'s posts"
+msgstr "の記事"
+
+#: views/admin/import.html:56
+msgid "Export all posts"
+msgstr "全記事をエクスポート"
+
+#: views/admin/link.html:11
+msgid "Edit link"
+msgstr "リンク編集"
+
+#: views/admin/link.html:11
+msgid "Add Link"
+msgstr "リンク追加"
+
+#: views/admin/link.html:31
+msgid "Manage All Links"
+msgstr "全リンク管理"
+
+#: views/admin/link.html:43
+msgid "Example: Nifty blogging software"
+msgstr "例：趣味関係"
+
+#: views/admin/link.html:47
+msgid "Web Address"
+msgstr "ホームページアドレス"
+
+#: views/admin/link.html:50
+msgid "Example: <code>http://xuming.net</code> - don't forget the <code>http://</code>"
+msgstr "例: <code>http://xuming.net</code> - <code>http://</code>を忘れないでください。"
+
+#: views/admin/link.html:54
+#: views/admin/links.html:22
+msgid "LinkComment"
+msgstr "リンクコメント"
+
+#: views/admin/link.html:57
+msgid "Example: Xuming's Blog"
+msgstr "例: Xuming's Blog"
+
+#: views/admin/links.html:7
+msgid "Manage Links"
+msgstr "リンク管理"
+
+#: views/admin/links.html:22
+msgid "URL"
+msgstr "URL"
+
+#: views/admin/pages.html:7
+msgid "Manage Pages"
+msgstr "ページ管理"
+
+#: views/admin/pages.html:8
+msgid "All Pages"
+msgstr "全ページ"
+
+#: views/admin/pages.html:34
+#: views/admin/posts.html:37
+msgid "Status"
+msgstr "状態"
+
+#: views/admin/pages.html:40
+#: views/admin/posts.html:43
+msgid "edit"
+msgstr "編集"
+
+#: views/admin/pages.html:42
+#: views/admin/posts.html:46
+msgid "Published"
+msgstr "公開"
+
+#: views/admin/pages.html:42
+#: views/admin/posts.html:46
+msgid "Unpublished"
+msgstr "非公開"
+
+#: views/admin/plugins.html:5
+msgid "Manage Plugins"
+msgstr "プラグイン管理"
+
+#: views/admin/plugins.html:10
+msgid "Plugin"
+msgstr "プラグイン"
+
+#: views/admin/plugins.html:10
+msgid "Version"
+msgstr "バージョン"
+
+#: views/admin/plugins.html:10
+msgid "Description"
+msgstr "概要"
+
+#: views/admin/plugins.html:10
+msgid "Active Status"
+msgstr "現在の状況"
+
+#: views/admin/plugins.html:20
+msgid "Deactivate"
+msgstr "アクティベート取り消し"
+
+#: views/admin/plugins.html:23
+msgid "Activate"
+msgstr "アクティベート"
+
+#: views/admin/posts.html:7
+msgid "Manage Posts"
+msgstr "記事管理"
+
+#: views/admin/posts.html:9
+msgid "All Posts"
+msgstr "全記事"
+
+#: views/admin/setup.html:14
+msgid "Setup and Configuraiton for this Blog"
+msgstr "ブログ設定"
+
+#: views/admin/setup.html:18
+msgid "Blog Title:"
+msgstr "ブログタイトル"
+
+#: views/admin/setup.html:24
+msgid "Sub Title:"
+msgstr "サブタイトル"
+
+#: views/admin/setup.html:27
+msgid "In a few words, explain what this blog is about."
+msgstr "ブログの簡単な紹介"
+
+#: views/admin/setup.html:31
+msgid "Blog notice:"
+msgstr "注記"
+
+#: views/admin/setup.html:37
+msgid "Default Link Structure:"
+msgstr "リンク構造標準化"
+
+#: views/admin/setup.html:40
+#: views/admin/setup.html.py:47
+msgid "Allowed variants: "
+msgstr "変数許可"
+
+#: views/admin/setup.html:44
+msgid "Permalink Structure:"
+msgstr "パーマリンク構造"
+
+#: views/admin/setup.html:51
+msgid "Domain:"
+msgstr "ドメイン"
+
+#: views/admin/setup.html:57
+msgid "Micolog Address(URL):"
+msgstr "ブログURL"
+
+#: views/admin/setup.html:63
+msgid "RSS Feed URL:"
+msgstr "RSS/Atom Feed URL:"
+
+#: views/admin/setup.html:68
+msgid "Time delta:(Hours)"
+msgstr "時差:(単位は時間)"
+
+#: views/admin/setup.html:75
+msgid "Theme:"
+msgstr "デザインテーマ:"
+
+#: views/admin/setup.html:87
+msgid "Posts per page:"
+msgstr "１ページに表示する記事数:"
+
+#: views/admin/setup.html:92
+msgid "Comments order:"
+msgstr "コメント順序"
+
+#: views/admin/setup.html:94
+msgid "ASC"
+msgstr "昇順"
+
+#: views/admin/setup.html:95
+msgid "DESC"
+msgstr "降順"
+
+#: views/admin/setup.html:99
+msgid "Comment Check Type:"
+msgstr "コメントチェックタイプ:"
+
+#: views/admin/setup.html:102
+msgid "Arithmetic"
+msgstr "演算"
+
+#: views/admin/setup.html:103
+msgid "Graph"
+msgstr "グラフ"
+
+#: views/admin/setup.html:104
+msgid "Client Arithmetic"
+msgstr "クライアント演算"
+
+#: views/admin/setup.html:108
+msgid "Comments per page:"
+msgstr "1ページのコメント表示数:"
+
+#: views/admin/setup.html:120
+msgid "Enable memcache:"
+msgstr "キャッシュを有効化:"
+
+#: views/admin/setup.html:125
+msgid "Allow Trackback:"
+msgstr "トラックバック許可:"
+
+#: views/admin/setup.html:131
+msgid "Allow Pingback:"
+msgstr "pingバックを許可:"
+
+#: views/admin/setup.html:136
+msgid "Xmlrpc  setting"
+msgstr "Xmlrpc設定："
+
+#: views/admin/setup.html:137
+msgid "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "
+msgstr "RPC用ユーザー名とパスワード設定。これらはWindows live writer等のツールで使用します。"
+
+#: views/admin/setup.html:140
+msgid "User name:"
+msgstr "ユーザー名:"
+
+#: views/admin/setup.html:146
+msgid "Password:"
+msgstr "パスワード:"
+
+#: views/admin/setup.html:153
+#: views/admin/sitemap.html:49
+msgid "Save Changes"
+msgstr "保存"
+
+#: views/admin/sitemap.html:16
+msgid "Sitemap Setup"
+msgstr "サイトマップを設置"
+
+#: views/admin/sitemap.html:20
+msgid "Entries in sitemap:"
+msgstr "サイトマップの件数:"
+
+#: views/admin/sitemap.html:28
+msgid "Include category:"
+msgstr "含めるカテゴリー:"
+
+#: views/admin/sitemap.html:34
+msgid "Include tag:"
+msgstr "含めるタグ:"
+
+#: views/admin/sitemap.html:39
+msgid "Pinging Search Engine (Google):"
+msgstr "Pingサーチエンジン(Google)"
+
+#: views/admin/status.html:23
+msgid "Cache status"
+msgstr "キャッシュ状態"
+
+#: views/admin/status.html:25
+#: views/admin/status.html.py:28
+msgid "Clear cache"
+msgstr "キャッシュ削除"
+
+#: views/admin/status.html:28
+msgid "Clear cache data."
+msgstr "キャッシュデータ削除"
+
+#: views/admin/status.html:31
+msgid "Environ"
+msgstr "環境"
+
+#: views/admin/tools.html:79
+msgid "Careless use of it will be dangerous!"
+msgstr "これらのツールは慎重に操作してください！！"
+
+#: views/admin/tools.html:82
+#: views/admin/tools.html.py:88
+#: views/admin/tools.html:95
+#: views/admin/tools.html.py:103
+#: views/admin/tools.html:114
+msgid "Run"
+msgstr "実行"
+
+#: views/admin/tools.html:83
+msgid "Update tags"
+msgstr "タグ更新"
+
+#: views/admin/tools.html:84
+msgid "It will refresh all tags for each entry."
+msgstr "全記事の全タグを更新します。"
+
+#: views/admin/tools.html:90
+msgid "Init datas"
+msgstr "日付初期化"
+
+#: views/admin/tools.html:91
+msgid "It will delete  all posts, pages and comments."
+msgstr "全記事、ページ、コメントを削除します。"
+
+#: views/admin/tools.html:97
+msgid "Update comments"
+msgstr "コメント更新"
+
+#: views/admin/tools.html:98
+msgid "It will refresh the number of comments for each entry."
+msgstr "記事のコメント数を更新します。"
+
+#: views/admin/tools.html:105
+msgid "Rebuild URL"
+msgstr "URLが重複しています。"
+
+#: views/admin/tools.html:106
+msgid "The URL of all entries (post or page) will be rebuild."
+msgstr "全ページ、全記事のURLを再構築します。"
+
+#: views/admin/tools.html:108
+msgid "Permalink"
+msgstr "パーマリンク"
+
+#: views/admin/tools.html:110
+msgid "Available parameters:"
+msgstr "パラメーター使用可能:"
+
+#: views/admin/tools.html:117
+msgid "Update archives"
+msgstr "アーカイブズ更新"
+
+#: views/admin/tools.html:118
+msgid "It will update the monthyear of entries."
+msgstr "年月記事を更新します。"
+
+#: views/admin/upload.html:29
+msgid "Error: invalid file extension"
+msgstr "错误：不支持的文件格式"
+
+#: views/admin/upload.html:53
+#: views/admin/upload.html.py:101
+msgid "Add"
+msgstr "添加"
+
+#: views/admin/upload.html:92
+msgid "New file"
+msgstr "添加文件"
+
+#: views/admin/upload.html:98
+msgid "Filename"
+msgstr "文件名"
+
+#: views/admin/upload.html:98
+msgid "Operater"
+msgstr "操作"
+
+#~ msgid "Please input title and content or external_page_address."
+#~ msgstr "请输入标题和内容或扩展页面地址"
+#~ msgid "Saved ok"
+#~ msgstr "保存成功"
+#~ msgid ""
+#~ "New comment on your post \"%s\"\n"
+#~ "Author : %s\n"
+#~ "E-mail : %s\n"
+#~ "URL\t: %s\n"
+#~ "Comment:\n"
+#~ "%s\n"
+#~ "You can see all comments on this post here:\n"
+#~ "%s\n"
+#~ msgstr ""
+#~ "关于\"%s\"的新评论\n"
+#~ "作者 : %s\n"
+#~ "E-mail : %s\n"
+#~ "网址    : %s\n"
+#~ "内容:\n"
+#~ "%s\n"
+#~ "查看所有评论:\n"
+#~ "%s\n"
+#~ msgid ""
+#~ "Hi~ New reference on your comment for post \"%s\"\n"
+#~ "Author : %s\n"
+#~ "URL\t: %s\n"
+#~ "Comment:\n"
+#~ "%s\n"
+#~ "You can see all comments on this post here:\n"
+#~ "%s\n"
+#~ msgstr ""
+#~ "Hi~ New reference on your comment for post \"%s\"\n"
+#~ "Author : %s\n"
+#~ "URL\t: %s\n"
+#~ "Comment:\n"
+#~ "%s\n"
+#~ "You can see all comments on this post here:\n"
+#~ "%s\n"
+#~ msgid "Insert"
+#~ msgstr "插入"
+
+#, fuzzy
+#~ msgid "Web Comment"
+#~ msgstr "评论"
+#~ msgid "Advance"
+#~ msgstr "高级"
+

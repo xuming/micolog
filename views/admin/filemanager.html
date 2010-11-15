@@ -1,0 +1,98 @@
+{% load i18n %}
+{% extends "base.html" %}
+
+{% block header %}
+<script type="text/javascript">
+// <![CDATA[
+function SplitFile()
+{
+    var file = $("#upfile").val();
+    if(!file){
+        return false;
+    }
+    file = file.replace(/\\/g, "/");
+    var parts = file.split("/");
+    var filename = parts[parts.length - 1];
+
+    var bits = filename.split(".");
+    var ext = bits[bits.length - 1];
+
+    $("#filename").val(filename);
+    $("#fileext").val(ext.toLowerCase());
+    return true;
+}
+// ]]>
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="wrap">
+<h2>{% trans "Upload a file" %}</h2>
+<!-- {{{ file upload -->
+<form action="/admin/upload" method="post" enctype="multipart/form-data">
+    <input type="file" id="upfile" name="upfile" />
+    <input type="hidden" id="filename" name="filename" />
+    <input type="hidden" id="fileext" name="fileext" />
+    <input type="submit" value="{% trans "Upload" %}" onclick="return SplitFile();" />
+</form>
+<!-- }}} -->
+</div>
+<br />
+
+<!-- {{{ file list -->
+<form action="/admin/filemanager" method="post">
+    <div class="wrap">
+        <h2>{% trans "Manage Files"%}</h2>
+        <div class="" style="padding:10px 5px 5px 5px"><b>{% trans "All Files"%}</b></div>
+
+        <div class="clear"></div>
+
+        <div class="tablenav">
+            <div class="alignleft">
+                <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}" onclick="return confirm('Do you really want to delete selected files?');" />
+            </div>
+ <div class="alignright">
+	        {% if pager.prev %}
+			<div class="alignleft"><a href="/admin/filemanager?page={{ pager.prev}}">{% trans "&laquo; prev"%}</a></div>
+			{% endif %}
+
+			{% if pager.next %}
+			<div class="alignright"><a href="/admin/filemanager?page={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
+			{% endif %}	 <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
+         </div>
+            <br class="clear"/>
+        </div>
+        <br class="clear"/>
+
+        <table class="widefat">
+            <thead>
+                <tr>
+                    <th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=del]').attr('checked',this.checked);"/></th>
+					<th>{% trans "File Name" %}</th>
+                    <th>{% trans "Size" %}</th>
+                    <th>{% trans "Upload Date" %}</th>
+
+                    <th>{% trans "Url" %}</th>
+ 					<th>{% trans "Download" %}</th>
+
+                </tr>
+            </thead>
+            <tbody>
+        {% for file in files %}
+            <tr>
+				<td  class="check-column" scope="row"><input type="checkbox" name="del" value="{{ file.key.id }}" /></td>
+                <td><a href="/media/{{ file.key }}/{{file.name}}">{{ file.name|escape }}</a></td>
+                <td>{{ file.size|filesizeformat }}</td>
+                <td>{{ file.date|datetz:"Y-m-d H:i:s" }}</td>
+                <td><a href="/media/{{ file.key }}/{{file.name}}?a=download">{{ file.name|escape }}</a></td>
+				<td>{{ file.download }}</td>
+
+            </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+<!-- }}} -->
+{% endblock %}

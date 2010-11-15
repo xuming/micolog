@@ -1,0 +1,319 @@
+/*  
+Theme Name: FreshPress 1.2
+Theme URI: http://www.freshpressthemes.com
+Author: Weborithm
+Author URI: http://www.weborithm.com/
+Description: Inspired by WordPress 2.5 release "Brecker". View more <a href="http://www.freshpressthemes.com">Fresh Themes</a>. If you need help with this theme please <a href="../wp-content/themes/FreshPress/readme.htm" target="_blank" >click here</a>.
+
+This theme was designed and built by Hyder Jaffari of Weborithm Design Studio.
+
+*/
+/* Layout.css   */
+/*two equal 174px right columns 
+#leftsidebar {width: 174px;}
+#rightsidebar {width: 174px;}
+#content {width: 576px;margin: 0px 15px 0px 0px;}
+ */
+/*one right column right columns  */
+#leftsidebar {width: 0px;}
+#rightsidebar {width: 274px;}
+#content {width: 665px;margin: 0px 0px 0px 0px;}
+
+body {margin: 0px;padding: 0px;font: 0.9em Tahoma, Verdana, sans-serif;}
+.clear {padding: 0px;margin: 0px;clear: both;}
+
+/* Link Elements Starts */
+#dashboard .dash a {padding: 0px;text-decoration: none;color: #dadada;margin: 0px;}
+#nav ul li a {color: #2583ad;text-decoration: none;}
+#content a, #featured p a, #rightsidebar ul li a, #leftsidebar ul li a, #fmore ul li a {color: #2583ad;text-decoration: underline;}
+#featured h2 a, #content h2 a, #header h1 a {color: #fff;text-decoration: none;}
+#content h2 a {color: #333;}
+#header h1 a {color: #555;}
+.fcomments a {color: #264761 !important;text-decoration: none;}
+/* Link Elements Ends */
+
+/* Link Hover Elements Starts */
+#nav ul li a:hover, #header h1 a:hover, #dashboard a:hover, #content a:hover, #rightsidebar ul li a:hover, #leftsidebar ul li a:hover, #featured p a:hover, #fmore ul li a:hover, .footerc ul li a:hover, .footerc p a:hover {
+    color: #d54e21;text-decoration: none;}
+.fcomments a:hover {color: #d54e21 !important;}
+#featured h2 a:hover {color: #333;}
+#credits a:hover {color: #a3c800;text-decoration: none;}
+/* Link Hover Elements Ends */
+
+#hiddenmessage {text-align:center;margin: 0px 40px 0px 0px;display:none;color: #B6411A;font-size: 1.4em;}
+
+/* Other Theme Properties Starts */
+
+img.alignright {float: right;margin: 0px 0px 10px 10px;padding: 0px;border: 1px solid #ccc;}
+img.alignleft {float: left;margin: 0px 10px 10px 0px;padding: 0px;border: 1px solid #ccc;}
+.alignright {float: right;padding: 0px;}
+.alignleft {float: left;padding: 0px;}
+.navigation {display: block;text-align: center;padding: 10px;font-size: 1em;}
+.video {text-align:center;margin: 0px;padding: 0px 0px 20px;}
+#dashboard, #nav ul li a, .fcomments a, #content .post h2 {letter-spacing: 1px;}
+#content h3, #comments h3 {margin: 10px;padding: 0px;border-bottom: 1px solid #e5e5e5;font: normal 1.4em Georgia, "Times New Roman", Times, serif;color: #333;}
+#comments h3 {margin: 0px 0px 2px;padding:5px;background: #ccc;border-bottom: none;}
+/* Other Theme Properties Ends */
+
+/* Dashboard Area Starts */
+#dashboard {padding: 10px 0px;background: #464646;color: #cccccc;}
+#dashboard .dash {width: 972px;margin: auto;text-align: right;}
+/* Dashboard Area Ends */
+
+/* Search Elements Starts */
+#searchtop {float: left;border:1px solid #333;}
+#searchtop #s {font-size: 1em;padding: 2px 5px;color: #333;border: none;}
+#searchform {margin: auto;text-align:center;padding: 0px 0px 10px;}
+#searchform #s {border:1px solid #333;width: 166px;padding: 2px;margin: 0px 0px 5px;}
+/* Search Elements Ends */
+
+/* Header Elements Starts */
+#header {background: #e4f2fd;padding: 20px 0px;border-bottom: 1px solid #c6d9e9;}
+.headings {width: 972px;margin: auto;}
+#header h1 {font: normal 2em Georgia, "Times New Roman", Times, serif;color: #555555;margin: 0px;padding: 0px;float: left;}
+#header h2 {float: right;padding: 9px 0px 0px;margin: 0px;color: #d54e21;font: normal 1.4em Georgia, "Times New Roman", Times, serif;}
+/* Header Elements Ends */
+
+/* Navigation Starts */
+#nav {padding: 0px;margin: 0px 0px 15px;border-bottom: 1px solid #dadada;}
+#nav ul {list-style: none;margin: 10px auto;padding: 0px;width: 972px;}
+#nav ul li {float: left;display: block;font-size: 1em;font-weight: bold;color: #2583ad;padding: 0px 20px 0px 0px;margin: 0px;}
+/* Navigation Ends */
+
+/* Main Container Starts */
+#container {padding: 0px 0px 20px;margin: 0px auto 0px;width: 972px;}
+/* Main Container Ends */
+
+/* Featured Area Starts */
+#featured {line-height: normal;width: 966px;border: 1px solid #2583ad;margin: 0px 0px 15px;padding: 2px;}
+#featured h2 {background: #d54e21;padding: 10px;margin: 0px;text-align: left;font: bold 1.4em Georgia, "Times New Roman", Times, serif;}
+#featured h2 span {padding: 0px;width: 800px;float: left;}
+.fcomments {margin: 0px;padding: 4px 7px;float: right;display: block;background: #ebebeb;text-decoration: none;color: #264761;font: bold 0.6565em Tahoma, Verdana, sans-serif;}
+#featured p {padding: 10px 10px 0px;color: #333;font-size: 0.9786em;line-height: 20px;margin: 0px;}
+#featured blockquote {border-bottom: 2px solid #E5E5E5;border-right: 1px solid #E5E5E5;margin: 10px 20px 0px;padding: 0px 5px;background: #f2f2f2 url(images/quote.gif) no-repeat left top;}
+#featured blockquote p {margin: 0px;padding: 5px;font-size: 1.1em;line-height: 24px;}
+#featured ul, #featured ol {margin: 10px 10px 0px 30px;padding: 0px;list-style:square;}
+#featured ul li, #featured ol li {margin: 0px;padding: 3px 0px 6px;font-size: 0.9em;}
+#fpost {padding: 0px;width: 576px;float: left;margin: 10px 0px;border-right: 1px solid #ccc;}
+#fpost .date {padding: 0px 10px;font-size: 0.7em;font-weight: bold;}
+#fmore {float: right;width: 365px;margin: 0px 10px 0px 0px;}
+#fmore h2 {color: #333;background: none;font-size: 1.2em;border-bottom: 2px solid #E4F2FD;border-top: 1px solid #E4F2FD;padding: 5px 0px;margin: 10px 0px 5px;}
+#fmore ul {margin: 5px 5px 5px 15px;padding: 0px;list-style: square;}
+#fmore ul li {padding: 6px 0px;margin: 0px;font-size: 0.8em;color: #333;}
+#fmore a.fmorec {background: #fff;font-size: 0.9em;text-decoration: none;}
+/* Featured Area Ends */
+
+/* Content Starts */
+#content {float: left;padding: 2px;border: 1px solid #ccc;}
+#content h2 {color: #333;font: bold 1.4em Georgia, "Times New Roman", Times, serif;border-bottom: 2px solid #E4F2FD;border-top: 1px solid #E4F2FD;margin: 0px 5px;padding: 5px 0px;}
+#content .date {padding: 10px;font-size: 0.7em;font-weight: bold;}
+#content .meta {padding: 10px 10px 20px;font-size: 0.8em;font-weight: normal;}
+#content .meta ul {list-style: none;margin: 0px;padding: 5px 0px;}
+#content .meta ul li {float: left;padding: 0px 5px 0px 0px;display: block;}
+#content .post {margin: 10px 10px 0px;padding: 0px;font-size: 1.0em;color: #333;}
+#content .post h2 {margin: 0px 0px 20px;padding: 0px;background: none;border-bottom: 2px solid #E4F2FD;border-top: none;font: normal 1.5em Georgia, "Times New Roman", Times, serif;color: #2583ad;}
+#content .post h3 {margin: 0px 0px 20px;padding: 0px;border-bottom: 1px solid #e5e5e5;font: normal 1.4em Georgia, "Times New Roman", Times, serif;color: #333;}
+#content .post p {padding: 0px 0px 20px;line-height: 20px;margin: 0px;}
+#content .post ul, #content .post ol {margin: 0px 35px 20px 35px;padding: 0px;}
+#content .post ul li, #content .post ol li {margin: 0px;padding: 3px 0px 6px;}
+#content .post blockquote {border-bottom: 2px solid #E5E5E5;border-right: 1px solid #E5E5E5;margin: 0px 20px 20px;padding: 5px 10px 0px;background: #f2f2f2 url(images/quote.gif) no-repeat left top;text-indent: 30px;}
+#content .post blockquote p {margin: 0px;padding: 5px 5px 10px;font-size: 1.1em;line-height: 24px;}
+#content .quoteleft {width: 200px;float: left;padding: 5px 10px;background: #f2f2f2 url(images/quote.gif) no-repeat left top;text-indent: 30px;color: #000;margin: 10px 10px 0px 0px;}
+#content .quoteright {width: 200px;float: right;padding: 5px 10px;background: #f2f2f2 url(images/quote.gif) no-repeat left top;text-indent: 30px;color: #000;margin: 10px 0px 0px 10px;}
+#content .commentmeta {font-size: 0.8em;font-weight: bold;text-align:right;border-bottom: 1px solid #ccc;margin: 0px 0px 25px;}
+#content .commentmeta a {background: #fff;padding: 5px;top: 7px;position: relative;text-decoration: none;border: 1px solid #ccc;}
+/* Content Ends */
+
+/* Left Sidebar Starts */
+#rightsidebar h3, #leftsidebar h3, #rightsidebar h2, #leftsidebar h2 {font: normal 1.1em Georgia, "Times New Roman", Times, serif;background: #E4F2FD;padding: 5px;margin: 0px 0px 10px;color: #333;}
+#rightsidebar li, #leftsidebar li {list-style: none;}
+#rightsidebar ul, #leftsidebar ul {margin: 10px 5px 10px 20px;padding: 0px;}
+#rightsidebar ul li, #leftsidebar ul li {padding: 3px 0px 6px;margin: 0px;font-size: 0.8em;color: #333;list-style: square;}
+#leftsidebar {float: left;padding: 2px;border: 1px solid #ccc;}
+/* Left Sidebar Ends */
+
+/* Right Sidebar Starts */
+#rightsidebar {padding: 2px;border: 1px solid #ccc;float: right;margin: 0px 0px 0px 15px;}
+/* Right Sidebar Ends */
+
+/* Sidebar Calendar Starts */
+#calendar_wrap {margin: 0px;padding: 0px 0px 10px;}
+#wp-calendar {width: 174px;}
+#today {text-align: center;background: #C4E2FB!important;}
+table#wp-calendar td {text-align: center;background: #e4f2fd;}
+#today a, #wp-calendar a {color: #2583ad;}
+#today a:hover, #wp-calendar a:hover {color: #d54e21;text-decoration: none;}
+#prev {text-align: left !important;padding: 0px 2px;}
+#next {text-align: right !important;padding: 0px 2px;}
+/* Sidebar Calendar Ends */
+
+/* Sidebar Tags Starts */
+#tag_cloud {padding: 0px 0px 10px !important;}
+#tag_cloud a {color: #2583ad;font-size: 100% !important;line-height: 22px;padding: 0px 2px;}
+#tag_cloud a:hover {color: #d54e21;text-decoration: none;}
+.textwidget, .adrotatorwidget {margin: 0px;padding: 0px 0px 10px;}
+/* Sidebar Tags Ends */
+
+
+/* Box Links, and action bar    border: red 1px solid;  */
+.boxlinks {font-size: 85%;}
+.inlineboxlinks {padding: 1em;margin: 1em 0;clear: left;}
+.actionbar {margin: 0px;clear: right; padding: 0px;font-size: 115%;display: block; width:100%;height:33px; }
+.actionbar a {font-size: 123%;background:#fafafa;height:22px;}
+.right {float: right;}
+.boxlinks2 {font-size: 85%;margin-top:-24px; margin-right:-11px;background-color:#ffffff;}
+.boxlinks2 a {border: 1px solid #235C9D;text-decoration: none;padding: 3px 5px;}
+.boxlinks a, .boxlinks span {margin-top:2px; display: block;vertical-align: bottom; float: left;padding: 0.2em 0.5em;margin-right: 0.15em;}
+.boxlinks span.current {border: 1px solid #235C9D;font-weight: bold;background: #235C9D;color: #fff;}
+.boxlinks a {border: 1px solid #235C9D;text-decoration: none;}
+.boxlinks a:hover {background:#E1ECF9;}
+.boxlinks a.nextprev {font-weight: bold;}
+.boxlinks span.nextprev {color: #666;}
+.boxlinks span.nextprev {border: 1px solid #ddd;color: #999;}
+ul.boxlink {list-style-type:none;}
+div.boxlinks a.current {border-bottom: 1px solid #E1ECF9;;background:#E1ECF9;	}
+.tab-spacer{background:#E1ECF9;border:0px solid #8db2e3;border-top:0 none;height:2px;font-size:1px;line-height:1px;}
+div.formbox {border:1px solid #8db2e3;margin-top:20px;}
+
+/*  code formatting for posts */
+.code {color: #63FF00;background: #000;overflow: auto;font: normal 12px "bitstream vera sans mono", monaco "lucida console", "courier new", courier, serif;margin: 0.9em 0; padding: 8px;}
+
+/* Footer Starts */
+
+#footer {background: #464646;padding: 0px;margin: 0px 0px 0px 0px;padding: 0px 0px 45px 0px;}
+.footerinner {width: 972px;margin:auto;padding: 15px 0px 15px 0px;}
+.footerc {float: left;border: 1px solid #333;margin: 0px 22px 15px 0px;padding: 2px;width: 303px;color: #dadada;}
+.footercalt {float: left;border: 1px solid #333;margin: 0px 0px 15px 0px;padding: 2px;width: 303px;color: #dadada;}
+.footerc h3, .footercalt h3 {font: normal 1.1em Georgia, "Times New Roman", Times, serif;color: #ccc;margin: 0px;padding:5px;background: #333;letter-spacing: 1px;}
+.footerc ul, .footercalt ul {margin: 5px 0px 5px 20px;padding: 0px;list-style: square;}
+.footerc ul li, .footercalt ul li {padding: 3px 0px 6px;margin: 0px;font-size: 0.9em;}
+.footerc p, .footercalt p {padding: 5px;margin: 0px;line-height: 22px;font-size: 0.9em;}
+.footerc ul li a, .footerc p a, .footercalt ul li a, .footercalt p a, #credits a {color: #dadada;}
+#credits {float: left;width: 962px;padding: 5px;font-size: 0.8em;color: #ccc;height: 29px;}
+#credits img {	float: left;}
+#credits span {float:right;line-height: 26px;}	
+
+/* Footer Ends */
+/*  ADMIN area */
+.secondary {color:#999999;font-size: 80%;}
+#editable-post-name {background-color:#FFFBCC;}
+/* Comments Starts */
+#comments {margin: 0px;padding: 2px 0px;border-top: 1px solid #ccc;}
+#respond {margin: 2px 0px;border-bottom: 1px solid #ccc;border-top: 1px solid #ccc;background: #fff;}
+#respond h4 {margin: 2px 0px;font: normal 1.4em Georgia, "Times New Roman", Times, serif;color: #333;padding:5px;background: #ccc;}
+/* Main Comment Elements */
+
+ol#commentlist {margin: 0px;padding: 10px 10px 10px 30px;border-top: 1px solid #ccc;}
+ol#commentlist li { /* This is for the normal entry headings */
+	font-size: 0.8em;color: #515151;margin: 0px;padding: 10px;border: 1px solid #F0F0F0;border-bottom: none;}
+ol#commentlist .entry { /* This is for the normal entry comments */
+	background: #fff;border: 1px solid #F0F0F0;margin: 0px 0px 20px;padding: 10px;}
+ol#commentlist li.alternate { /* This is for the alternate entry headings */
+	margin: 0px;padding: 10px;border: 1px solid #CCC;border-bottom: none;background: #f9f9f9;}
+ol#commentlist .alternate { /* This is for the alternate entry comments */
+	border: 1px solid #ccc;margin: 0px 0px 20px;padding: 10px;background: #f9f9f9;}
+ol#commentlist li.author { /* This is for the author entry headings */
+	margin: 0px;padding: 10px;border: 1px solid #CCC;border-bottom: none;}
+ol#commentlist .author { /* This is for the author entry comments */
+	border: 1px solid #ccc;margin: 0px 0px 20px;padding: 10px;background: #e4f2fd;}
+ol#commentlist .entry p, ol#commentlist .author p, ol#commentlist .alternate p {
+	font-size: 0.9em;color: #333;padding: 0px;margin: 0px;line-height: 20px;}
+ol#commentlist .entry blockquote, ol#commentlist .author blockquote, ol#commentlist .alternate blockquote {
+    padding: 5px 5px 0px;margin: 0px 20px 10px;font-size: 0.9em;}
+ol#commentlist .entry blockquote p, ol#commentlist .author blockquote p, ol#commentlist .alternate blockquote p {
+	line-height: 20px;padding: 0px 0px 5px;}
+ol#commentlist #comment span {float: right;}
+ol#commentlist li .avatar { border: 1px solid #ccc;padding: 2px;background: #fff;}
+#comment_form {padding: 0px 10px;}
+#comment_form input {width: 240px;padding: 5px;margin: 0px 10px 0px 0px;border: 1px solid #ccc;background: #F8F8F8;}
+#comment_form textarea {width: 542px;padding: 5px;border: 1px solid #ccc;background: #F8F8F8;}
+#comment_form #submit {width: 240px;padding: 5px;border: 1px solid #ccc;background: #e4f2fd;font: 120% Georgia, "Times New Roman", Times, serif;color: #333;}
+#comment_form #submit:hover {border: 1px solid #333;background: #d54e21;color: #fff;}
+#comment_form input[type="text"]:focus {	background: #ffffff;border: 1px solid #d54e21;}
+#comment_form textarea:focus {background: #fff;border: 1px solid #d54e21;}
+/* Comments Ends */
+
+/*  Form elements */
+
+/* Colors & Style */
+form {background-color:#FAFAFA; }
+form fieldset {background-color:#FAFAFA; border-color: #000000; border-width: 0px; border-style: solid;}
+form fieldset legend {font-size: 1.3em; font-weight: normal; color: #235C9D;}
+input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 1.1em; color: #000000;}
+form div fieldset {border-color: #666666;}
+form .instructions {background-color:#FFFFCC;text-align: left;}
+form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {background-color: #cccccc; color: #000000; width: auto; padding: 0 6px; margin: 0;}
+form input, form select, form textarea { background-color: #ffffff;}
+
+/*form div {width: 354px;}   */
+form div fieldset { margin: 0 0 0 144px;  width: 197px;}
+form div label { width: 130px;}
+form div fieldset div { width: 480px;}
+form div label.labelCheckbox, form div label.labelRadio { width: 430px; margin: 0 0 5px 142px;}
+form div fieldset label.labelCheckbox, form div fieldset label.labelRadio { width: 380px;}
+form div select, form div textarea { width: 430px;}
+form fieldset div input { width: 430px;}
+form div input.inputFile { width: 400px;}
+form div select.selectOne, form div select.selectMultiple { width: 430px; }
+form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio { margin: 0 0 0 140px;}
+form div.submit {width: 214px;padding: 0 0 0 146px;}
+form div small { margin: 0 0 5px 142px;}
+
+
+/*Dialog form*/
+form.small fieldset div { width: 100%;}
+form.small  div.instructions {background-color:#FFFFCC;text-align: left;}
+form.small fieldset {background-color:#ffffff;border: red 0px solid; padding: 0px;margin: 6px;}
+form.small div label { width: 130px;}
+form.small label.labelCheckbox, form.small div label.labelRadio { width: 200px; margin: 0 0 5px 142px;}
+form.small fieldset label.labelCheckbox, form.small div fieldset label.labelRadio { width: 150px;}
+form.small select, form.small div textarea { width: 200px;}
+form.small fieldset div input { width: 150px;}
+form.small input.inputCheckbox, form.small div input.inputRadio, input.inputCheckbox, input.inputRadio {width: 14px; margin: 0 0 0 0px;}
+
+
+
+/* Buttons --*/
+
+form .actions {padding: 10px;padding: 10px;background-color: #F5F5F5;border-top: 2px solid #235C9D;text-align: right;}
+form div.actions input {background-color: #EBE9ED;}
+form .primaryAction {}
+form .secondaryAction {color: grey;}
+form .secondaryAction:hover {color: black;}
+
+/* general style */
+form .instructions {	margin: 1.5em 0;padding: 3px; background-color:#FFFFCC;margin: 0px 0 0 0;}
+form {margin: 0; padding: 0;}
+form fieldset { clear: both; padding: 10px; margin: 0 0 10px 0;}/**/
+/* */
+form fieldset legend {margin: 0 0 0 0;padding: 0 5px;}
+label {font-size: 1.0em;}
+label u {font-style: normal; text-decoration: underline;}
+textarea { overflow: auto;}
+form div { clear: left; display: block; height: expression('1%');margin: 5px 0 0 0;padding: 1px 3px;}
+form div fieldset {clear: none;border-width: 1px;border-style: solid; padding: 0 5px 5px 5px;}
+form div fieldset legend {font-size: 1.0em; padding: 0 3px 0 9px;}
+form div.required fieldset legend {font-weight: bold;}
+form div label {display: block;float: left;padding: 3px 5px; margin: 0 0 5px 0; text-align: right;}
+form div.optional label, label.optional {font-weight: normal;}
+form div.required label, label.required {font-weight: bold;}
+form div label.labelCheckbox, form div label.labelRadio {float: none; display: block;  height: expression('1%'); padding: 0;text-align: left;}
+form div fieldset label.labelCheckbox, form div fieldset label.labelRadio {  margin: 0 0 5px 0;}
+form div img { border: 1px solid #000000;}
+form div input, form div select, form div textarea {margin: 0 0 0 0;}
+form div select.selectOne, form div select.selectMultiple { padding: 1px 3px;}
+form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {display: inline; height: 14px; width: 14px; background-color: transparent; border-width: 0; padding: 0;}
+form div.submit div { display: inline; float: left; text-align: left; width: auto; padding: 0; margin: 0;}
+form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton { width: auto; padding: 0 6px; margin: 0;}
+form div.submit div input.inputSubmit, form div.submit div input.inputButton { float: right; margin: 0 0 0 5px;}
+form div small {display: block; padding: 1px 3px; font-size: 88%; height: expression('1%');}
+form fieldset legend { line-height: 150%;}
+form textarea.expanding { overflow: auto; overflow-x: auto; overflow-y: visible;}
+div.optional label:before {content: '';}
+div.required label:before {content: '';}
+form textarea.wide { margin: 30px 0px 0 -144px; width:100%; overflow: auto; overflow-x: auto; overflow-y: visible;}
+form div label.labelCheckbox, form div label.labelRadio, label.labelCheckbox, label.labelRadio {display: block; height: expression('1%'); padding: 4px 0px 0px 18px; text-indent: -18px; line-height: 120%;}
+form div label.labelCheckbox input.inputCheckbox, form div label.labelRadio input.inputRadio, label.labelCheckbox input.inputCheckbox, label.labelRadio input.inputRadio {margin: 0px 0px 0px 0px;}
+form div label.compact { display: inline; width: auto; padding: 4px 10px 0px 0px; text-indent: 0px; margin: 0px 0px 0px 0px;}
+form div.notes p, form div small {  line-height: 125%;}
+form div.wide small { margin: 0px 0px 5px 0px;}

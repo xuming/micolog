@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content%}
+{% if entries %}
+
+{% for entry in entries %}
+
+
+<div class="ctop"></div>
+<div class="box">
+<div id="post-{{entry.key}}">
+<div class="nifty"><h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{entry.title}}">{{entry.title}}</a> <span class="date">{{entry.date|datetz:"F jS, Y"}}</span></h2></div>
+
+
+<div class="en_body">
+{{entry.content_excerpt}}
+</div>
+
+<div class="meta">{% if entry.strtags %}Tags: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}<br><br>{%endif%}  Posted in {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | {%if self.is_admin%}<a href="{{entry.edit_url}}">Edit</a> | {%endif%}  <a href="/{{entry.link}}#comments">Comments({{entry.commentcount}})&#187;</a></div>
+</div>
+
+</div>
+<div class="cbottom"></div>
+<div class="space"></div>
+{% endfor %}
+
+<div class="ctop"></div>
+<div class="box">
+<div class="alignleft">{% if show_next %}<a href="/page/{{ pageindex|add:"1" }}">&laquo; Older Entries</a>{%endif%}</div>
+<div class="alignright">{% if show_prev %}<a href="/page/{{ pageindex|add:"-1" }}">&laquo; Newer Entries</a>{%endif%}</div>
+<div class="clear"></div></div>
+<div class="cbottom"></div>
+<div class="space"></div>
+
+{% else %}
+<div class="ctop"></div>
+<div class="box">
+<h2>Not Found</h2>
+<p>Sorry, but you are looking for something that isn't here.</p>
+</div>
+<div class="clear"></div>
+<div class="cbottom"></div>
+<div class="space"></div>
+
+
+{% endif %}
+
+</div>
+{% include "sidebar.html" %}
+{% endblock %}
+
+

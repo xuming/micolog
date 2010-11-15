@@ -1,0 +1,110 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>{%trans "Files"%}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="/static/upload/upload.css" type="text/css" media="screen" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/upload/ajaxupload.js"></script>
+<script type="text/javascript">
+function fixHeight(){$('#listArea').css('height',(document.body.clientHeight-56)+'px');}
+function getQuery(item){var svalue = location.search.match(new RegExp('[\?\&]' + item + '=([^\&]*)(\&?)','i'));return svalue?decodeURIComponent(svalue[1]):'';}
+function formatBytes(bytes) {
+	var s = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
+	var e = Math.floor(Math.log(bytes)/Math.log(1024));
+	return (bytes/Math.pow(1024, Math.floor(e))).toFixed(2)+" "+s[e];
+}
+
+$(function(){
+
+$('#listBody tr').hover(function(){$(this).addClass('hover');},function(){$(this).removeClass('hover');});
+var button = $('#divAddFiles'), interval,msg=$('#msg');
+new AjaxUpload(button, {
+        action: '/admin/uploadex',
+
+        onSubmit : function(file , ext){
+                /*if (! (ext && /^({{ext}})$/i.test(ext))){
+                        // extension is not allowed
+                        alert('{% trans "Error: invalid file extension"%}');
+                        // cancel upload
+                        return false;
+                }*/
+            this.disable();
+            msg.text('');
+            // Uploding -> Uploading. -> Uploading...
+			interval = window.setInterval(function(){
+				var text = msg.text();
+				if (text.length < 13){
+					msg.text(text + '<');
+				} else {
+					msg.text('');
+				}
+			}, 200);
+        },
+		onComplete: function(file, response){
+
+			window.clearInterval(interval);
+			msg.text('');
+            this.enable();
+			file=eval('(' + response + ')');
+
+
+			$('#listBody').prepend('<tr id="f'+file.id+'"><td>'+file.name+'</td><td>'+formatBytes(file.size)+'</td><td id="f'+file.id+'_state"><a href="javascript:void(0);" id="btnClear" onclick="$(this).parent().parent().dblclick();" class="btn" ><span><img src="/static/upload/img/blueball.gif" /> {% trans "Add"%}</span></a></td></tr>');
+			$('#f'+file.id).hover(function(){$(this).addClass('hover');},function(){$(this).removeClass('hover');})
+			.click(function(){selectID=file.id;$('#listBody tr').removeClass('select');$(this).removeClass('hover').addClass('select');$('#btnClear').show();})
+            .dblclick(function(){callback('{{blog.baseurl}}/media/'+file.id+'/'+file.name);});
+
+		},
+});
+
+});
+
+if (typeof callback=="undefined")
+{
+	var fileref=document.createElement('script')
+	fileref.setAttribute("type","text/javascript")
+	fileref.setAttribute("src", "/tinymce/tiny_mce_popup.js")
+	if (typeof fileref!="undefined")
+	  document.getElementsByTagName("head")[0].appendChild(fileref)
+
+	callback=function(e){
+	        var win = tinyMCEPopup.getWindowArg("window");
+	        //就这句关键，IMG_URI应该由服务端生成
+	        win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = e;
+	        tinyMCEPopup.close();
+	}
+}
+</script>
+</head>
+<body style="margin:0px">
+	<div id="upload">
+
+		<div id="buttonArea">
+
+			<div id="controlBtns" >
+	<span style="color:red;" id="msg"></span>
+
+			</div>
+ 		<a href="javascript:void(0);" id="addFiles" class="btn"><span>
+           <div style="width: 16px; float: left; padding-right: 5px; background-image: url(/static/upload/img/add2.gif); background-repeat: no-repeat; height: 18px;"></div>
+
+			<div id="divAddFiles" style="width:80px;">{% trans "New file"%}</div></span></a>
+
+
+		</div>
+		<div id="listArea" style="height:165px">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+				<thead id="listTitle"><tr><td width="53%">{% trans "Filename"%}</td><td width="25%">{% trans "Size"%}</td><td width="22%">{% trans "Operater"%}</td></tr></thead>
+				<tbody id="listBody">
+		{%for file in files%}
+		<tr onclick="selectID='{{file.key}}';$('#listBody tr').removeClass('select');$(this).removeClass('hover').addClass('select');$('#btnClear').show();" ondblclick="callback('{{blog.baseurl}}/media/{{file.key}}/{{file.name}}');"><td>{{file.name}}</td><td>{{file.size|filesizeformat}}</td><td><a href="javascript:void(0);" id="btnClear" onclick="$(this).parent().parent().dblclick();" class="btn" ><span><img src="/static/upload/img/blueball.gif" /> {% trans "Add"%}</span></a></td></tr>
+		{%endfor%}
+				</tbody>
+
+			</table>
+		</div>
+
+	</div>
+</body>
+</html>

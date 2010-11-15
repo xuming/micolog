@@ -1,0 +1,58 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+ <form action="/admin/categories" method="post" >
+   <div class="wrap">
+
+      <h2>{% trans "Manage Categories" %} (<a href="/admin/category?action=add">{% trans "add new"%}</a>)</h2>
+      <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Categories"%}</b><span style='color:gray'> ({{pager.count}}) </span></div>
+
+      <div class="clear"></div>
+
+	   <div class="tablenav">
+		  <div class="alignleft">
+		  <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}"/>
+		  </div>
+    <div class="alignright">
+	        {% if pager.prev %}
+			<div class="alignleft"><a href="/admin/entries/page?page={{ pager.prev}}">{% trans "&laquo; prev" %}</a></div>
+			{% endif %}
+
+			{% if pager.next %}
+			<div class="alignright"><a href="/admin/entries/page?page={{ pager.next }}">{% trans "next &raquo;"%}</a></div>
+			{% endif %}
+            <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
+         </div>
+
+		      <br class="clear"/>
+	   </div>
+	  <br class="clear"/>
+	  
+
+
+	   <table class="widefat">
+		<thead>
+			<tr>
+			<th class="check-column" style="text-align:left;padding-left:12px;" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
+		<th style="width: 15%;">{% trans "Name" %}</th><th>{%trans "Slug"%}</th><th>{%trans "Parent"%}</th>	</tr>
+			</thead>
+			<tbody>
+			
+			{% recurse category in cats children="children" indent=(0,20) %}
+			
+			<tr valign="middle" id="link-{{category.key}}">			
+			                <td  colspan="2" style="text-align:left;padding-left:20px;"><input style="margin-left:{{indent}}px;" type="checkbox" value="{{category.key}}" name="checks"/>  <a class="row-title" title='Edit "{{category.name}}"' href="/admin/category?key={{category.key}}&amp;action=edit">{{category.name}}</a></td>
+                            <td>{{category.slug}}</td>
+                             <td>{{category.parent_cat.name}}</td>
+                           </tr>
+			  	{% yield %}
+			{% endrecurse %}
+
+
+          
+			</tbody>
+		</table>
+
+   </div>
+</form>
+ {% endblock  %}

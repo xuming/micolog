@@ -1,0 +1,50 @@
+{% load i18n %}
+{% extends "base.html" %}
+ {% block content %}
+ <form action="/admin/entries/page" method="post" >
+   <div class="wrap">
+
+      <h2>{% trans "Manage Pages" %} (<a href="/admin/page?action=add">{% trans "add new"%}</a>)</h2>
+      <div class="" style="padding:10px 5px 5px 5px"><B>{%trans "All Pages"%}</b><span style='color:gray'> ({{pager.count}}) </span></div>
+
+      <div class="clear"></div>
+
+	   <div class="tablenav">
+		  <div class="alignleft">
+		  <input type="submit" class="button-secondary delete" name="deleteit" value="{% trans "Delete"%}"/>
+		  </div>
+    <div class="alignright">
+	        {% if pager.prev %}
+			<div class="alignleft"><a href="/admin/entries/page?page={{ pager.prev}}">{% trans "&laquo; prev"%}</a></div>
+			{% endif %}
+
+			{% if pager.next %}
+			<div class="alignright"><a href="/admin/entries/page?page={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
+			{% endif %}	 <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
+         </div>
+
+		      <br class="clear"/>
+	   </div>
+	  <br class="clear"/>
+
+	   <table class="widefat">
+		<thead>
+			<tr>
+			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
+		<th style="width: 15%;">{% trans "Date"%}</th><th>{%trans "Title"%}</th>	<th class="num" scope="col"><div class="vers"><img src="/static/images/comment-grey-bubble.png" alt="Comments"/></div></th><th>{%trans "Status"%}</th></tr>
+			</thead>
+			<tbody>
+            {%for entry in entries%}
+		<tr valign="middle" id="link-{{entry.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{entry.key.id}}" name="checks"/></th>
+                           <td>{{entry.date.date}}</td>
+                           <td> <a class="row-title" style="color:gray" title='Edit "{{entry.title|escape}}"' href="/admin/page?type=page&key={{entry.key}}&amp;action=edit">[{%trans "edit" %}]</a> <strong><a class="row-title" title='{{entry.title|escape}}' href="/{{entry.link}}" target="_blank">{{entry.title|escape}}</a></strong></td>
+                           <td class="num" scope="col">{{entry.commentcount}}</td>
+                           <td>{%if entry.published%}{% trans "Published"%}{%else%}{%trans "Unpublished"%} {%endif%}</td>
+			</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+
+   </div>
+</form>
+ {% endblock  %}

@@ -1,0 +1,63 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block h_message %}
+  {%if postback%}
+    <div class="info {%if not result%}error{%endif%}">{{msg}}</div>
+  {%endif%}
+{% endblock %}
+ {% block content %}
+<form action="/admin/author" method="post" >
+   <div class="wrap">
+      <h2>{%ifequal action 'edit'%}{%trans "Edit Author" %}{%else%}{%trans "Add Author" %} {%endifequal%}</h2>
+      <div id="poststuff">
+
+<div id="submitlink" class="submitbox">
+
+<div id="previewview">
+</div>
+
+<div class="inside">
+<p>&nbsp;</p>
+</div>
+
+<p class="submit">
+<input type="submit" tabindex="4" value="Save" name="save" class="button button-highlighted"/>
+</p>
+
+<div class="side-info">
+<h5>{%trans "Related" %}</h5>
+
+<ul>
+<li><a href="/admin/authors">{%trans "Manage All Authors"%}</a></li>
+
+
+</ul>
+</div>
+</div>
+
+<div id="post-body">
+<div class="stuffbox" id="namediv">
+<h3>{%trans "Display Name"%}</h3>
+<div class="inside">
+	<input type="text" id="name" value="{{author.dispname}}" tabindex="1" size="30" name="name"/><br/>
+    {%trans "The name is used to display."%}"</div>
+</div>
+
+<div class="stuffbox" id="addressdiv">
+<h3>Email</h3>
+<div class="inside">
+	<input type="text" id="email" value="{{author.email}}" tabindex="1" size="30" name="email"/><br/>
+    </div>
+</div>
+
+
+
+<input type="hidden" value="{{author.key}}" name="key"/>
+<input type="hidden" value="{{action}}" name="action"/>
+
+</div>
+</div>
+
+   </div>
+   </form>
+ {% endblock  %}

@@ -1,0 +1,327 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block header %}
+<style type='text/css' media='all'>
+	div#TB_title {
+		background-color: #222222;
+		color: #cfcfcf;
+	}
+	div#TB_title a, div#TB_title a:visited {
+		color: #cfcfcf;
+	}
+
+</style>
+
+<script type='text/javascript'>
+
+    function taggle_ext_page(isChecked)
+    {
+        if(isChecked)
+        {
+            $('#postarea').hide();
+            $('#ext_page_area').show();
+        }else
+        {   $('#postarea').show();
+            $('#ext_page_area').hide();
+        }
+    }
+    $(function(){
+       taggle_ext_page($("#is_external_page").attr("checked"));
+    });
+    /* <![CDATA[ */
+	quicktagsL10n = {
+		quickLinks: "(Quick Links)",
+		wordLookup: "Enter a word to look up:",
+		dictionaryLookup: "Dictionary lookup",
+		lookup: "lookup",
+		closeAllOpenTags: "Close all open tags",
+		closeTags: "close tags",
+		enterURL: "Enter the URL",
+		enterImageURL: "Enter the URL of the image",
+		enterImageDescription: "Enter a description of the image"
+	}
+/* ]]> */
+</script>
+{%mf editor_header%}
+<script language="javascript" type="text/javascript" src="/static/js/editor.js"></script>
+
+<script type="text/javascript" src="/tinymce/tiny_mce.js"></script>
+<script type="text/javascript" src="/tinymce/jquery.tinymce.js"></script>
+
+<script type="text/javascript">
+    $('#content').ready(function() {
+        $('.editor-toolbar').show();
+		$('#edButtonHTML').click(function(){switchEditors.go('content','html');});
+		$('#edButtonPreview').click(function(){switchEditors.go('content','tinymce');});
+
+			$('#content').tinymce({
+				// Location of TinyMCE script
+				script_url : '/tinymce/tiny_mce.js',
+	          	// General options
+				theme : "advanced",
+
+				//plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
+				plugins : "safari,pagebreak,save,advhr,advimage,advlink,emotions, inlinepopups,media,directionality,visualchars,nonbreaking,emotions,fullscreen,preview,wordpress,syntaxhl",
+
+				// Theme options
+		    theme_advanced_buttons1:"bold,italic,strikethrough,|,bullist,numlist,blockquote,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,link,unlink,image,wp_more,code,preview,|,fullscreen,syntaxhl,wp_adv",
+		    theme_advanced_buttons2:"styleselect,formatselect,fontselect,fontsizeselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,|,media,charmap,emotions,|,outdent,indent,|,undo,redo",
+		    theme_advanced_buttons3:"",
+		    theme_advanced_buttons4:"",
+
+				theme_advanced_toolbar_location : "top",
+				theme_advanced_toolbar_align : "left",
+				theme_advanced_statusbar_location : "bottom",
+				theme_advanced_resizing : true,
+				{%ifequal blog.language 'zh_CN'%}
+	           language : "ch",
+	           skin :"wp_theme_zh",
+	      {%else%}
+	      	   //language : "{{ blog.language|slice:":2" }}",
+	      	   skin :'wp_theme',
+	      {%endifequal%}
+				// Example content CSS (should be your site CSS)
+				content_css : "/tinymce/wordpress.css",
+				extended_valid_elements : "textarea[cols|rows|disabled|name|readonly|class]",
+
+				// Drop lists for link/image/media/template dialogs
+				//template_external_list_url : "lists/template_list.js",
+				//external_link_list_url : "lists/link_list.js",
+				//external_image_list_url : "/static/js/image_list.js",
+				//media_external_list_url : "/static/js/image_list.js",
+				file_browser_callback: 'micolog_file',
+    			relative_urls: false
+
+		});
+	});
+  function micolog_file(field_name, url, type, win){
+   if (type=='image')
+   {ext='jpg|png|jpeg|gif';}
+   else if (type=='mdeia')
+   {ext='swf|wmv|avi|wma|mp3|mid|asf|rm|rmvb|flv';}
+   else
+   {
+	ext="*";
+   }
+
+   tinyMCE.activeEditor.windowManager.open({
+        file : '/admin/uploadex?ext='+ext,  //上传窗口的路径
+        title : '{%trans "Files"%}',
+        width : 420,
+        height : 200,
+        resizable : "no",
+        inline : "yes",
+        popup_css: false,
+        close_previous : "no"
+    }, {
+        window : win,  //告诉它是被谁弹出来的
+        input : field_name  //这个是指生成的图片地址要往哪里填
+    });
+	return false;
+  }
+</script>
+{%endmf%}
+{% endblock %}
+
+{% block h_message %}
+  {%if postback%}
+    <div class="info {%if not result%}error{%endif%}">{{msg}}</div>
+  {%endif%}
+{% endblock %}
+{% block nav2 %}
+<div id="dnav2"><a href="/admin/post" {%ifequal entrytype 'post'%} class="current" {%endifequal%}>{%trans "New Post" %}</a>  <a href="/admin/page" {%ifequal entrytype 'page'%} class="current" {%endifequal%}>{%trans "New Page" %}</a>
+</div>
+{% endblock %}
+
+ {% block content %}
+
+
+<form action="/admin/{{entrytype}}" method="post">
+
+   <div class="wrap">
+
+      <h2>{%ifequal entrytype "post"%}
+      {%trans "Write Post"%}
+        {%else%}
+      {%trans "Write Page" %}
+        {%endifequal%}
+ </h2>
+      <div id="poststuff">
+
+<div id="submitlink" class="submitbox">
+
+<div id="previewview">
+</div>
+{%ifequal entrytype "post"%}
+<h3>{%trans "Category" %}</h3>
+<div class="inside">
+
+<p style="height:120px;overflow-y:scroll">
+
+                    {%for cat in cats%}
+
+                       <input type="checkbox" name="cats"  value="{{cat.slug}}" {%if cat.select %}checked="checked"{%endif%}/>{{cat.name}}<br>
+                    {%endfor%}
+</p>
+
+</div>
+{%endifequal%}
+<p class="submit">
+<input type="submit" tabindex="4" value="{% trans "Save" %}" name="save" class="button button-highlighted"/>
+{%if entry.published%}
+<input type="submit" tabindex="4" value="{% trans "UnPublish" %}" name="unpublish" class="button button-highlighted"/>
+{%else%}
+<input type="submit" tabindex="4" value="{% trans "Publish" %}" name="publish" class="button button-highlighted"/>
+{%endif%}
+<input type="hidden" value="{{entry.published}}" name="published" />
+
+</p>
+<div class="inside">
+  <p>
+	<input type="checkbox" style="margin-left:10px;" id="sticky" {%if entry.sticky%} checked="checked" {%endif%}  name="sticky"/><label for="sticky">{% trans "Sticky it." %}</label>
+<br>
+  <input type="checkbox" style="margin-left:10px;" tabindex="4" id="allow_comment" name="allow_comment" class="button button-highlighted" {%if entry.allow_comment%}checked="checked"{%endif%} {%if not entry%}checked="checked"{%endif%}/><label for="allow_comment">{% trans "allow comment" %}</label>
+    <br>
+  <input type="checkbox" style="margin-left:10px;" tabindex="4" id="allow_trackback" name="allow_trackback" class="button button-highlighted"  {%if not blog.allow_trackback%}disabled="disabled"{%else%}{%if entry.allow_trackback%}checked="checked"{%endif%} {%if not entry%}checked="checked"{%endif%} {%endif%} /><label for="allow_trackback">{% trans "allow trackback" %}</label>
+  </p>
+</div>
+<div class="side-info">
+<h5>{%trans "Related" %}</h5>
+
+<ul>
+<li><a href="/admin/entries/post">{%trans "Manage All Posts" %}</a></li>
+<li><a href="/admin/entries/page">{%trans "Manage All Pages" %}</a></li>
+
+</ul>
+</div>
+</div>
+
+<div id="post-body" class="entry-editor">
+
+{%ifnotequal entrytype "post"%}
+<div style="margin-left:20px;margin-top:5px;">
+
+<input type="checkbox" onclick="taggle_ext_page(this.checked);" id="is_external_page" name="is_external_page" {%if  entry.is_external_page%}checked="checked"{%endif%}/><label for="is_external_page">{%trans "Use as  external page" %} </label>
+</div>
+{%endifnotequal%}
+<div id="titlediv">
+<h3>{%trans "Title" %}</h3>
+<div id="titlewrap">
+	<input type="text" autocomplete="off" id="title" value="{{entry.title|escape}}" tabindex="1" size="52" name="post_title"/>
+</div>
+<div class="inside">
+	<div id="edit-slug-box">
+	</div>
+</div>
+</div>
+
+
+<div class="stuffbox" id="ext_page_area" {%if not entry.is_external_page%}style="display:none"{%endif%}>
+
+<h3>{%trans "External page address" %}</h3>
+<div  class="f_text">
+    <input type="text" id="external_page_address" name="external_page_address" value="{{entry.external_page_address}}">
+</div>
+<h3>{%trans "Target" %}</h3>
+<div style="padding:5px;" >
+    &nbsp;<input type="radio" name="target" id="target_self" value="_self" {%ifequal entry.target "_self"%} checked="checked"{%endifequal%}><label for="target_self">_self</label>
+    <input type="radio" name="target" id="target_blank" value="_blank" {%ifequal entry.target "_blank"%} checked="checked"{%endifequal%}><label for="target_blank">_blank</label>
+</div>
+
+</div>
+
+<div class="stuffbox" id="postarea" style="margin-left:20px;{%if entry.is_external_page%}display:none{%endif%}">
+
+<h3 style="padding-bottom:6px">
+<div style="float:left;width:200px;">
+{%ifequal entrytype "post"%}
+{%trans "Post"%}
+{%else%}
+{%trans "Page" %}
+{%endifequal%}
+</div>
+
+<div class='editor-toolbar' style="float:right;width:200px;display:none" >
+    <span class="alignright" id="spn_html"><a id="edButtonHTML" class="">HTML</a></span>
+    <span class="alignright tg"  id="spn_visual" ><a id="edButtonPreview" class="active">Visual</a></span>
+    <div class='clear'></div>
+</div>
+<div style="clear:left"></div>
+</h3>
+
+<div id="quicktags" style="display: none;">
+<script src="/static/js/quicktags.js" type="text/javascript"></script>
+<script type="text/javascript">edToolbar('content')</script>
+</div>
+
+<div id="editorcontainer">
+{%mf admin_entry_edit%}
+  <textarea style="width:100%;border:0px;" cols="40" rows="15" id="content" name="content">{{entry.content|escape}}</textarea>
+{%endmf%}
+</div>
+</div>
+<script type="text/javascript">
+ edCanvas = document.getElementById('content');
+</script>
+<div class="clear"></div>
+<div class="stuffbox">
+<h3>{% trans "Slug" %}</h3>
+<div class="inside">
+	<input type="text" value="{{entry.slug|escape}}" tabindex="1" size="50" name="slug"/><br/>
+</div>
+</div>
+{%ifequal entrytype "post"%}
+<div class="clear"></div>
+<div class="stuffbox" id="tag">
+<h3>{% trans "Tag" %}</h3>
+<div class="inside" style="float:left;">
+	<input type="text" id="tags" onkeyup="this.value=this.value.replace(/，/g, ',');" value="{{entry.strtags|escape}}" tabindex="1" size="50" name="tags"/><br/>
+</div>
+{%include "selecttags.html"%}
+</div>
+
+<div style="display:none">
+<div class="clear"></div>
+<div class="stuffbox" id="tag">
+<h3>{% trans "Password" %}</h3>
+<div class="inside">
+	<input type="text" id="password" value="{{entry.password}}" tabindex="1" size="30" name="password"/><br/>
+</div>
+</div>
+</div>
+
+{%else%}
+<div class="clear"></div>
+<div class="stuffbox">
+<h3>{% trans "Options" %}</h3>
+<div class="inside">
+  	<p>
+     <span style="font-weight:bold;width:30px">{% trans "Page level:"%} </span><input type="text" id="entry_parent" value="{{entry.entry_parent}}" tabindex="1" size="4" name="entry_parent"/>
+  	<p>
+      <span  style="font-weight:bold;width:30px">{% trans "Page order:"%}</span> <input type="text" id="menu_order" value="{{entry.menu_order}}" tabindex="1" size="4" name="menu_order"/>
+    </p>
+</div>
+</div>
+
+
+{%endifequal%}
+
+<div class="clear"></div>
+<div class="stuffbox">
+<h3>{% trans "Excerpt" %}</h3>
+<div class="inside">
+	<textarea name="excerpt" style="width:98%"/>{%if entry.excerpt%}{{entry.excerpt|escape}}{%endif%}</textarea><br/>
+</div>
+</div>
+
+
+<input type="hidden" value="{{entry.key}}" name="key"/>
+<input type="hidden" value="{{action}}" name="action"/>
+
+</div>
+</div>
+
+   </div>
+   </form>
+
+ {% endblock  %}

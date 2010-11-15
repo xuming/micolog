@@ -1,0 +1,174 @@
+{% load i18n %}
+{% extends "setup_base.html" %}
+{% block nav2_1 %}
+<li><a href="/admin/setup"  class="current">{%trans "Basic" %}</a></li>
+<li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
+{% endblock%}
+{% block content %}
+     <!-- Admin Full Width -->
+    <div id="m_admin">
+        <form method="post">
+            <div class="wrap">
+            <h2>{%trans "Setup and Configuraiton for this Blog"%}</h2>
+
+            <table class="form-table">
+                 <tr valign="top">
+                <th scope="row">{% trans "Blog Title:"%}</th>
+                <td><input type="text" size="45" value="{{ blog.title }}"  id="title" name="title"/>
+                </td>
+                </tr>
+
+                <tr valign="top">
+                <th scope="row">{% trans "Sub Title:"%}</th>
+                <td><input type="text" size="45" value="{{ blog.subtitle }}" style="width: 95%;" id="subtitle" name="subtitle" />
+                <br/>
+                {% trans "In a few words, explain what this blog is about."%}</td>
+                </tr>
+
+                <tr valign="top">
+                <th scope="row">{% trans "Blog notice:"%}</th>
+                <td><textarea id="blognotice" style="width:95%" cols="45" rows="5" name="blognotice">{{ blog.blognotice|escape }}</textarea>
+               </td>
+                </tr>
+
+ <tr valign="top">
+                <th scope="row">{% trans "Default Link Structure:"%}</th>
+
+                <td><input type="text" size="45" style="width: 95%;" value="{{ blog.default_link_format }}"  id="default_link_format" name="default_link_format" />
+                 <br>{% trans "Allowed variants: " %}%(year)s , %(month)s , %(day)s , %(post_id)s
+               </td>
+                </tr>
+ <tr valign="top">
+                <th scope="row">{% trans "Permalink Structure:"%}</th>
+
+                <td><input type="text" size="45" style="width: 95%;" value="{{ blog.link_format }}"  id="link_format" name="link_format" />
+                 <br>{% trans "Allowed variants: " %}%(year)s , %(month)s , %(day)s , %(postname)s , %(post_id)s
+               </td>
+                </tr>
+                  <tr valign="top">
+                <th scope="row">{% trans "Domain:"%}</th>
+                <td><input type="text" size="45" value="{{ blog.domain }}"  id="domain" name="domain" />
+               </td>
+                </tr>
+                </tr>
+                  <tr valign="top">
+                <th scope="row">{% trans "Micolog Address(URL):"%}</th>
+                <td><input type="text" size="45" value="{{ blog.baseurl }}"  id="baseurl" name="baseurl" />
+               </td>
+                </tr>
+
+                 <tr valign="top">
+                <th scope="row">{% trans "RSS Feed URL:"%}</th>
+                <td><input type="text" size="45" value="{{ blog.feedurl }}"  id="feedurl" name="feedurl" />
+               </td>
+                </tr>
+                 <tr valign="top">
+                <th scope="row">{% trans "Time delta:(Hours)"%}</th>
+                <td><input type="text" size="45" value="{{ blog.timedelta }}"  id="timedelta" name="timedelta" />
+               </td>
+                </tr>
+
+
+            <tr valign="top">
+                <th scope="row">{% trans "Theme:"%}</th>
+                <td>
+                    <select  id="theme_name" name="theme_name" >
+                    {%for theme in themes%}
+                    <option value="{{theme}}" {%ifequal blog.theme_name theme%}selected='selected'{%endifequal%}>{{theme}}</option>
+                    {%endfor%}
+
+                    </select>
+                       <a href="http://micolog.appspot.com/themes" target="_blank">{% trans "Get more themes"%}</a>
+               </td>
+               </tr>
+                  <tr valign="top">
+                <th scope="row">{% trans "Posts per page:"%}</th>
+                <td><input type="text" size="8" value="{{ blog.posts_per_page }}"  id="posts_per_page" name="posts_per_page" />
+               </td>
+               </tr>
+               <tr valign="top">
+                <th scope="row">{% trans "Comments order:"%}</th>
+                <td>
+                   <input type="radio"   id="comments_order0" name="comments_order" {% ifequal blog.comments_order 0%} checked="checked" {%endifequal%} value="0"/><label for="comments_order0">{% trans "ASC"%}</label>
+                   <input type="radio"   id="comments_order1" name="comments_order" {% ifequal blog.comments_order 1%} checked="checked" {%endifequal%} value="1"/><label for="comments_order1">{% trans "DESC"%}</label>
+               </td>
+               </tr>
+ 				<tr valign="top">
+                <th scope="row">{% trans "Comment Check Type:"%}</th>
+                <td>
+					<input type="radio"   id="comments_ctype0" name="comment_check_type" {% ifequal blog.comment_check_type 0%} checked="checked" {%endifequal%} value="0"/><label for="comments_ctype0">None</label>
+				   <input type="radio"   id="comments_ctype1" name="comment_check_type" {% ifequal blog.comment_check_type 1%} checked="checked" {%endifequal%} value="1"/><label for="comments_ctype1">{% trans "Arithmetic"%}</label>
+                   <input type="radio"   id="comments_ctype2" name="comment_check_type" {% ifequal blog.comment_check_type 2%} checked="checked" {%endifequal%} value="2"/><label for="comments_ctype2">{% trans "Graph"%}</label>
+                   <input type="radio"   id="comments_ctype3" name="comment_check_type" {% ifequal blog.comment_check_type 3%} checked="checked" {%endifequal%} value="3"/><label for="comments_ctype2">{% trans "Client Arithmetic"%}</label>
+               </td>
+               </tr>
+   <tr valign="top">
+                <th scope="row">{% trans "Comments per page:"%}</th>
+                <td><input type="text" size="8" value="{{ blog.comments_per_page }}"  id="comments_per_page" name="comments_per_page" />
+               </td>
+               </tr>
+
+ <tr valign="top">
+                <th scope="row">{% trans "Avatar icon style:"%}</th>
+                <td>
+                   <input type="radio"   id="avatar_style0" name="avatar_style" {% ifequal blog.avatar_style 0%} checked="checked" {%endifequal%} value="0"/><label for="avatar_style0">{% trans "Default"%}</label>
+                   <input type="radio"   id="avatar_style1" name="avatar_style" {% ifequal blog.avatar_style 1%} checked="checked" {%endifequal%} value="1"/><label for="avatar_style1">{% trans "Identicon"%}</label>
+               </td>
+               </tr>
+
+                   <tr valign="top" style="display:none">
+                <th scope="row">{% trans "Enable comment notify by mail:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
+               </td>
+                </tr>
+    <tr valign="top">
+                <th scope="row">{% trans "Enable memcache:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.enable_memcache %} checked="checked" {%endif%}  id="enable_memcache" name="enable_memcache" />
+               </td>
+                </tr>
+  <tr valign="top">
+                <th scope="row">{% trans "Allow Trackback:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.allow_trackback %} checked="checked" {%endif%}  id="allow_trackback" name="allow_trackback" />
+               </td>
+                </tr>
+
+  <tr valign="top">
+                <th scope="row">{% trans "Allow Pingback:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.allow_pingback %} checked="checked" {%endif%}  id="allow_pingback" name="allow_pingback" />
+               </td>
+                </tr>
+            </table>
+            <h3>{% trans "Xmlrpc  setting"%}</h3>
+            <p>{% trans "Setup the username and password for RPC call. These will be used by client tools (e.g. Windows live writer). "%}</p>
+            <table class="form-table">
+               <tr valign="top">
+                <th scope="row">{% trans "User name:"%}</th>
+                <td><input type="text" size="45" value="{{ blog.rpcuser }}"  id="rpcuser" name="rpcuser" />
+               </td>
+                </tr>
+
+                <tr valign="top">
+                <th scope="row">{% trans "Password:"%}</th>
+                <td><input type="password" size="45" value="{{ blog.rpcpassword }}"  id="rpcpassowrd" name="rpcpassword" />
+               </td>
+                </tr>
+            </table>
+
+
+<p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
+<input type="hidden" value="update" name="action"/>
+<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice,link_format" name="str_options"/>
+<input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback" name="bool_options"/>
+<input type="hidden" value="posts_per_page,comments_order,comments_per_page,comment_check_type,avatar_style" name="int_options"/>
+<input type="hidden" value="timedelta" name="float_options"/>
+
+</p>
+
+  </div>
+
+        </form>
+    </div>
+    <!-- Featured Ends -->
+{% endblock %}
