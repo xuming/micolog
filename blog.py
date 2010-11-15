@@ -136,7 +136,7 @@ class MainPage(BasePublicPage):
 						'pageindex':page,
 						'ishome':True,
 						'pagecount':max_page,
-						'postscount':entrycount
+						'postscounts':entrycount
 							})
 
 
