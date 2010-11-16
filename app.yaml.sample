@@ -1,0 +1,57 @@
+application: mlog
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /favicon\.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
+  mime_type: image/x-icon
+
+- url: /robots\.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+  
+- url: /tinymce/.*
+  script: $PYTHON_LIB/google/appengine/ext/zipserve
+
+#- url: /tinymce
+#  static_dir: tinymce  
+  
+- url: /static
+  static_dir: static
+
+- url: /rpc|/xmlrpc\.php|/rpc/.*
+  script: api_rpc.py
+
+- url: /themes/.*
+  script: theme_files.py
+
+- url: /myadmin/.*|/myadmin
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
+
+- url: /admin/post|/admin/entries/(post|page)|/admin/links|/admin/categories|/admin/comments
+  script: admin.py
+  login: required
+
+- url: /admin/{0,1}
+  script: admin.py
+  login: required
+
+- url: /admin/link|/admin/category|/admin/(post|page)|/admin/lang|/admin/filemanager|/admin/upload|/admin/uploadex
+  script: admin.py
+  login: required
+
+- url: /admin/.*
+  script: admin.py
+  login: admin
+  
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /.*
+  script: blog.py
+
