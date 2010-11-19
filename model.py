@@ -442,11 +442,11 @@ class Entry(BaseModel):
 	def get_content_excerpt(self,more='..more'):
 		if g_blog.show_excerpt:
 			if self.excerpt:
-				return self.excerpt+' <a href="/%s">%s</a>'%(self.link,more)
+				return self.excerpt+' <a href="/%s" class="e_more">%s</a>'%(self.link,more)
 			else:
 				sc=self.content.split('<!--more-->')
 				if len(sc)>1:
-					return sc[0]+u' <a href="/%s">%s</a>'%(self.link,more)
+					return sc[0]+u' <a href="/%s" class="e_more">%s</a>'%(self.link,more)
 				else:
 					return sc[0]
 		else:
