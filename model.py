@@ -121,26 +121,6 @@ class LangIterator:
 				return item
 		return {'code':'en_US','lang':'English'}
 
-class BaseModel(db.Model):
-	def __init__(self, parent=None, key_name=None, _app=None, **kwds):
-		self.__isdirty = False
-		DBModel.__init__(self, parent=None, key_name=None, _app=None, **kwds)
-
-	def __setattr__(self,attrname,value):
-		"""
-		DataStore api stores all prop values say "email" is stored in "_email" so
-		we intercept the set attribute, see if it has changed, then check for an
-		onchanged method for that property to call
-		"""
-		if (attrname.find('_') != 0):
-			if hasattr(self,'_' + attrname):
-				curval = getattr(self,'_' + attrname)
-				if curval != value:
-					self.__isdirty = True
-					if hasattr(self,attrname + '_onchange'):
-						getattr(self,attrname + '_onchange')(curval,value)
-
-		DBModel.__setattr__(self,attrname,value)
 
 class Cache(db.Model):
 	cachekey = db.StringProperty(multiline=False)
@@ -386,7 +366,7 @@ class Link(db.Model):
 		db.Model.delete(self)
 		g_blog.tigger_action("delete_link",self)
 
-class Entry(BaseModel):
+class Entry(db.Model):
 	author = db.UserProperty()
 	author_name = db.StringProperty()
 	published = db.BooleanProperty(default=False)
