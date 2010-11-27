@@ -60,7 +60,8 @@ class BasePublicPage(BaseRequestHandler):
 						'blogroll':blogroll,
 						'archives':archives,
 						'alltags':alltags,
-						'recent_comments':Comment.all().order('-date').fetch(5)
+						'recent_comments':Comment.all().order('-date').fetch(5),
+						'recent_posts':Entry.all().filter("published =", True).filter('entrytype =','post').order('-date').fetch(15)
 		})
 
 	def m_list_pages(self):
@@ -190,10 +191,10 @@ class entriesByTag(BasePublicPage):
 			page_index=1
 		import urllib
 		slug=urldecode(slug)
-
-		entries=Entry.all().filter("published =", True).filter('tags =',slug).order("-date")
+		tag_obj = Tag.all().filter("slug =", slug).get()
+		entries=Entry.all().filter("published =", True).filter('tags =',tag_obj.tag).order("-date")
 		entries,links=Pager(query=entries,items_per_page=20).fetch(page_index)
-		self.render('tag',{'entries':entries,'tag':slug,'pager':links})
+		self.render('tag',{'entries':entries,'tag':tag_obj,'pager':links})
 
 
 
@@ -260,6 +261,7 @@ class SinglePost(BasePublicPage):
 						'checknum1':random.randint(1,10),
 						'checknum2':random.randint(1,10),
 						'comments_nav':comments_nav,
+						'is_page':True
 						})
 
 	def post(self,slug=None,postid=None):

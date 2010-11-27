@@ -29,6 +29,7 @@ from app.pingback import autoPingback
 from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault
+from app.utils import slugify
 
 
 class Error404(BaseRequestHandler):
@@ -93,10 +94,10 @@ class admin_do_action(BaseRequestHandler):
 				func()
 			else:
 				self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
-		except:
-			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
+		except Exception, e:
+			self.render2('views/admin/error.html',{'message':_('This operate has not defined!<br>' + str(e))})
 
-
+	@requires_admin
 	def post(self,slug=None):
 		try:
 			func=getattr(self,'action_'+slug)
@@ -104,8 +105,8 @@ class admin_do_action(BaseRequestHandler):
 				func()
 			else:
 				self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
-		except:
-			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!')})
+		except Exception, e:
+			 self.render2('views/admin/error.html',{'message':_('This operate has not defined!<br>' + str(e) )})
 
 	@requires_admin
 	def action_test(self):
@@ -134,26 +135,47 @@ class admin_do_action(BaseRequestHandler):
 	@requires_admin
 	def action_updatelink(self):
 		link_format=self.param('linkfmt')
-
 		if link_format:
+			try:
+				offset = int(self.param('offset'))
+			except Exception,e:
+				offset = 0
+			try:
+				PAGESIZE = int(self.param('limit'))
+			except Exception,e:
+				PAGESIZE = 100
+
 			link_format=link_format.strip()
 			g_blog.link_format=link_format
 			g_blog.save()
-			for entry in Entry.all():
-				vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
-				'postname':entry.slug,'post_id':entry.post_id}
+			Entries = Entry.all().filter("post_id >=",offset).order('post_id').fetch(PAGESIZE+1)
 
-				if entry.slug:
-					newlink=link_format%vals
-				else:
-					newlink=g_blog.default_link_format%vals
+			for entry in Entries[:-1]:
+				if entry.entrytype == "post":
+					vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
+					'postname':entry.slug,'post_id':entry.post_id, 'category':entry.get_min_category().slug}
 
-				if entry.link<>newlink:
-					entry.link=newlink
+					if entry.slug:
+						newlink=link_format%vals
+					else:
+						newlink=g_blog.default_link_format%vals
+
+					if entry.link<>newlink:
+						entry.link=newlink
+						entry.put()
+				if entry.entrytype == "page":
+					entry.link = entry.slug + "/"
 					entry.put()
-			self.write(_('"Link formated succeed"'))
+
+			if len(Entries) == PAGESIZE + 1 :
+				self.write(simplejson.dumps({'offset':(Entries[-1].post_id), 'complete':0 }))
+			else:
+				memcache.flush_all()
+				self.write(simplejson.dumps({'complete':1, 'message':'Link formated succeed' }))
+			#self.write(_('"Link formated succeed"'))
 		else:
-			self.write(_('"Please input url format."'))
+			self.write(simplejson.dumps({'complete':1, 'message':'Please input url format.'}))
+			#self.write(_('"Please input url format."'))
 
 	@requires_admin
 	def action_init_blog(self,slug=None):
@@ -436,7 +458,10 @@ class admin_entry(BaseRequestHandler):
 
 		allow_comment=self.parambool('allow_comment')
 		allow_trackback=self.parambool('allow_trackback')
-		entry_slug=self.param('slug')
+		if self.param('slug') == "":
+			entry_slug=slugify(title)
+		else:
+			entry_slug=self.param('slug')
 		entry_parent=self.paramint('entry_parent')
 		menu_order=self.paramint('menu_order')
 		entry_excerpt=self.param('excerpt').replace('\n','<br />')
@@ -494,6 +519,8 @@ class admin_entry(BaseRequestHandler):
 						c=Category.all().filter('slug =',cate)
 						if c:
 							newcates.append(c[0].key())
+				else:
+					newcates.append(Category.all().order('date')[0].key())
 				entry.categorie_keys=newcates;
 
 				entry.save(published)
@@ -534,6 +561,8 @@ class admin_entry(BaseRequestHandler):
 							c=Category.all().filter('slug =',cate)
 							if c:
 								newcates.append(c[0].key())
+					else:
+						newcates.append(Category.all().order('date')[0].key())
 					entry.categorie_keys=newcates;
 					entry.allow_comment=allow_comment
 					entry.allow_trackback=allow_trackback
@@ -1087,12 +1116,37 @@ class admin_ThemeEdit(BaseRequestHandler):
 			self.write(item.filename+"<br>")
 
 
+class ping_comment_feed(BaseRequestHandler):
+	def get(self, slug=None):
+		from datetime import datetime, timedelta
+		t =  datetime.now() - timedelta(hours=1)
+		if Comment.all().filter("date >", t).count() > 0:
+			blog_url = g_blog.baseurl+"/"
+			blog_feed = g_blog.baseurl+"/feed/comments"
+			blog_title = g_blog.title
+
+			s = "http://blogsearch.google.com/ping?name={{blog_title}}&url={{blog_url|urlencode}}&changesURL={{blog_feed|urlencode}}"
+			c = Context({
+				"blog_title": blog_title.replace(' ','+'),
+				"blog_url":blog_url,
+				"blog_feed":blog_feed
+				})
+
+			t = Template(s)
+			url = t.render(c)
+			try:
+				urlfetch.fetch(url)
+			except :
+				logging.error('Ping Cannot contact: %s' % url)
+		else:
+			logging.error('No new comment')
 def main():
 	webapp.template.register_template_library('filter')
 	webapp.template.register_template_library('app.recurse')
 
 	application = webapp.WSGIApplication(
 					[
+					('/ping_comment_feed',ping_comment_feed),
 					('/admin/{0,1}',admin_main),
 					('/admin/setup',admin_setup),
 					('/admin/entries/(post|page)',admin_entries),

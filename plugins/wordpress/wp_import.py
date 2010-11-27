@@ -1,6 +1,6 @@
 ###Import post,page,category,tag from wordpress export file
 import xml.etree.ElementTree as et
-import logging
+import logging,re
 ###import from wxr file
 class import_wordpress:
 	def __init__(self,source):
@@ -9,15 +9,17 @@ class import_wordpress:
 		self.entries=[]
 
 		self.source=source
-		self.doc=et.fromstring(source)
+		self.source=re.sub(r'<atom:.*>','',source)
+		self.doc=et.fromstring(self.source)
 		#use namespace
-		self.wpns='{http://wordpress.org/export/1.0/}'
+		self.wpns='{'+re.search(r'xmlns:wp="(.*)"',source).group(1)+'}'
 
-		self.contentns="{http://purl.org/rss/1.0/modules/content/}"
-		self.excerptns="{http://wordpress.org/export/1.0/excerpt/}"
+		self.contentns='{'+re.search(r'xmlns:content="(.*)"',source).group(1)+'}'
+		self.excerptns='{'+re.search(r'xmlns:excerpt="(.*)"',source).group(1)+'}'
 		et._namespace_map[self.wpns]='wp'
 		et._namespace_map[self.contentns]='content'
 		et._namespace_map[self.excerptns]='excerpt'
+		et._namespace_map['{http://www.w3.org/2005/Atom}']="atom"
 		self.channel=self.doc.find('channel')
 		self.dict={'category':self.wpns+'category','tag':self.wpns+'tag','item':'item'}
 		self.cur_do=None
@@ -95,8 +97,9 @@ class import_wordpress:
 										)
 					entry['comments'].append(comment)
 				self.entries.append(entry)
-			except:
-				logging.info("parse wordpress file error")
+			except Exception,e :
+				raise
+				logging.info("parse wordpress file error:%s",e.message)
 		self.total=self.count()
 		self.cur_do=("begin","begin")
 		self.source=None
@@ -137,7 +140,7 @@ class import_wordpress:
 if __name__=='__main__':
 	import sys
 	#f=sys.argv[1]
-	f='D:\\work\\micolog\\wordpress.xml'
+	f='''schwarzespapier.wordpress.2010-11-22.xml'''
 	wp=import_wordpress(open(f).read())
 	wp.parse()
 

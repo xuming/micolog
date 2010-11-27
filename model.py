@@ -7,9 +7,12 @@ from google.appengine.api import memcache
 from google.appengine.api import mail
 from google.appengine.api import urlfetch
 from google.appengine.api import datastore
+from app.short_code_parser import parse
 from datetime import datetime
+from app.utils import trim_excerpt_without_filters
 import urllib, hashlib,urlparse
 import zipfile,re,pickle,uuid
+from app.utils import slugify
 #from base import *
 logging.info('module base reloaded')
 
@@ -239,6 +242,7 @@ class Category(db.Model):
 	name=db.StringProperty(multiline=False)
 	slug=db.StringProperty(multiline=False)
 	parent_cat=db.SelfReferenceProperty()
+	date = db.DateTimeProperty(auto_now_add=True)
 	@property
 	def posts(self):
 		return Entry.all().filter('entrytype =','post').filter("published =", True).filter('categorie_keys =',self)
@@ -311,6 +315,7 @@ class Archive(db.Model):
 
 class Tag(db.Model):
 	tag = db.StringProperty(multiline=False)
+	slug = db.StringProperty(multiline=False)
 	tagcount = db.IntegerProperty(default=0)
 	@property
 	def posts(self):
@@ -319,11 +324,12 @@ class Tag(db.Model):
 	@classmethod
 	def add(cls,value):
 		if value:
-			tag= Tag.get_by_key_name(value)
+			v = value.strip()
+			tag= Tag.get_by_key_name(v)
 			if not tag:
-				tag=Tag(key_name=value)
-				tag.tag=value
-
+				tag=Tag(key_name=v)
+				tag.tag=v
+				tag.slug=slugify(v)
 			tag.tagcount+=1
 			tag.put()
 			return tag
@@ -341,6 +347,8 @@ class Tag(db.Model):
 				else:
 					tag.delete()
 
+	def __str__(self):
+		return self.tag
 
 
 class Link(db.Model):
@@ -413,7 +421,11 @@ class Entry(db.Model):
 	def content_excerpt(self):
 		return self.get_content_excerpt(_('..more').decode('utf8'))
 
+	def meta_description(self):
+		return trim_excerpt_without_filters(self.content).replace("\n"," ")
 
+	def get_content(self):
+		return parse(self.content)
 	def get_author_user(self):
 		if not self.author:
 			self.author=g_blog.owner
@@ -484,13 +496,13 @@ class Entry(db.Model):
 			addlist=tags
 		else:
 			#search different  tags
-			removelist=[n for n in self.tags if n not in tags]
-			addlist=[n for n in tags if n not in self.tags]
+			removelist=[n.strip() for n in self.tags if n not in tags]
+			addlist=[n.strip() for n in tags if n not in self.tags]
 		for v in removelist:
 			Tag.remove(v)
 		for v in addlist:
 			Tag.add(v)
-		self.tags=tags
+		self.tags=[t.strip() for t in tags]
 
 	def get_comments_by_page(self,index,psize):
 		return self.comments().fetch(psize,offset = (index-1) * psize)
@@ -520,6 +532,7 @@ class Entry(db.Model):
 			return Comment.all().filter('entry =',self).filter('ctype IN',[1,2]).order('-date')
 		else:
 			return Comment.all().filter('entry =',self).filter('ctype IN',[1,2]).order('date')
+
 	def commentsTops(self):
 		return [c for c  in self.purecomments() if c.parent_key()==None]
 
@@ -558,7 +571,15 @@ class Entry(db.Model):
 		g_blog.entrycount+=cnt
 		g_blog.put()
 
+	def get_min_category(self):
+		min = self.categories[0].ID()
+		category = self.categories[0]
+		for cat in self.categories:
+			if min > cat.ID():
+				min = cat.ID()
+				category = cat
 
+		return category
 	def save(self,is_publish=False):
 		"""
 		Use this instead of self.put(), as we do some other work here
@@ -878,8 +899,11 @@ def InitBlogData():
 	activate(g_blog.language)
 	g_blog.save()
 
+	cate = Category(name=_("Uncategorized").decode('utf8'), slug=_("uncategorized").decode('utf8'))
+	cate.put()
 	entry=Entry(title=_("Hello world!").decode('utf8'))
 	entry.content=_('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
+	entry.categorie_keys = [cate.key()]
 	entry.save(True)
 	link=Link(href='http://xuming.net',linktext=_("Xuming's blog").decode('utf8'))
 	link.put()
