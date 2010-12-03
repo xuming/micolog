@@ -54,7 +54,7 @@ def post_struct(entry):
 
 
 	struct = {
-		'postid': entry.key().id(),
+		'postid': str(entry.key().id()),
 		'title': entry.title,
 		'link': entry.fullurl,
 		'permaLink': entry.fullurl,
@@ -90,7 +90,7 @@ def page_struct(entry):
 
 
 	struct = {
-		'page_id': entry.key().id(),
+		'page_id': str(entry.key().id()),
 		'title': entry.title,
 		'link': entry.fullurl,
 		'permaLink': entry.fullurl,
@@ -723,7 +723,7 @@ def mt_publishPost(postid):
 	try:
 		entry=Entry.get_by_id(int(postid))
 		entry.save(True)
-		return entry.key().id()
+		return str(entry.key().id())
 	except:
 		return 0
 
