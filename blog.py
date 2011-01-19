@@ -523,7 +523,7 @@ class Post_comment(BaseRequestHandler):
 							entry=Entry.get(key))
 			if url:
 				try:
-					if not url.startswith(('http://','https://')):
+					if not url.lower().startswith(('http://','https://')):
 						url = 'http://' + url
 					comment.weburl=url
 				except:
