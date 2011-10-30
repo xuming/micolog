@@ -46,7 +46,7 @@ class Session(dict):
 		if name in rh.request.str_cookies:
 			self._sid=rh.request.str_cookies[name]
 			data=memcache.get(self._sid)
-			if data!=None:
+			if data is not None:
 				self.update(data)
 				# memcache timeout is absolute, so we need to reset it on each access
 				memcache.set(self._sid,data,self._timeout)
@@ -82,7 +82,7 @@ class Session(dict):
 	def invalidate(self):
 		"""Delete session data and cookie."""
 		self.rh.response.headers.add_header('Set-Cookie',
-				'%s=; expires=Sat, 1-Jan-2000 00:00:00 GMT;'%(self._name))
+				'%s=; expires=Sat, 1-Jan-2000 00:00:00 GMT;'%self._name)
 		memcache.delete(self._sid)
 		self.clear()
 		self._invalid=True

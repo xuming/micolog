@@ -1,7 +1,7 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
  {% block content %}
-   <div class="wrap">
+<div class="wrap">
 <h2>{% trans "Manage Plugins"%}</h2>
 <p>
 <a href="http://micolog.appspot.com/plugins" target="_blank">Get more plugins</a>
@@ -12,7 +12,7 @@
 <tr>
 <td><a href="/admin/plugins/{{plugin.iname}}">{{plugin.name}}</a></td>
 <td><a href="{{plugin.uri}}" target="_blank">{{plugin.version}}</a></td>
-<td>{{plugin.description}}</td>
+<td>{{plugin.description|safe}}</td>
 <td><a href="{{plugin.authoruri}}" target="_blank">{{plugin.author}}</a></td>
 <td>
 {%if plugin.active%}

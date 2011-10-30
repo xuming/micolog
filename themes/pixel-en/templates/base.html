@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head profile="http://gmpg.org/xfn/11">
+{%mf head%}
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8;" />
+<title>{% block title %}{{ blog.title}}{% endblock %}</title>
+<link rel="shortcut icon" href="/favicon.ico" />
+<meta name="application-name" content="{{ blog.title}}" />
+<meta name="msapplication-tooltip" content="{{ blog.subtitle}}" />
+<meta name="msapplication-starturl" content="/" />
+<meta name="msapplication-window" content="width=1024;height=768" />
+<meta name="msapplication-navbutton-color" content="black" />
+<meta property="og:title" content="{{ blog.title }}" />
+<meta property="og:type" content="blog" />
+<meta property="og:url" content="{{ blog.baseurl }}" />
+<meta property="og:image" content="{{ blog.baseurl }}/favicon.ico" />
+<meta property="og:site_name" content="{{ blog.title}}" />
+<meta property="og:description" content="{{ blog.subtitle}}" />
+{% block head_block %}{% endblock %}
+<link rel="canonical" href="{{ blog.baseurl }}" />
+<link rel="stylesheet" href="/themes/{{ blog.theme_name }}/style.css" type="text/css" media="screen" />
+<link rel="alternate" type="application/rss+xml" title="{{ blog.title }} RSS Feed" href="{{ blog.feedurl }}" />
+<link href="/static/wlwmanifest.xml" type="application/wlwmanifest+xml" rel="wlwmanifest"/>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript" src="/themes/{{ blog.theme_name }}/js/sfhover.js"></script>
+{%endmf%}
+</head>
+<body>
+<div id="wrapper">
+	<div id="header">
+
+	<div id="topright">	
+	<ul>
+		<li><fb:like href="{{ blog.baseurl }}/{{ entry.link }}" send="false" width="406" show_faces="false" colorscheme="dark" font="arial"></fb:like></li>
+		{{self.m_list_pages|safe}}
+		<li><a href="#main">skip to content &darr;</a></li>
+	</ul>
+	</div>
+	<div class="cleared"></div>
+
+	<div id="logo">
+	<h1><a href="{{ blog.baseurl }}">{{ blog.title}}</a></h1>
+	<span>{{ blog.subtitle}}</span>
+	</div>
+	</div><!-- Closes header -->
+
+	<div id="catnav">
+	<div id="toprss"><g:plusone></g:plusone><a href="{{blog.feedurl}}"><img src="/themes/{{ blog.theme_name }}/images/rss-trans.png" alt="RSS feed" width="65" height="24" /></a></div><!-- Closes toprss -->
+	<ul id="nav">
+		<li><a href="{{ blog.baseurl }}">Home</a></li>
+		{%for cate in categories%}
+		<li><a href="/category/{{cate.slug}}">{{cate.name}}</a></li>
+		{%endfor%}
+	</ul>
+	</div><!-- Closes catnav -->
+	<div class="cleared"></div>
+
+	{%block content %}{%endblock%}
+
+	<div id="footer">
+	{%mf footer%}
+	<div id="footerleft">
+	<p>Powered by <a href="https://micolog.appspot.com/">Micolog</a>. Theme: <a href="http://85ideas.com/public-releases/wordpress-theme-pixel/" title="Pixel">Pixel</a>. Sweet icons by <a href="http://famfamfam.com/">famfamfam</a>. Modify by <a href="http://eric.cloud-mes.com/">Eric</a>. <a href="#main">Back to top &uarr;</a></p>
+	</div>
+	<div id="footerright">
+	<img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+	</div>
+	<div class="cleared"></div>
+	{%endmf%}
+	</div><!-- Closes footer -->
+</div><!-- Closes wrapper -->
+</body>
+</html>

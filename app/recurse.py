@@ -1,6 +1,10 @@
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from google.appengine.dist import use_library
+use_library('django', '1.2')
 from django.template import Library
-from django.template import Node, NodeList, Template, Context
-from django.template import TemplateSyntaxError, VariableDoesNotExist, BLOCK_TAG_START, BLOCK_TAG_END, VARIABLE_TAG_START, VARIABLE_TAG_END, SINGLE_BRACE_START, SINGLE_BRACE_END, COMMENT_TAG_START, COMMENT_TAG_END
+from django.template import Node, NodeList
+from django.template import TemplateSyntaxError, VariableDoesNotExist
 
 register = Library()
 

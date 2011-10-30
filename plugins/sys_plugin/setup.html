@@ -6,10 +6,10 @@
                </div>
                 <div><b>{% trans "Message to me:"%}</b></div>
                 
-               <textarea name='sbody' style="width:600px;height:200px;">{{self.sbody}}</textarea>
+               <textarea name='sbody' style="width:600px;height:200px;">{{self.sbody|safe}}</textarea>
                
                <div><b>{% trans "Message to commenter:"%}</b></div>
-              <textarea name='bbody' style="width:600px;height:200px;">{{self.bbody}}</textarea>
+              <textarea name='bbody' style="width:600px;height:200px;">{{self.bbody|safe}}</textarea>
                   <p>
                   <input type="submit" value="Save" />
                   </p>

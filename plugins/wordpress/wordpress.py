@@ -1,6 +1,6 @@
 from micolog_plugin import *
 from google.appengine.api import memcache
-from google.appengine.api.labs import taskqueue
+from google.appengine.api import taskqueue
 from wp_import import *
 from model import *
 import logging,math

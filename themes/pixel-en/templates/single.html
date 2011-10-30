@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+{% block content%}
+
+<div id="main">
+
+<div id="contentwrapper">
+{% if entry %}
+
+<div class="topPost">
+	<h2 class="topTitle"><a href="/{{ entry.link }}">{{entry.title}}</a></h2>
+	<p class="topMeta">by {{entry.author}} on {{entry.date|datetz:"F jS, Y"}}, under {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%}</p>
+	<div class="topContent">
+	{%mf entry_content %}
+	{{ entry.content|safe }}
+	{%endmf%}
+	</div>
+	<div class="cleared"></div>
+	<div class="cleared"></div>
+	{% if entry.strtags %}<span class="topTags">{%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}</span>{%endif%}
+	<div class="cleared"></div>
+</div> <!-- Closes topPost -->
+<br/><small>{%if self.is_admin%}<a href="{{entry.edit_url|safe}}">Edit</a>{%endif%}</small>
+
+<div id="comments">
+{% include "comments.html" %}
+</div> <!-- Closes Comment -->
+
+{%endif%}
+</div><!-- Closes contentwrapper-->
+{% include "sidebar.html" %}
+<div class="cleared"></div>
+</div><!-- Closes Main -->
+{% endblock %}

@@ -8,7 +8,7 @@
     {% if url.lastmod %}<lastmod>{{ url.lastmod|date:"Y-m-d" }}</lastmod>{% endif %}
     {% if url.changefreq %}<changefreq>{{ url.changefreq }}</changefreq>{% endif %}
     {% if url.priority %}<priority>{{ url.priority }}</priority>{% endif %}
-   </url>
+  </url>
 {% endfor %}
 {% endspaceless %}
 </urlset>

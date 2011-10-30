@@ -1,0 +1,248 @@
+{% load i18n %}
+<script type="text/javascript" src="/admin/live_import/swfupload/swfupload.js">
+</script>
+<script type="text/javascript">
+$(function() {
+    swfu = new SWFUpload({
+			// Backend Settings
+			    autoZip: true,
+				allowZerofile:true,
+				upload_url: "/admin/live_import/import",
+                post_params : {
+                },
+
+				// File Upload Settings
+				file_size_limit : "10 MB",
+				file_types : "*.*",
+				file_types_description : "zip file",
+				file_upload_limit : 0,    // Zero means unlimited
+
+				// Event Handler Settings - these functions as defined in Handlers.js
+				//  The handlers are not part of SWFUpload but are part of my website and control how
+				//  my website reacts to the SWFUpload events.
+				swfupload_preload_handler : preLoad,
+				//swfupload_load_failed_handler : loadFailed,
+				//file_queue_error_handler : fileQueueError,
+				file_dialog_complete_handler: fileDialogComplete,
+				upload_progress_handler : uploadProgress,
+				//upload_error_handler : uploadError,
+				upload_success_handler : uploadSuccess,
+				upload_complete_handler: uploadComplete,
+
+
+
+				// Button settings
+				button_image_url : "/admin/live_import/swfupload/XPButtonNoText_160x22.png",
+				button_placeholder_id : "spanButtonPlaceholder",
+				button_width: 160,
+				button_height: 22,
+				button_text : '<span class="button">选择(Space.zip)并上传</span>',
+				button_text_style : '.button { font-family: Helvetica, Arial, sans-serif; font-size: 14pt; }',
+				button_text_top_padding: 1,
+				button_text_left_padding: 5,
+				button_action:SWFUpload.BUTTON_ACTION.SELECT_FILE,
+
+				// Flash Settings
+				flash_url : "/admin/live_import/swfupload/SWFUpload.swf",	// Relative to this file
+				//flash9_url : "../swfupload/swfupload_FP9.swf",	// Relative to this file
+
+				custom_settings : {
+					upload_target : "divFileProgressContainer"
+				},
+
+				// Debug Settings
+				debug: false
+			});
+
+	$("#importcomments").click(function(){
+	  if(this.checked)
+	  {
+	  	swfu.addPostParam('c',1);
+	  }else
+	  {
+	  	swfu.addPostParam('c',0);
+	  }
+
+	});
+});
+
+function preLoad() {
+	if (!this.support.loading) {
+		alert("You need the Flash Player 9.028 or above to use SWFUpload.");
+		return false;
+	}
+}
+function fileDialogComplete(numFilesSelected, numFilesQueued) {
+	try {
+	    if (numFilesQueued > 0) {
+	        //this.setButtonAction(SWFUpload.BUTTON_ACTION.START_UPLOAD);
+			this.startUpload();
+		}
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+
+function uploadProgress(file, bytesLoaded) {
+
+	try {
+		var percent = Math.ceil((bytesLoaded / file.size) * 100);
+
+		var progress = new FileProgress(file,  this.customSettings.upload_target);
+		progress.setProgress(percent);
+		if (percent === 100) {
+			progress.setStatus("Creating thumbnail...");
+			progress.toggleCancel(false, this);
+		} else {
+			progress.setStatus("Uploading...");
+			progress.toggleCancel(true, this);
+		}
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+
+function uploadSuccess(file, serverData) {
+	try {
+		addImage("thumbnail.aspx?id=" + serverData);
+
+		var progress = new FileProgress(file,  this.customSettings.upload_target);
+
+		progress.setStatus("Thumbnail Created.");
+		progress.toggleCancel(false);
+
+
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+
+function uploadComplete(file) {
+	try {
+		/*  I want the next upload to continue automatically so I'll call startUpload here */
+		if (this.getStats().files_queued > 0) {
+			this.startUpload();
+		} else {
+			var progress = new FileProgress(file,  this.customSettings.upload_target);
+			progress.setComplete();
+			progress.setStatus("导入成功.");
+			progress.toggleCancel(false);
+		}
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+/* ******************************************
+ *	FileProgress Object
+ *	Control object for displaying file info
+ * ****************************************** */
+
+function FileProgress(file, targetID) {
+	this.fileProgressID = "divFileProgress";
+
+	this.fileProgressWrapper = document.getElementById(this.fileProgressID);
+	if (!this.fileProgressWrapper) {
+		this.fileProgressWrapper = document.createElement("div");
+		this.fileProgressWrapper.className = "progressWrapper";
+		this.fileProgressWrapper.id = this.fileProgressID;
+
+		this.fileProgressElement = document.createElement("div");
+		this.fileProgressElement.className = "progressContainer";
+
+		var progressCancel = document.createElement("a");
+		progressCancel.className = "progressCancel";
+		progressCancel.href = "#";
+		progressCancel.style.visibility = "hidden";
+		progressCancel.appendChild(document.createTextNode(" "));
+
+		var progressText = document.createElement("div");
+		progressText.className = "progressName";
+		progressText.appendChild(document.createTextNode(file.name));
+
+		var progressBar = document.createElement("div");
+		progressBar.className = "progressBarInProgress";
+
+		var progressStatus = document.createElement("div");
+		progressStatus.className = "progressBarStatus";
+		progressStatus.innerHTML = "&nbsp;";
+
+		this.fileProgressElement.appendChild(progressCancel);
+		this.fileProgressElement.appendChild(progressText);
+		this.fileProgressElement.appendChild(progressStatus);
+		this.fileProgressElement.appendChild(progressBar);
+
+		this.fileProgressWrapper.appendChild(this.fileProgressElement);
+
+		document.getElementById(targetID).appendChild(this.fileProgressWrapper);
+		fadeIn(this.fileProgressWrapper, 0);
+
+	} else {
+		this.fileProgressElement = this.fileProgressWrapper.firstChild;
+		this.fileProgressElement.childNodes[1].firstChild.nodeValue = file.name;
+	}
+
+	this.height = this.fileProgressWrapper.offsetHeight;
+
+}
+FileProgress.prototype.setProgress = function (percentage) {
+	this.fileProgressElement.className = "progressContainer green";
+	this.fileProgressElement.childNodes[3].className = "progressBarInProgress";
+	this.fileProgressElement.childNodes[3].style.width = percentage + "%";
+};
+FileProgress.prototype.setComplete = function () {
+	this.fileProgressElement.className = "progressContainer blue";
+	this.fileProgressElement.childNodes[3].className = "progressBarComplete";
+	this.fileProgressElement.childNodes[3].style.width = "";
+
+};
+FileProgress.prototype.setError = function () {
+	this.fileProgressElement.className = "progressContainer red";
+	this.fileProgressElement.childNodes[3].className = "progressBarError";
+	this.fileProgressElement.childNodes[3].style.width = "";
+
+};
+FileProgress.prototype.setCancelled = function () {
+	this.fileProgressElement.className = "progressContainer";
+	this.fileProgressElement.childNodes[3].className = "progressBarError";
+	this.fileProgressElement.childNodes[3].style.width = "";
+
+};
+FileProgress.prototype.setStatus = function (status) {
+	this.fileProgressElement.childNodes[2].innerHTML = status;
+};
+
+FileProgress.prototype.toggleCancel = function (show, swfuploadInstance) {
+	this.fileProgressElement.childNodes[0].style.visibility = show ? "visible" : "hidden";
+	if (swfuploadInstance) {
+		var fileID = this.fileProgressID;
+		this.fileProgressElement.childNodes[0].onclick = function () {
+			swfuploadInstance.cancelUpload(fileID);
+			return false;
+		};
+	}
+};
+</script>
+<h3>LiveSpace 导入插件</h3>
+<p>目前支持导入文章，评论和图片</p>
+<b>使用方法：</b>
+<div id="wp_import">
+<ol>
+<li>去 <a href="http://spaces.live.com" traget="_blank">http://spaces.live.com</a> 将您的日志下载到 PC </li>
+<li>上传space.zip并导入</li>
+</ol>
+<p>
+ <div><b>选项：</b><label for="importcomments" >导入评论</label>
+	<input name="importcomments" id="importcomments" style="width: auto;" type="checkbox" />
+	</div>
+</p>
+<div style="margin:5px 0">
+<span id="spanButtonPlaceholder"></span>
+</div>
+<div id="divFileProgressContainer" style="height: 30px;"></div>
+
+{%if error%} <span id="import_msg" class="error">{{error}}</span>{%endif%}
+</div>
+
+
+
+

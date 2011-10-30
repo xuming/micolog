@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:atom="http://www.w3.org/2005/Atom"
@@ -13,7 +14,7 @@
 	<lastBuildDate>{{last_updated}}</lastBuildDate>
 	<sy:updatePeriod>daily</sy:updatePeriod>
 	<sy:updateFrequency>1</sy:updateFrequency>
-	<generator>Micolog-Python 0.7</generator>
+	<generator>Micolog {{blog.version}}</generator>
 {% for comment in comments %}	<item>
 		<title><![CDATA[由：{{comment.author}} 在 {{comment.entry.title|escape}}]]></title>
 		<link>{{ blog.baseurl }}/{{comment.entry.link|escape}}#comment-{{comment.key.id}}</link>

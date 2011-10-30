@@ -1,5 +1,8 @@
 # Wrapper for loading templates from zipfile.
 import zipfile,logging,os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from google.appengine.dist import use_library
+use_library('django', '1.2')
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 logging.debug("zipload imported")
@@ -24,7 +27,6 @@ def get_from_zipfile(zipfilename,name):
     except (KeyError, RuntimeError), err:
       return None
 
-
 def get_template_sources(template_dirs=None):
     if not template_dirs:
         template_dirs = settings.TEMPLATE_DIRS
@@ -43,7 +45,7 @@ def load_template_source(template_name, template_dirs=None):
     template_file='/'.join((_TEMPLATES_, template_name))
     for zipfile in get_template_sources(template_dirs):
         try:
-            return (get_from_zipfile(zipfile,template_file), os.path.join(zipfile,template_file))
+            return get_from_zipfile(zipfile,template_file), os.path.join(zipfile,template_file)
         except IOError:
             tried.append(zipfile)
     if tried:

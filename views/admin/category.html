@@ -1,8 +1,8 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
 {% block h_message %}
   {%if postback%}
-    <div class="info {%if not result%}error{%endif%}">{{msg}}</div>
+    <div class="info {%if not result%}error{%endif%}">{{msg|safe}}</div>
   {%endif%}
 {% endblock %}
  {% block content %}

@@ -1,5 +1,5 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
 {% block header %}
 <style type='text/css' media='all'>
 	div#TB_title {
@@ -125,7 +125,7 @@
 
 {% block h_message %}
   {%if postback%}
-    <div class="info {%if not result%}error{%endif%}">{{msg}}</div>
+    <div class="info {%if not result%}error{%endif%}">{{msg|safe}}</div>
   {%endif%}
 {% endblock %}
 {% block nav2 %}
@@ -275,7 +275,7 @@
 <div class="stuffbox" id="tag">
 <h3>{% trans "Tag" %}</h3>
 <div class="inside" style="float:left;">
-	<input type="text" id="tags" onkeyup="this.value=this.value.replace(/，/g, ',');" value="{{entry.strtags|escape}}" tabindex="1" size="50" name="tags"/><br/>
+	<input type="text" id="tags" value="{{entry.strtags|escape}}" tabindex="1" size="50" name="tags"/><br/>
 </div>
 {%include "selecttags.html"%}
 </div>

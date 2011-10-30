@@ -122,10 +122,9 @@ def autoPingback(sourceURI, reST = None, HTML = None):
 
     The following specification details how this code should work:
         http://www.hixie.ch/specs/pingback/pingback"""
-    assert reST != None or HTML != None
+    assert reST is not None or HTML is not None
 
-
-    if reST != None:
+    if reST is not None:
         links = reSTLinks(reST)
     else:
         links = htmlLinks(HTML)

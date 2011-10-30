@@ -1,11 +1,19 @@
+{% extends "base.html" %}
 {% load i18n %}
-{% extends "setup_base.html" %}
-{% block nav2_1 %}
-<li><a href="/admin/setup"  class="current">{%trans "Basic" %}</a></li>
+{% block nav2 %}
+<div id="dnav2">
+<ul>{% block nav2_1 %}
+<li><a href="/admin/setup">{%trans "Basic" %}</a></li>
 <li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
 <li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
-<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
-{% endblock%}
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>{% endblock %}
+{%for menu in self.blog.plugins.get_setupmenu %}
+<li><a href="{{menu.url}}" {%ifequal m_id menu.m_id%}class="current"{%endifequal%} >{{menu.title}}</a></li>
+{%endfor%}
+</ul>
+<div style="clear:both"></div>
+</div>
+{% endblock %}
 {% block content %}
      <!-- Admin Full Width -->
     <div id="m_admin">
@@ -123,7 +131,7 @@
                 <td><input type="checkbox" size="45" {% if blog.comment_notify_mail %} checked="checked" {%endif%}  id="enable_memcache" name="comment_notify_mail" />
                </td>
                 </tr>
-    <tr valign="top">
+  <tr valign="top">
                 <th scope="row">{% trans "Enable memcache:"%}</th>
                 <td><input type="checkbox" size="45" {% if blog.enable_memcache %} checked="checked" {%endif%}  id="enable_memcache" name="enable_memcache" />
                </td>
@@ -137,7 +145,12 @@
   <tr valign="top">
                 <th scope="row">{% trans "Allow Pingback:"%}</th>
                 <td><input type="checkbox" size="45" {% if blog.allow_pingback %} checked="checked" {%endif%}  id="allow_pingback" name="allow_pingback" />
-               </td>
+                </td>
+                </tr>
+   <tr valign="top">
+                <th scope="row">{% trans "Admin Essential:"%}</th>
+                <td><input type="checkbox" size="45" {% if blog.admin_essential %} checked="checked" {%endif%}  id="admin_essential" name="admin_essential" />
+                </td>
                 </tr>
             </table>
             <h3>{% trans "Xmlrpc  setting"%}</h3>
@@ -160,7 +173,7 @@
 <p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
 <input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice,link_format" name="str_options"/>
-<input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback" name="bool_options"/>
+<input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback,admin_essential" name="bool_options"/>
 <input type="hidden" value="posts_per_page,comments_order,comments_per_page,comment_check_type,avatar_style" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>
 

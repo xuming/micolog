@@ -5,7 +5,7 @@
 <title>{%trans "Files"%}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="/static/upload/upload.css" type="text/css" media="screen" />
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script type="text/javascript" src="/static/upload/ajaxupload.js"></script>
 <script type="text/javascript">
 function fixHeight(){$('#listArea').css('height',(document.body.clientHeight-56)+'px');}
@@ -55,7 +55,7 @@ new AjaxUpload(button, {
 			.click(function(){selectID=file.id;$('#listBody tr').removeClass('select');$(this).removeClass('hover').addClass('select');$('#btnClear').show();})
             .dblclick(function(){callback('{{blog.baseurl}}/media/'+file.id+'/'+file.name);});
 
-		},
+		}
 });
 
 });
@@ -70,8 +70,7 @@ if (typeof callback=="undefined")
 
 	callback=function(e){
 	        var win = tinyMCEPopup.getWindowArg("window");
-	        //就这句关键，IMG_URI应该由服务端生成
-	        win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = e;
+	        //戮螘饪ぢ关硷拷_URI应赂膿煞锟斤拷	        win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = e;
 	        tinyMCEPopup.close();
 	}
 }
@@ -79,19 +78,14 @@ if (typeof callback=="undefined")
 </head>
 <body style="margin:0px">
 	<div id="upload">
-
 		<div id="buttonArea">
-
-			<div id="controlBtns" >
-	<span style="color:red;" id="msg"></span>
-
-			</div>
- 		<a href="javascript:void(0);" id="addFiles" class="btn"><span>
-           <div style="width: 16px; float: left; padding-right: 5px; background-image: url(/static/upload/img/add2.gif); background-repeat: no-repeat; height: 18px;"></div>
-
-			<div id="divAddFiles" style="width:80px;">{% trans "New file"%}</div></span></a>
-
-
+			<div id="controlBtns" ><span style="color:red;" id="msg"></span></div>
+ 		<a href="javascript:void(0);" id="addFiles" class="btn">
+            <span>
+            <div style="width: 16px; float: left; padding-right: 5px; background-image: url(/static/upload/img/add2.gif); background-repeat: no-repeat; height: 18px;"></div>
+    		<div id="divAddFiles" style="width:80px;">{% trans "New file"%}</div>
+            </span>
+        </a>
 		</div>
 		<div id="listArea" style="height:165px">
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -101,10 +95,8 @@ if (typeof callback=="undefined")
 		<tr onclick="selectID='{{file.key}}';$('#listBody tr').removeClass('select');$(this).removeClass('hover').addClass('select');$('#btnClear').show();" ondblclick="callback('{{blog.baseurl}}/media/{{file.key}}/{{file.name}}');"><td>{{file.name}}</td><td>{{file.size|filesizeformat}}</td><td><a href="javascript:void(0);" id="btnClear" onclick="$(this).parent().parent().dblclick();" class="btn" ><span><img src="/static/upload/img/blueball.gif" /> {% trans "Add"%}</span></a></td></tr>
 		{%endfor%}
 				</tbody>
-
 			</table>
 		</div>
-
 	</div>
 </body>
 </html>

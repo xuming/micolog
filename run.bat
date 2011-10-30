@@ -1,1 +1,1 @@
-dev_appserver.py . --debug
+dev_appserver.py --skip_sdk_update_check --debug .
