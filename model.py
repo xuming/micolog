@@ -170,7 +170,7 @@ class Blog(db.Model):
     blognotice=db.TextProperty(default='')
     domain=db.StringProperty()
     show_excerpt=db.BooleanProperty(default=True)
-    version=0.742
+    version=0.743
     timedelta=db.FloatProperty(default=8.0)# hours
     language=db.StringProperty(default="en-us")
     sitemap_entries=db.IntegerProperty(default=30)

@@ -1,5 +1,8 @@
 ﻿#history
 
+2011/11/09 0.743 release (http://eric.cloud-mes.com)
+Final version of Google App Engine python runtime 2.5.
+
 2011/10/05 0.742 release (http://eric.cloud-mes.com/)
 Minor Page/CSS layout adjust for Chromium.
 
