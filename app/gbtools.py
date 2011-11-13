@@ -72,14 +72,14 @@ def string2List(ustring):
         utmp=[]
         for uchar in ustring:
                 if is_other(uchar):
-                        if len(utmp)==0:
+                        if not len(utmp):
                                 continue
                         else:
                                 retList.append("".join(utmp))
                                 utmp=[]
                 else:
                         utmp.append(uchar)
-        if len(utmp)!=0:
+        if len(utmp):
                 retList.append("".join(utmp))
         return retList
 

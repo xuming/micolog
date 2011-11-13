@@ -17,7 +17,7 @@
 	<language>zh-cn</language>
 	<sy:updatePeriod>daily</sy:updatePeriod>
 	<sy:updateFrequency>1</sy:updateFrequency>
-	<generator>Micolog-Python 0.7</generator>
+	<generator>Micolog {{blog.version}}</generator>
 		{% for entry in entries %}<item>
 		<title>{{entry.title|escape}}</title>
 		<link>{{ blog.baseurl }}/{{entry.link|escape}}</link>
@@ -29,7 +29,7 @@
 
 		<guid isPermaLink="false">{{ blog.baseurl }}/?p={{entry.post_id}}</guid>
 		<description><![CDATA[{{entry.excerpt|escape}}]]></description>
-			<content:encoded><![CDATA[{{entry.content}}
+			<content:encoded><![CDATA[{{entry.content|safe}}
 {%if entry.relateposts%}
 <h4>相关阅读</h4>
 <ul>

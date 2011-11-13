@@ -1,1 +1,1 @@
-dev_appserver.py -c ..\micolog
+dev_appserver.py --skip_sdk_update_check -c --debug .

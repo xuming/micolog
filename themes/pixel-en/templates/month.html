@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content%}
+
+
+<div id="main">
+<div id="contentwrapper">
+{% if entries %}
+
+{% for entry in entries %}
+<div class="topPost">
+  <h2 class="topTitle"><a href="/{{ entry.link }}" title="Permanent Link to {{entry.title}}">{{entry.title}}</a></h2>
+  <p class="topMeta">by {{entry.author}} on {{entry.date|datetz:"F jS, Y"}}, under {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%}</p>
+  <div class="topContent">{{entry.content_excerpt|safe}}</div>
+  <span class="topComments"><a href="/{{entry.link}}#comments">Comments({{entry.commentcount}})&#187;</a></span>
+  <span class="topTags">{% if entry.strtags %}{%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%}</span>
+  <span class="topMore"><a href="/{{ entry.link }}">more...</a></span>
+<div class="cleared"></div>
+</div> <!-- Closes topPost --><br/>
+{% endfor %}
+
+{% else %}
+
+<div class="topPost">
+  <h2 class="topTitle">Not Found</h2>
+  <div class="topContent"><p>Sorry, but you are looking for something that isn't here. You can search again by using <a href="#searchform">this form</a>...</p></div>
+</div> <!-- Closes topPost -->
+
+{% endif %}
+
+<div id="nextprevious">
+<div class="alignleft">{% if show_next %}<a href="/page/{{ pageindex|add:"1" }}">&laquo; Older Entries</a>{%endif%}</div>
+<div class="alignright">{% if show_prev %}<a href="/page/{{ pageindex|add:"-1" }}">&laquo; Newer Entries</a>{%endif%}</div>
+<div class="cleared"></div>
+</div>
+
+</div> <!-- Closes contentwrapper-->
+
+{% include "sidebar.html" %}
+<div class="cleared"></div>
+</div><!-- Closes Main -->
+{% endblock %}

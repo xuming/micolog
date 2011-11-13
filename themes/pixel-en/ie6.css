@@ -1,0 +1,17 @@
+#main #welcome {
+  background: #020202;
+  }
+
+#contentwrapper .pageTitle, #contentwrapper2 .pageTitle {
+  background: #020202;
+  }
+
+.topPost span.topComments, .topPost span.topMore, .topPost span.topTags {
+  background: #020202;
+  padding: 0 10px;
+  }
+
+#sidebars .sidebarbox {
+  background: #020202;
+  }
+

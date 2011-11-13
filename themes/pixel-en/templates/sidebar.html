@@ -1,0 +1,109 @@
+<div id="sidebars">
+
+<div id="sidebar_full">
+<ul>
+	<li>
+	<div class="sidebarbox">
+	{{blog.blognotice|safe}}
+	</div>
+	</li>
+
+	<li>
+	<div class="sidebarbox">
+	<h2>Recent Posts</h2>
+	<ul>
+		{% for entry in blog.recentposts %}
+		<li><a href="/{{entry.link|escape}}" title="{{entry.title|escape}}">{{entry.title|escape}}({{entry.readtimes}})</a></li>
+		{%endfor%}
+	</ul>
+	</div>
+	</li>
+
+	<li>
+	<div class="sidebarbox">
+	<h2>Browse by tags</h2>
+	{% for t in alltags %}
+	<a title="{{ t.tagcount }} pages" href="/tag/{{t.tag|urlencode}}"><span style='font-size:{{ t.tagcount|add:9 }}px;'>{{t.tag}}</span></a>
+	{%endfor%} 
+	</div>
+	</li>
+	
+	<li>
+	<div class="sidebarbox">
+	<h2>Archives</h2>
+	<ul>
+	{%for archive in archives%}
+	<li><a href="/{{archive.year}}/{{archive.month}}">{{archive.monthyear}}({{archive.entrycount}})</a></li>
+	{%endfor%}	
+	</ul>
+	</div>
+	</li>
+	
+	<li>
+	<div class="sidebarbox">
+	<h2>Other Links</h2>
+	{% if blogroll %}
+	<ul>
+		{%for link in blogroll%}
+		<li><a href="{{link.href}}" target="_blank">{{link.linktext}}</a></li>
+		{%endfor%}
+	</ul>
+	{% endif %}
+	</div>
+	</li>
+</ul>
+</div><!-- Closes Sidebar_full -->
+
+<div id="sidebar_left">
+<ul>
+	<li>
+	<div class="sidebarbox">
+	<h2>Categories</h2>
+	<ul>
+	{%for cate in categories%}
+	<li><a href="/category/{{cate.slug}}">{{cate.name}}({{cate.count}})</a></li>
+	{%endfor%}
+	</ul>
+	</div>
+	</li>
+</ul>
+</div> <!-- Closes Sidebar_left -->
+
+<div id="sidebar_right">
+<ul>
+<li>
+<div class="sidebarbox">
+<h2>Meta</h2>
+<ul id="langpref"></ul>
+</div>
+</li>
+</ul>
+</div> <!-- Closes Sidebar_right -->
+
+<div class="cleared"></div>
+
+<script type="text/javascript">
+	<!--//
+		function loginp()
+		{
+		   $.getJSON("/do/info_login", function(ret){
+				  if( ret.islogin)
+				  {
+					html='<li><a href="{{self.logouturl}}">Logoff</a></li>';
+					if (ret.isadmin)
+					html+=' <li><a href="/admin">Admin</a></li>';
+					$('#langpref').html(html);
+
+				  }
+				  else
+				  {
+					$('#langpref').html('<li><a href="/admin">Logon</a></li>');
+					if(typeof(get_check_area)!='undefined')
+						get_check_area({{blog.comment_check_type}});
+				  }
+		   });
+		}
+		loginp();
+	//-->
+</script>
+</div>

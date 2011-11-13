@@ -1,4 +1,6 @@
 .DS_Store
+.idea
+*.bak
 *.pyc
 *.pyo
 .bzr

@@ -13,14 +13,16 @@ __history__ = """
 0.0.2: 1/21/03 - First working version.
 0.0.1: 1/21/03 - Initial version.  Thanks to Mark Pilgrim for helping me figure some module basics out.
 """
-import httplib, urllib, urlparse, re
+import urllib, re
 from google.appengine.api import urlfetch
 import logging
-"""Everything I needed to know about trackback I learned from the trackback tech specs page
-http://www.movabletype.org/docs/mttrackback.html.  All arguments are optional.  This allows us to create an empty TrackBack object,
-then use autodiscovery to populate its attributes.
-"""
+
 class TrackBack:
+    """
+    Everything I needed to know about trackback I learned from the trackback tech specs page
+    http://www.movabletype.org/docs/mttrackback.html.  All arguments are optional.  This allows us to create an empty TrackBack object,
+    then use autodiscovery to populate its attributes.
+    """
 
     def __init__(self, tbUrl=None, title=None, excerpt=None, url=None, blog_name=None):
         self.tbUrl = tbUrl

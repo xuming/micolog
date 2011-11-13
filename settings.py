@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Django settings for the example project.
-import os
-
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = False
 
 ##LANGUAGE_CODE = 'zh-CN'

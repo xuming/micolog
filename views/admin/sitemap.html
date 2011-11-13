@@ -1,12 +1,19 @@
-﻿{% load i18n %}
-{% extends "setup_base.html" %}
-{% block nav2_1 %}
+﻿{% extends "base.html" %}
+{% load i18n %}
+{% block nav2 %}
+<div id="dnav2">
+<ul>{% block nav2_1 %}
 <li><a href="/admin/setup">{%trans "Basic" %}</a></li>
 <li><a href="/admin/import">{%trans "Import/Export" %}</a></li>
-<li><a href="/admin/sitemap" class="current">{%trans "Sitemap" %}</a></li>
-<li><a href="/admin/tools">{%trans "Tools" %}</a></li>
+<li><a href="/admin/sitemap">{%trans "Sitemap" %}</a></li>
+<li><a href="/admin/tools">{%trans "Tools" %}</a></li>{% endblock %}
+{%for menu in self.blog.plugins.get_setupmenu %}
+<li><a href="{{menu.url}}" {%ifequal m_id menu.m_id%}class="current"{%endifequal%} >{{menu.title}}</a></li>
+{%endfor%}
+</ul>
+<div style="clear:both"></div>
+</div>
 {% endblock %}
-
 {% block content %}
 
 	 <!-- Admin Full Width -->

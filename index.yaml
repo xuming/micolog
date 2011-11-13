@@ -46,6 +46,11 @@ indexes:
   properties:
   - name: email
   - name: date
+
+- kind: Comment
+  properties:
+  - name: email
+  - name: date
     direction: desc
 
 - kind: Comment
@@ -107,12 +112,6 @@ indexes:
   - name: entrytype
   - name: published
   - name: date
-
-- kind: Entry
-  properties:
-  - name: entrytype
-  - name: published
-  - name: date
     direction: desc
 
 - kind: Entry
@@ -128,6 +127,23 @@ indexes:
   - name: published
   - name: slug
   - name: date
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: sticky
+    direction: desc
+  - name: date
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: sticky
+    direction: desc
+  - name: date
+    direction: desc
 
 - kind: Entry
   properties:

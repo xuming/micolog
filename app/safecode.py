@@ -10,7 +10,7 @@
 # Description: 负责验证码生成。
 # Modify Date: 2008-08-06
 
-import md5
+import hashlib
 import random
 from pngcanvas import PNGCanvas
 

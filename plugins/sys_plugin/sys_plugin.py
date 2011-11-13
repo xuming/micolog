@@ -67,22 +67,18 @@ class sys_plugin(Plugin):
 		self.register_urlmap('sys_plugin/setup',self.setup)
 
 		self.register_urlhandler('/admin/sys_plugin/notify',NotifyHandler)
-		self.register_setupmenu('sysplugin_notify',_('Notify'),'/admin/sys_plugin/notify')
+		self.register_setupmenu('sysplugin_notify','Notify','/admin/sys_plugin/notify')
 
 		self.register_action('pre_comment',self.pre_comment)
 		self.register_action('save_comment',self.save_comment)
 		self.sbody=OptionSet.getValue('sys_plugin_sbody',SBODY)
 		self.bbody=OptionSet.getValue('sys_plugin_bbody',BBODY)
 
-
-
-
 	def head(self,content,blog=None,*arg1,**arg2):
 		content=content+'<meta name="generator" content="Micolog %s" />'%blog.version
 		return content
 
 	def footer(self,content,blog=None,*arg1,**arg2):
-
 		return content+'<!--Powered by micolog %s-->'%blog.version
 
 	def setup(self,page=None,*arg1,**arg2):
@@ -119,12 +115,12 @@ class sys_plugin(Plugin):
 		for s in self.blocklist.splitlines():
 			if comment.content.find(s)>-1:
 				raise Exception
+
 	def save_comment(self,comment,*arg1,**arg2):
 		if self.blog.comment_notify_mail:
 			self.notify(comment)
 
 	def notify(self,comment):
-
 		try:
 						sbody=self.sbody.decode('utf-8')
 		except:

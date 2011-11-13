@@ -13,11 +13,11 @@
 {% if entry %}
 
 <div id="post-{{entry.key}}">
-<div class="nifty"><h2><a href="/{{ entry.link }}" rel="bookmark" title="Permanent Link to {{entry.title}}">{{entry.title}}</a> <span class="date">{{entry.date|datetz:"F jS, Y"}}</span></h2></div>
+<div class="nifty"><h2><a href="/{{ entry.link|safe }}" rel="bookmark" title="Permanent Link to {{entry.title}}">{{entry.title}}</a> <span class="date">{{entry.date|datetz:"F jS, Y"}}</span></h2></div>
 <div class="en_body">
-{{ entry.content }}
+{{ entry.content|safe }}
 </div>
-<div class="meta">{%if self.is_admin%}<a href="{{entry.edit_url}}">Edit this entry</a>  {%endif%}  </div>
+<div class="meta">{%if self.is_admin%}<a href="{{entry.edit_url|safe}}">Edit this entry</a>  {%endif%}  </div>
 
 </div>
 </div>

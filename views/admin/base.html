@@ -6,7 +6,7 @@
     <meta name="generator" content="Mlog" />
     <link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
      <script type="text/javascript" src="/static/js/utils.js"></script>
-     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>
 var userSettings = {'url':'/','uid':'{{self.author.key}}','time':'{% now "r" %}'};
 
@@ -48,7 +48,9 @@ $('#more').click(
 <div id="header">
     <div class="headings">
       <h1><a href="/" >{{ blog.title }}</a></h1>
+{%if not blog.admin_essential%}
       <h2>{{ blog.subtitle }}</h2>
+{%endif%}
       <div class="clear"></div>
     </div>
 </div>
@@ -95,7 +97,7 @@ $('#more').click(
     {% endblock %}
     <!-- Featured Ends -->
 
-    {% block content %}{{content}}{% endblock %}
+    {% block content %}{{content|safe}}{% endblock %}
 
 
 
@@ -108,15 +110,16 @@ $('#more').click(
 <div id="footer">
 {%mf admin_footer%}
     <div class="fontmlog">
+        {%if not blog.admin_essential%}
         <div id="credits">
             <!-- Credit link can be removed by giving a $5 donation, it'll help us all build good karma! -->
-            <div class="flogo">
+            <div class="flogo" style='background : url(/static/images/mlog.png) no-repeat;'>
                 <a href="http://micolog.xuming.net"> Micolog {{blog.version}}</a> for <br><a href="http://code.google.com/appengine/" > google app engine</a>
             </div>
             <span>Theme from: <a href="http://www.freshpressthemes.com" title="See more fresh themes" target="_blank">FreshPress Themes</a> {% now "Y" %}</span>
             <!-- Do Not Remove -->
-
         </div>
+        {%endif%}
          <div class="clear"></div>
 
     </div>

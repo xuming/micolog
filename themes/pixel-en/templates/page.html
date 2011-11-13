@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} {{entry.title}} - {{blog.title}} {% endblock %}
+{% block content%}
+
+<div id="main">
+
+<div id="contentwrapper">
+{% if entry %}
+
+<div class="topPost">
+	<h2 class="topTitle"><a href="/{{ entry.link }}">{{entry.title}}</a></h2>
+	<div class="topContent">
+	{%mf entry_content %}
+	{{ entry.content|safe }}
+	{%endmf%}
+	</div>
+	<div class="cleared"></div>
+</div> <!-- Closes topPost -->
+<br/><small>{%if self.is_admin%}<a href="{{entry.edit_url|safe}}">Edit</a>{%endif%}</small>
+
+<div id="comments">
+{% include "comments.html" %}
+</div> <!-- Closes Comment -->
+
+{%endif%}
+</div><!-- Closes contentwrapper-->
+{% include "sidebar.html" %}
+<div class="cleared"></div>
+</div><!-- Closes Main -->
+{% endblock %}

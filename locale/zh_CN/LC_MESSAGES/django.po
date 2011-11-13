@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: micolog 0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-10 16:56+0800\n"
-"PO-Revision-Date: 2010-10-10 21:36+0800\n"
-"Last-Translator: SkyCloud <hongwei.xjtu@gmail.com>\n"
+"PO-Revision-Date: 2011-10-30 19:19+0800\n"
+"Last-Translator: Eric Guo <eric.guocz@gmail.com>\n"
 "Language-Team: micolog <coolchyni@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -170,7 +170,7 @@ msgstr "这是一个测试"
 
 #: .\model.py:434
 msgid "..more"
-msgstr "(..更多内容)"
+msgstr "..更多"
 
 #: .\model.py:901
 msgid "Hello world!"
@@ -494,7 +494,7 @@ msgstr "邮件"
 
 #: .\views\admin\comments.html.py:46
 msgid "IP"
-msgstr ""
+msgstr "IP"
 
 #: .\views\admin\comments.html.py:46
 msgid "Entry"
@@ -630,7 +630,7 @@ msgstr "上传日期"
 
 #: .\views\admin\filemanager.html.py:76
 msgid "Url"
-msgstr ""
+msgstr "URL"
 
 #: .\views\admin\filemanager.html.py:77
 msgid "Download"
@@ -696,7 +696,7 @@ msgstr "链接描述"
 
 #: .\views\admin\link.html.py:57
 msgid "Example: Xuming's Blog"
-msgstr ""
+msgstr "例子:徐明的博客"
 
 #: .\views\admin\links.html.py:7
 msgid "Manage Links"

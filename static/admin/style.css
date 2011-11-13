@@ -510,7 +510,6 @@ background : #d54e21;
 color : #fff;
 }
 #footer .flogo {
-background : url(/static/images/mlog.png) no-repeat;
 width : 400px;
 height : 32px;
 padding-left : 40px;
@@ -819,7 +818,7 @@ width:300px;
 #postarea a{cursor:pointer}
 #postarea .title{float:left}
 #postarea .editor-toolbar span {
-font-weight : blod;
+font-weight : bold;
 height : 20px;
 margin : 0 5px;
 padding : 3px 5px 0;
@@ -900,7 +899,7 @@ padding:0 0 6px;
 
 }
 #nav2 ul{height:20px;margin-bottom:0;list-style-type:none;margin-left:0;padding:0}
-#nav2 ul li{display:bolck;float:left;}
+#nav2 ul li{display:block;float:left;}
 
 #nav2 a {
 color : #2583ad;

@@ -3,6 +3,7 @@ from model import OptionSet
 from google.appengine.ext.webapp import template
 from google.appengine.ext import zipserve
 RE_FIND_GROUPS = re.compile('\(.*?\)')
+
 class PluginIterator:
 	def __init__(self, plugins_path='plugins'):
 		self.iterating = False
@@ -26,10 +27,10 @@ class PluginIterator:
 			value = self.list[self.cursor]
 			self.cursor += 1
 			if os.path.isdir(os.path.join(self.plugins_path, value)):
-				return (value,'%s.%s.%s'%(self.plugins_path,value,value))
+				return value,'%s.%s.%s'%(self.plugins_path,value,value)
 			elif value.endswith('.py') and not value=='__init__.py':
 				value=value[:-3]
-				return (value,'%s.%s'%(self.plugins_path,value))
+				return value,'%s.%s'%(self.plugins_path,value)
 			else:
 				return self.next()
 
@@ -113,7 +114,7 @@ class Plugins:
 		if active:
 			plugin=self.getPluginByName(iname)
 			if plugin:
-				if (iname not in self.active_list):
+				if iname not in self.active_list:
 					self.active_list.append(iname)
 					OptionSet.setValue("PluginActive",self.active_list)
 				plugin.active=active
@@ -133,7 +134,7 @@ class Plugins:
 		else:
 			plugin=self.getPluginByName(iname)
 			if plugin:
-				if (iname in self.active_list):
+				if iname in self.active_list:
 					self.active_list.remove(iname)
 					OptionSet.setValue("PluginActive",self.active_list)
 				plugin.active=active
@@ -220,8 +221,6 @@ class Plugins:
 		else:
 			return {}
 
-
-
 	def tigger_filter(self,name,content,*arg1,**arg2):
 		for func in self.get_filter_plugins(name):
 			content=func(content,*arg1,**arg2)
@@ -272,7 +271,6 @@ class Plugin:
 
 	def register_filter(self,name,func):
 		self._filter[name]=func
-
 
 	def register_action(self,name,func):
 		self._action[name]=func
