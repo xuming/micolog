@@ -37,11 +37,6 @@ for applications.
 Django template documentation is available at:
 http://www.djangoproject.com/documentation/templates/
 """
-
-
-
-
-
 import md5
 import os,logging
 
