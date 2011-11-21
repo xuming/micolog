@@ -1,0 +1,881 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. micolog.model &mdash; Micolog v0.8 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Micolog v0.8 documentation" href="../index.html" />
+    <link rel="up" title="Library Reference" href="index.html" />
+    <link rel="prev" title="1. micolog.utils" href="micolog.utils.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="micolog.utils.html" title="1. micolog.utils"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Micolog v0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Library Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-micolog.model">
+<span id="micolog-model"></span><h1>2. micolog.model<a class="headerlink" href="#module-micolog.model" title="Permalink to this headline">¶</a></h1>
+<p>DB model for micolog.
+This module define the struct of gae db store.</p>
+<dl class="class">
+<dt id="micolog.model.Blog">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Blog</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Blog" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.Blog.owner">
+<tt class="descname">owner</tt><a class="headerlink" href="#micolog.model.Blog.owner" title="Permalink to this definition">¶</a></dt>
+<dd><p>A user property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.author">
+<tt class="descname">author</tt><a class="headerlink" href="#micolog.model.Blog.author" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.rpcuser">
+<tt class="descname">rpcuser</tt><a class="headerlink" href="#micolog.model.Blog.rpcuser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.rpcpassword">
+<tt class="descname">rpcpassword</tt><a class="headerlink" href="#micolog.model.Blog.rpcpassword" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.description">
+<tt class="descname">description</tt><a class="headerlink" href="#micolog.model.Blog.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string that can be longer than 500 bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.baseurl">
+<tt class="descname">baseurl</tt><a class="headerlink" href="#micolog.model.Blog.baseurl" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.urlpath">
+<tt class="descname">urlpath</tt><a class="headerlink" href="#micolog.model.Blog.urlpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.title">
+<tt class="descname">title</tt><a class="headerlink" href="#micolog.model.Blog.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.subtitle">
+<tt class="descname">subtitle</tt><a class="headerlink" href="#micolog.model.Blog.subtitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.entrycount">
+<tt class="descname">entrycount</tt><a class="headerlink" href="#micolog.model.Blog.entrycount" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.posts_per_page">
+<tt class="descname">posts_per_page</tt><a class="headerlink" href="#micolog.model.Blog.posts_per_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.feedurl">
+<tt class="descname">feedurl</tt><a class="headerlink" href="#micolog.model.Blog.feedurl" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.theme_name">
+<tt class="descname">theme_name</tt><a class="headerlink" href="#micolog.model.Blog.theme_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.enable_memcache">
+<tt class="descname">enable_memcache</tt><a class="headerlink" href="#micolog.model.Blog.enable_memcache" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.link_format">
+<tt class="descname">link_format</tt><a class="headerlink" href="#micolog.model.Blog.link_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.comment_notify_mail">
+<tt class="descname">comment_notify_mail</tt><a class="headerlink" href="#micolog.model.Blog.comment_notify_mail" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.comments_order">
+<tt class="descname">comments_order</tt><a class="headerlink" href="#micolog.model.Blog.comments_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.comments_per_page">
+<tt class="descname">comments_per_page</tt><a class="headerlink" href="#micolog.model.Blog.comments_per_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.comment_check_type">
+<tt class="descname">comment_check_type</tt><a class="headerlink" href="#micolog.model.Blog.comment_check_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.avatar_style">
+<tt class="descname">avatar_style</tt><a class="headerlink" href="#micolog.model.Blog.avatar_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.blognotice">
+<tt class="descname">blognotice</tt><a class="headerlink" href="#micolog.model.Blog.blognotice" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string that can be longer than 500 bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.domain">
+<tt class="descname">domain</tt><a class="headerlink" href="#micolog.model.Blog.domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.show_excerpt">
+<tt class="descname">show_excerpt</tt><a class="headerlink" href="#micolog.model.Blog.show_excerpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.timedelta">
+<tt class="descname">timedelta</tt><a class="headerlink" href="#micolog.model.Blog.timedelta" title="Permalink to this definition">¶</a></dt>
+<dd><p>A float property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.language">
+<tt class="descname">language</tt><a class="headerlink" href="#micolog.model.Blog.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.sitemap_entries">
+<tt class="descname">sitemap_entries</tt><a class="headerlink" href="#micolog.model.Blog.sitemap_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.sitemap_include_category">
+<tt class="descname">sitemap_include_category</tt><a class="headerlink" href="#micolog.model.Blog.sitemap_include_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.sitemap_include_tag">
+<tt class="descname">sitemap_include_tag</tt><a class="headerlink" href="#micolog.model.Blog.sitemap_include_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.sitemap_ping">
+<tt class="descname">sitemap_ping</tt><a class="headerlink" href="#micolog.model.Blog.sitemap_ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.default_link_format">
+<tt class="descname">default_link_format</tt><a class="headerlink" href="#micolog.model.Blog.default_link_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.allow_pingback">
+<tt class="descname">allow_pingback</tt><a class="headerlink" href="#micolog.model.Blog.allow_pingback" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Blog.allow_trackback">
+<tt class="descname">allow_trackback</tt><a class="headerlink" href="#micolog.model.Blog.allow_trackback" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean property.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.tigger_filter">
+<tt class="descname">tigger_filter</tt><big>(</big><em>name</em>, <em>content</em>, <em>*arg1</em>, <em>**arg2</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.tigger_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.tigger_action">
+<tt class="descname">tigger_action</tt><big>(</big><em>name</em>, <em>*arg1</em>, <em>**arg2</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.tigger_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.tigger_urlmap">
+<tt class="descname">tigger_urlmap</tt><big>(</big><em>url</em>, <em>*arg1</em>, <em>**arg2</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.tigger_urlmap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.get_ziplist">
+<tt class="descname">get_ziplist</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.get_ziplist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.save">
+<tt class="descname">save</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.initialsetup">
+<tt class="descname">initialsetup</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.initialsetup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.get_theme">
+<tt class="descname">get_theme</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.get_theme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.get_langs">
+<tt class="descname">get_langs</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.get_langs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.cur_language">
+<tt class="descname">cur_language</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.cur_language" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.rootpath">
+<tt class="descname">rootpath</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Blog.rootpath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.hotposts">
+<tt class="descname">hotposts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.hotposts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.recentposts">
+<tt class="descname">recentposts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.recentposts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Blog.postscount">
+<tt class="descname">postscount</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#micolog.model.Blog.postscount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Category">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Category</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Category" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.Category.uid">
+<tt class="descname">uid</tt><a class="headerlink" href="#micolog.model.Category.uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.name">
+<tt class="descname">name</tt><a class="headerlink" href="#micolog.model.Category.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.slug">
+<tt class="descname">slug</tt><a class="headerlink" href="#micolog.model.Category.slug" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.parent_cat">
+<tt class="descname">parent_cat</tt><a class="headerlink" href="#micolog.model.Category.parent_cat" title="Permalink to this definition">¶</a></dt>
+<dd><p>A property that represents a many-to-one reference to another model.</p>
+<p>For example, a reference property in model A that refers to model B forms
+a many-to-one relationship from A to B: every instance of A refers to a
+single B instance, and every B instance can have many A instances refer
+to it.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.date">
+<tt class="descname">date</tt><a class="headerlink" href="#micolog.model.Category.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of all of our date/time properties.</p>
+<p>We handle common operations, like converting between time tuples and
+datetime instances.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.posts">
+<tt class="descname">posts</tt><a class="headerlink" href="#micolog.model.Category.posts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.count">
+<tt class="descname">count</tt><a class="headerlink" href="#micolog.model.Category.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Category.put">
+<tt class="descname">put</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Category.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Category.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Category.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Category.ID">
+<tt class="descname">ID</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Category.ID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.Category.get_from_id">
+<em class="property">classmethod </em><tt class="descname">get_from_id</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#micolog.model.Category.get_from_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.children">
+<tt class="descname">children</tt><a class="headerlink" href="#micolog.model.Category.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.Category.allTops">
+<em class="property">classmethod </em><tt class="descname">allTops</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Category.allTops" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Category.category_set">
+<tt class="descname">category_set</tt><a class="headerlink" href="#micolog.model.Category.category_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inverse of the Reference property above.</p>
+<p>We construct reverse references automatically for the model to which
+the Reference property is pointing to create the one-to-many property for
+that model.  For example, if you put a Reference property in model A that
+refers to model B, we automatically create a _ReverseReference property in
+B called a_set that can fetch all of the model A instances that refer to
+that instance of model B.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Archive">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Archive</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Archive" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.Archive.monthyear">
+<tt class="descname">monthyear</tt><a class="headerlink" href="#micolog.model.Archive.monthyear" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Archive.year">
+<tt class="descname">year</tt><a class="headerlink" href="#micolog.model.Archive.year" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Archive.month">
+<tt class="descname">month</tt><a class="headerlink" href="#micolog.model.Archive.month" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Archive.entrycount">
+<tt class="descname">entrycount</tt><a class="headerlink" href="#micolog.model.Archive.entrycount" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Archive.date">
+<tt class="descname">date</tt><a class="headerlink" href="#micolog.model.Archive.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of all of our date/time properties.</p>
+<p>We handle common operations, like converting between time tuples and
+datetime instances.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Tag">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Tag</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Tag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.Tag.tag">
+<tt class="descname">tag</tt><a class="headerlink" href="#micolog.model.Tag.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Tag.slug">
+<tt class="descname">slug</tt><a class="headerlink" href="#micolog.model.Tag.slug" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Tag.tagcount">
+<tt class="descname">tagcount</tt><a class="headerlink" href="#micolog.model.Tag.tagcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Tag.posts">
+<tt class="descname">posts</tt><a class="headerlink" href="#micolog.model.Tag.posts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.Tag.add">
+<em class="property">classmethod </em><tt class="descname">add</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#micolog.model.Tag.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.Tag.remove">
+<em class="property">classmethod </em><tt class="descname">remove</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#micolog.model.Tag.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Link">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Link</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Link" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.Link.href">
+<tt class="descname">href</tt><a class="headerlink" href="#micolog.model.Link.href" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Link.linktype">
+<tt class="descname">linktype</tt><a class="headerlink" href="#micolog.model.Link.linktype" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Link.linktext">
+<tt class="descname">linktext</tt><a class="headerlink" href="#micolog.model.Link.linktext" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Link.linkcomment">
+<tt class="descname">linkcomment</tt><a class="headerlink" href="#micolog.model.Link.linkcomment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Link.createdate">
+<tt class="descname">createdate</tt><a class="headerlink" href="#micolog.model.Link.createdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of all of our date/time properties.</p>
+<p>We handle common operations, like converting between time tuples and
+datetime instances.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Link.get_icon_url">
+<tt class="descname">get_icon_url</tt><a class="headerlink" href="#micolog.model.Link.get_icon_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>get ico url of the wetsite</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Link.put">
+<tt class="descname">put</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Link.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Link.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Link.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.User">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">User</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.User" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="micolog.model.User.user">
+<tt class="descname">user</tt><a class="headerlink" href="#micolog.model.User.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>A user property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.dispname">
+<tt class="descname">dispname</tt><a class="headerlink" href="#micolog.model.User.dispname" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.email">
+<tt class="descname">email</tt><a class="headerlink" href="#micolog.model.User.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.website">
+<tt class="descname">website</tt><a class="headerlink" href="#micolog.model.User.website" title="Permalink to this definition">¶</a></dt>
+<dd><p>A property whose values are Link instances.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.level">
+<tt class="descname">level</tt><a class="headerlink" href="#micolog.model.User.level" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>User level. check with binary bit.</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">USER_LEVEL_AUTHOR=1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">USER_LEVEL_ADMIN=3</span></tt></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.password">
+<tt class="descname">password</tt><a class="headerlink" href="#micolog.model.User.password" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.isAdmin">
+<tt class="descname">isAdmin</tt><a class="headerlink" href="#micolog.model.User.isAdmin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.User.isAuthor">
+<tt class="descname">isAuthor</tt><a class="headerlink" href="#micolog.model.User.isAuthor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Comment">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Comment</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comment object.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In micolog 0.8. Comment don&#8217;t belongs to any entry.
+Every thing can be commented if it has a unique comment entry key.</p>
+</div>
+<dl class="attribute">
+<dt id="micolog.model.Comment.comment_entry_key">
+<tt class="descname">comment_entry_key</tt><a class="headerlink" href="#micolog.model.Comment.comment_entry_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.StringProperty() - The unique key of a comment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.comment_parent">
+<tt class="descname">comment_parent</tt><a class="headerlink" href="#micolog.model.Comment.comment_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.SelfReference() - Parent comment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.date">
+<tt class="descname">date</tt><a class="headerlink" href="#micolog.model.Comment.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.DateTimeProperty(auto_now_add=True) - The date of the comment created.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.content">
+<tt class="descname">content</tt><a class="headerlink" href="#micolog.model.Comment.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.TextProperty(required=True)- Comment content.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.author">
+<tt class="descname">author</tt><a class="headerlink" href="#micolog.model.Comment.author" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.StringProperty() - Author of this comment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.email">
+<tt class="descname">email</tt><a class="headerlink" href="#micolog.model.Comment.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.EmailProperty() - Email address</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.weburl">
+<tt class="descname">weburl</tt><a class="headerlink" href="#micolog.model.Comment.weburl" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.URLProperty() - Web url</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.status">
+<tt class="descname">status</tt><a class="headerlink" href="#micolog.model.Comment.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.IntegerProperty(default=COMMENT_APPROVE)</p>
+<dl class="docutils">
+<dt>Comment status:</dt>
+<dd><ul class="first last simple">
+<li>COMMENT_HOLD=0</li>
+<li>COMMENT_APPROVE=1</li>
+<li>COMMENT_SPAM=2</li>
+<li>COMMENT_TRASH=3</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.reply_notify_mail">
+<tt class="descname">reply_notify_mail</tt><a class="headerlink" href="#micolog.model.Comment.reply_notify_mail" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.BooleanProperty(default=False)
+Whether need send mail to commenter when a reply occurred</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.ip">
+<tt class="descname">ip</tt><a class="headerlink" href="#micolog.model.Comment.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.StringProperty() - Ip address.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.ctype">
+<tt class="descname">ctype</tt><a class="headerlink" href="#micolog.model.Comment.ctype" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.IntegerProperty(default=COMMENT_TYPE_NORMAL)</p>
+<dl class="docutils">
+<dt>Comment Type.</dt>
+<dd><ul class="first last simple">
+<li>COMMENT_TYPE_NORMAL = 0</li>
+<li>COMMENT_TYPE_TRACKBACK = 1</li>
+<li>COMMENT_TYPE_PINGBACK = 2</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.shortcontent">
+<tt class="descname">shortcontent</tt><a class="headerlink" href="#micolog.model.Comment.shortcontent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short string for this comment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Comment.put">
+<tt class="descname">put</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Comment.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save comment to db.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Comment.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.model.Comment.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete comment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.children">
+<tt class="descname">children</tt><a class="headerlink" href="#micolog.model.Comment.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Children comments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="micolog.model.Comment.store">
+<tt class="descname">store</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#micolog.model.Comment.store" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method used by function pickle(). It make data simple.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Comment.comment_set">
+<tt class="descname">comment_set</tt><a class="headerlink" href="#micolog.model.Comment.comment_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inverse of the Reference property above.</p>
+<p>We construct reverse references automatically for the model to which
+the Reference property is pointing to create the one-to-many property for
+that model.  For example, if you put a Reference property in model A that
+refers to model B, we automatically create a _ReverseReference property in
+B called a_set that can fetch all of the model A instances that refer to
+that instance of model B.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.Media">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">Media</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.Media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Media object. Used to store files. Such as: gif,jpeg,txt ... and so on.</p>
+<dl class="attribute">
+<dt id="micolog.model.Media.name">
+<tt class="descname">name</tt><a class="headerlink" href="#micolog.model.Media.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.StringProperty() - name for media</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Media.mtype">
+<tt class="descname">mtype</tt><a class="headerlink" href="#micolog.model.Media.mtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.StringProperty() - media type. Such as <tt class="docutils literal"><span class="pre">image\jpeg</span></tt> <tt class="docutils literal"><span class="pre">image\gif</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Media.bits">
+<tt class="descname">bits</tt><a class="headerlink" href="#micolog.model.Media.bits" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.BlobProperty() - bits for media object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Media.date">
+<tt class="descname">date</tt><a class="headerlink" href="#micolog.model.Media.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.DateTimeProperty(auto_now_add=True) - media upload date.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Media.download">
+<tt class="descname">download</tt><a class="headerlink" href="#micolog.model.Media.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>db.IntegerProperty(default=0) - download times of this media.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.Media.size">
+<tt class="descname">size</tt><a class="headerlink" href="#micolog.model.Media.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get media object size.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="micolog.model.OptionSet">
+<em class="property">class </em><tt class="descclassname">micolog.model.</tt><tt class="descname">OptionSet</tt><big>(</big><em>parent=None</em>, <em>key_name=None</em>, <em>_app=None</em>, <em>_from_entity=False</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#micolog.model.OptionSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provide some methods to get and set value from GAE db store.
+Usually, it used by micolog plugins.
+exmpale:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">micolog.model</span> <span class="kn">import</span> <span class="n">OptionSet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">OptionSet</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;v&#39;</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">OptionSet</span><span class="o">.</span><span class="n">getValue</span><span class="p">(</span><span class="s">&#39;v&#39;</span><span class="p">)</span>
+<span class="go">[1, 2, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">OptionSet</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;v&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="micolog.model.OptionSet.name">
+<tt class="descname">name</tt><a class="headerlink" href="#micolog.model.OptionSet.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A textual property, which can be multi- or single-line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="micolog.model.OptionSet.value">
+<tt class="descname">value</tt><a class="headerlink" href="#micolog.model.OptionSet.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string that can be longer than 500 bytes.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.OptionSet.getValue">
+<em class="property">classmethod </em><tt class="descname">getValue</tt><big>(</big><em>name</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#micolog.model.OptionSet.getValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value from db.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.OptionSet.setValue">
+<em class="property">classmethod </em><tt class="descname">setValue</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="headerlink" href="#micolog.model.OptionSet.setValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save value to db.
+Args:</p>
+<blockquote>
+<div>name (str):  The name to use.</div></blockquote>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="micolog.model.OptionSet.remove">
+<em class="property">classmethod </em><tt class="descname">remove</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#micolog.model.OptionSet.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove value form db.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="micolog.utils.html"
+                        title="previous chapter">1. micolog.utils</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/library/micolog.model.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="micolog.utils.html" title="1. micolog.utils"
+             >previous</a> |</li>
+        <li><a href="../index.html">Micolog v0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Library Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, x.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

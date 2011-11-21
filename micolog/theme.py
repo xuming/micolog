@@ -11,13 +11,68 @@ from google.appengine.ext.zipserve import *
 sys.path.append('modules')
 from model import *
 
-# {{{ Handlers
+# Handlers
 
 cwd = os.getcwd()
 theme_path = os.path.join(cwd, 'themes')
 file_modifieds={}
 
 max_age = 600  #expires in 10 minutes
+
+class Theme:
+    def __init__(self, name='default'):
+        self.name = name
+        self.mapping_cache = {}
+        self.dir = '/themes/%s' % name
+        self.viewdir = os.path.join(rootpath, 'view')
+        self.server_dir = os.path.join(rootpath, 'themes', self.name)
+        if os.path.exists(self.server_dir):
+            self.isZip = False
+        else:
+            self.isZip = True
+            self.server_dir = self.server_dir+".zip"
+        #self.server_dir=os.path.join(self.server_dir,"templates")
+        logging.debug('server_dir:%s'%self.server_dir)
+
+    def __getattr__(self, name):
+        if self.mapping_cache.has_key(name):
+            return self.mapping_cache[name]
+        else:
+
+            path = "/".join((self.name, 'templates', name + '.html'))
+            logging.debug('path:%s'%path)
+##                      if not os.path.exists(path):
+##                              path = os.path.join(rootpath, 'themes', 'default', 'templates', name + '.html')
+##                              if not os.path.exists(path):
+##                                      path = None
+            self.mapping_cache[name] = path
+            return path
+
+class ThemeIterator:
+    def __init__(self, theme_path='themes'):
+        self.iterating = False
+        self.theme_path = theme_path
+        self.list = []
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if not self.iterating:
+            self.iterating = True
+            self.list = os.listdir(self.theme_path)
+            self.cursor = 0
+
+        if self.cursor >= len(self.list):
+            self.iterating = False
+            raise StopIteration
+        else:
+            value = self.list[self.cursor]
+            self.cursor += 1
+            if value.endswith('.zip'):
+                value = value[:-4]
+            return value
+
 def Error404(handler):
     handler.response.set_status(404)
     html = template.render(os.path.join(cwd,'views/404.html'), {'error':404})

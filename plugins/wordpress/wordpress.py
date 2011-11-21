@@ -142,7 +142,7 @@ class wordpress(Plugin_importbase):
 		self.uri="http://xuming.net"
 		self.description="Plugin for import wxr file."
 		self.name="Wordpress Import"
-		self.version="0.7"
+		self.version="0.701"
 		self.register_urlhandler('/admin/wp_import',waphandler)
 
 	def get(self,page):
@@ -159,7 +159,7 @@ class wordpress(Plugin_importbase):
 			#OptionSet.setValue('wpimport_data',imt)
 			cmtimport=page.parambool('importcomments')
 			memcache.set("cmtimport",cmtimport,time=3600)
-			
+
 
 			memcache.set("imt",imt)
 			queue.add(taskqueue.Task( url="/admin/wp_import"))

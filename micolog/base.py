@@ -21,20 +21,6 @@ import urllib
 import traceback
 import micolog_template
 
-
-logging.info('module base reloaded')
-def urldecode(value):
-    return  urllib.unquote(urllib.unquote(value)).decode('utf8')
-    #return  urllib.unquote(value).decode('utf8')
-
-def urlencode(value):
-    return urllib.quote(value.encode('utf8'))
-
-def sid():
-    now=datetime.datetime.now()
-    return now.strftime('%y%m%d%H%M%S')+str(now.microsecond)
-
-
 def requires_admin(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -57,6 +43,7 @@ def printinfo(method):
             print x
         return method(self, *args, **kwargs)
     return wrapper
+
 #only ajax methed allowed
 def ajaxonly(method):
     @functools.wraps(method)
@@ -77,46 +64,6 @@ def hostonly(method):
             self.error(404)
     return wrapper
 
-def format_date(dt):
-    return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
-
-def cache(key="",time=3600):
-    def _decorate(method):
-        def _wrapper(*args, **kwargs):
-            from model import g_blog
-            if not g_blog.enable_memcache:
-                method(*args, **kwargs)
-                return
-
-            request=args[0].request
-            response=args[0].response
-            skey=key+ request.path_qs
-            #logging.info('skey:'+skey)
-            html= memcache.get(skey)
-            #arg[0] is BaseRequestHandler object
-
-            if html:
-                logging.info('cache:'+skey)
-                response.last_modified =html[1]
-                ilen=len(html)
-                if ilen>=3:
-                    response.set_status(html[2])
-                if ilen>=4:
-                    for skey,value in html[3].items():
-                        response.headers[skey]=value
-                response.out.write(html[0])
-            else:
-                if 'last-modified' not in response.headers:
-                    response.last_modified = format_date(datetime.utcnow())
-
-                method(*args, **kwargs)
-                result=response.out.getvalue()
-                status_code = response._Response__status[0]
-                logging.debug("Cache:%s"%status_code)
-                memcache.set(skey,(result,response.last_modified,status_code,response.headers),time)
-
-        return _wrapper
-    return _decorate
 
 #-------------------------------------------------------------------------------
 class PingbackError(Exception):
@@ -221,6 +168,74 @@ class Pager(object):
             links['next'] = 0
 
         return (results, links)
+
+
+
+class LangIterator:
+    def __init__(self, path='locale'):
+        self.iterating = False
+        self.path = path
+        self.list = []
+        for value in  os.listdir(self.path):
+            if os.path.isdir(os.path.join(self.path, value)):
+                if os.path.exists(os.path.join(self.path, value, 'LC_MESSAGES')):
+                    try:
+                        lang = open(os.path.join(self.path, value, 'language')).readline()
+                        self.list.append({'code':value, 'lang':lang})
+                    except:
+                        self.list.append( {'code':value, 'lang':value})
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if not self.iterating:
+            self.iterating = True
+            self.cursor = 0
+
+        if self.cursor >= len(self.list):
+            self.iterating = False
+            raise StopIteration
+        else:
+            value = self.list[self.cursor]
+            self.cursor += 1
+            return value
+
+    def getlang(self, language):
+        from django.utils.translation import  to_locale
+        for item in self.list:
+            if item['code'] == language or item['code'] == to_locale(language):
+                return item
+        return {'code':'en_US', 'lang':'English'}
+
+
+def Sitemap_NotifySearch():
+    """ Send notification of the new Sitemap(s) to the search engines. """
+
+
+    url = g_blog.baseurl+"/sitemap"
+
+    # Cycle through notifications
+    # To understand this, see the comment near the NOTIFICATION_SITES comment
+    for ping in settings.NOTIFICATION_SITES:
+        query_map = ping[3]
+        query_attr = ping[5]
+        query_map[query_attr] = url
+        query = urllib.urlencode(query_map)
+        notify = urlparse.urlunsplit((ping[0], ping[1], ping[2], query, ping[4]))
+        # Send the notification
+        logging.info('Notifying search engines. %s'%ping[1])
+        logging.info('url: %s'%notify)
+        try:
+            result = urlfetch.fetch(notify)
+            if result.status_code == 200:
+                logging.info('Notify Result: %s' % result.content)
+            if result.status_code == 404:
+                logging.info('HTTP error 404: Not Found')
+                logging.warning('Cannot contact: %s' % ping[1])
+
+        except :
+            logging.error('Cannot contact: %s' % ping[1])
 
 
 class BaseRequestHandler(webapp.RequestHandler):

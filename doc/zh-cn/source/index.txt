@@ -1,0 +1,23 @@
+.. Micolog documentation master file, created by
+   sphinx-quickstart on Wed Jan 19 17:59:52 2011.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Micolog's documentation!
+===================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 1
+   
+   intro
+   Library Reference<library/index>  
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

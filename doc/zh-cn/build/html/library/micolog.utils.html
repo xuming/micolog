@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. micolog.utils &mdash; Micolog v0.8 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Micolog v0.8 documentation" href="../index.html" />
+    <link rel="up" title="Library Reference" href="index.html" />
+    <link rel="next" title="2. micolog.model" href="micolog.model.html" />
+    <link rel="prev" title="Library Reference" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="micolog.model.html" title="2. micolog.model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Library Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Micolog v0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Library Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-micolog.utils">
+<span id="micolog-utils"></span><h1>1. micolog.utils<a class="headerlink" href="#module-micolog.utils" title="Permalink to this headline">¶</a></h1>
+<p>Common class and functions used by micolog.</p>
+<dl class="function">
+<dt id="micolog.utils.format_date">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">format_date</tt><big>(</big><em>dt</em><big>)</big><a class="headerlink" href="#micolog.utils.format_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format date as <tt class="docutils literal"><span class="pre">'%a,</span> <span class="pre">%d</span> <span class="pre">%b</span> <span class="pre">%Y</span> <span class="pre">%H:%M:%S</span> <span class="pre">GMT'</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.sid">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">sid</tt><big>(</big><big>)</big><a class="headerlink" href="#micolog.utils.sid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get unique string as id. This id is based on the time of now.
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sid</span><span class="p">()</span>
+<span class="go">&#39;110129154345718000&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.slugify">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">slugify</tt><big>(</big><em>inStr</em><big>)</big><a class="headerlink" href="#micolog.utils.slugify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conver string to slug.
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s">&#39;this is a test&#39;</span><span class="p">)</span>
+<span class="go">return &#39;this-is-a-test&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.strip_tags">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">strip_tags</tt><big>(</big><em>text</em>, <em>valid_tags={}</em><big>)</big><a class="headerlink" href="#micolog.utils.strip_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>strip tags, remove invalid tag attrs.
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">strip_tags</span><span class="p">(</span><span class="s">&#39;this &lt;a href=&quot;&quot;&gt;xxx&lt;/a&gt;&#39;</span><span class="p">)</span>
+<span class="go">u&#39;this xxx&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strip_tags</span><span class="p">(</span><span class="s">&#39;this &lt;a href=&quot;&quot;&gt;xxx&lt;/a&gt;&#39;</span><span class="p">,{</span><span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;href&#39;</span><span class="p">})</span>
+<span class="go">u&#39;this &lt;a href=&quot;&quot;&gt;xxx&lt;/a&gt;&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.trim_excerpt">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">trim_excerpt</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#micolog.utils.trim_excerpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove html tags and truncate the text. Max length is 120.
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">trim_excerpt_without_filters</span><span class="p">(</span><span class="s">&#39;this is a test &lt;br&gt;sss&#39;</span><span class="p">)</span>
+<span class="go">u&#39;this is a test sss&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.urldecode">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">urldecode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#micolog.utils.urldecode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode the url string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="micolog.utils.urlencode">
+<tt class="descclassname">micolog.utils.</tt><tt class="descname">urlencode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#micolog.utils.urlencode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode the url string.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Library Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="micolog.model.html"
+                        title="next chapter">2. micolog.model</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/library/micolog.utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="micolog.model.html" title="2. micolog.model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Library Reference"
+             >previous</a> |</li>
+        <li><a href="../index.html">Micolog v0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Library Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, x.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

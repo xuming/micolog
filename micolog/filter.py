@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from google.appengine.dist import use_library
-use_library('django', '1.2')
+import logging
 from django import template
 from model import *
-import django.template.defaultfilters as defaultfilters
+import  django.template.defaultfilters as defaultfilters
 import urllib
+from app.utils import trim_excerpt_without_filters
 register = template.Library()
 from datetime import *
+from app.utils import slugify as slugify_function
+
+@register.filter
+def month_name(value):
+	months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	return months[int(value)-1]
+
+@register.filter
+def slugify(value):
+	return slugify_function(value)
 
 @register.filter
 def datetz(date,format):  #datetime with timedelta
@@ -40,11 +48,11 @@ def dict_value(v1,v2):
 	return v1[v2]
 
 
-import app.html_filter
+from app.html_filter import html_filter
 
-plog_filter = app.html_filter.html_filter()
+plog_filter = html_filter()
 plog_filter.allowed = {
-		'a': ('href', 'target', 'name', 'rel'),
+		'a': ('href', 'target', 'name'),
 		'b': (),
 		'blockquote': (),
 		'pre': (),
@@ -70,7 +78,6 @@ plog_filter.allowed = {
 		'li': (),
 		'br': (),
 		'hr': (),
-		'code':(),
 		}
 
 plog_filter.no_close += ('br',)
