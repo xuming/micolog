@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 import os,logging
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from google.appengine.dist import use_library
-use_library('django', '1.2')
-import functools
+import functools,webapp2
 from google.appengine.api import users
-from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 ##import app.webapp as webapp2
 from django.template import TemplateDoesNotExist
-from django.conf import settings
-settings._target = None
+#from django.conf import settings
+#settings._target = None
 #from model import g_blog,User
 #activate(g_blog.language)
 from google.appengine.api import taskqueue
@@ -19,7 +15,7 @@ from mimetypes import types_map
 from datetime import datetime
 import urllib
 import traceback
-import micolog_template
+import template
 
 def requires_admin(method):
     @functools.wraps(method)
@@ -63,73 +59,6 @@ def hostonly(method):
         else:
             self.error(404)
     return wrapper
-
-
-#-------------------------------------------------------------------------------
-class PingbackError(Exception):
-    """Raised if the remote server caused an exception while pingbacking.
-    This is not raised if the pingback function is unable to locate a
-    remote server.
-    """
-
-    _ = lambda x: x
-    default_messages = {
-        16: _(u'source URL does not exist'),
-        17: _(u'The source URL does not contain a link to the target URL'),
-        32: _(u'The specified target URL does not exist'),
-        33: _(u'The specified target URL cannot be used as a target'),
-        48: _(u'The pingback has already been registered'),
-        49: _(u'Access Denied')
-    }
-    del _
-
-    def __init__(self, fault_code, internal_message=None):
-        Exception.__init__(self)
-        self.fault_code = fault_code
-        self._internal_message = internal_message
-
-    def as_fault(self):
-        """Return the pingback errors XMLRPC fault."""
-        return Fault(self.fault_code, self.internal_message or
-                     'unknown server error')
-
-    @property
-    def ignore_silently(self):
-        """If the error can be ignored silently."""
-        return self.fault_code in (17, 33, 48, 49)
-
-    @property
-    def means_missing(self):
-        """If the error means that the resource is missing or not
-        accepting pingbacks.
-        """
-        return self.fault_code in (32, 33)
-
-    @property
-    def internal_message(self):
-        if self._internal_message is not None:
-            return self._internal_message
-        return self.default_messages.get(self.fault_code) or 'server error'
-
-    @property
-    def message(self):
-        msg = self.default_messages.get(self.fault_code)
-        if msg is not None:
-            return _(msg)
-        return _(u'An unknown server error (%s) occurred') % self.fault_code
-
-class util:
-    @classmethod
-    def do_trackback(cls, tbUrl=None, title=None, excerpt=None, url=None, blog_name=None):
-        taskqueue.add(url='/admin/do/trackback_ping',
-            params={'tbUrl': tbUrl,'title':title,'excerpt':excerpt,'url':url,'blog_name':blog_name})
-
-    #pingback ping
-    @classmethod
-    def do_pingback(cls,source_uri, target_uri):
-        taskqueue.add(url='/admin/do/pingback_ping',
-            params={'source': source_uri,'target':target_uri})
-
 
 
 ##cache variable
@@ -238,18 +167,19 @@ def Sitemap_NotifySearch():
             logging.error('Cannot contact: %s' % ping[1])
 
 
-class BaseRequestHandler(webapp.RequestHandler):
-    def __init__(self):
-        self.current='home'
+class BaseRequestHandler(webapp2.RequestHandler):
+
+
 
 ##	def head(self, *args):
 ##		return self.get(*args)
 
     def initialize(self, request, response):
-        webapp.RequestHandler.initialize(self, request, response)
+        self.current='home'
+        webapp2.RequestHandler.initialize(self, request, response)
         os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-        from model import g_blog,User
-        self.blog = g_blog
+        from model import User,Blog
+        self.blog = Blog.getBlog()
         self.login_user = users.get_current_user()
         self.is_login = (self.login_user != None)
         self.loginurl=users.create_login_url(self.request.uri)
@@ -380,3 +310,4 @@ class BaseRequestHandler(webapp.RequestHandler):
         else:
             self.redirect(redirect_url)
             return False
+

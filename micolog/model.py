@@ -7,14 +7,14 @@ import os, logging
 ##from google.appengine.api import users
 from google.appengine.ext import db
 ##from google.appengine.ext.db import Model as DBModel
-##from google.appengine.api import memcache
+from google.appengine.api import memcache
 ##from google.appengine.api import mail
 ##from google.appengine.api import urlfetch
 ##from google.appengine.api import datastore
 ##from datetime import datetime
 ##from micolog.utils import trim_excerpt
 ##import urllib, hashlib, urlparse
-##import zipfile, re, pickle, uuid
+import zipfile, re, pickle, uuid
 ##from micolog.utils import slugify
 ##from theme import Theme
 from cache import *
@@ -25,8 +25,8 @@ class Blog(db.Model):
     rpcuser = db.StringProperty(default='admin')
     rpcpassword = db.StringProperty(default='')
     description = db.TextProperty()
-    baseurl = db.StringProperty(multiline=False, default=None)
-    urlpath = db.StringProperty(multiline=False)
+    #baseurl = db.StringProperty(multiline=False, default=None)
+    #urlpath = db.StringProperty(multiline=False)
     title = db.StringProperty(multiline=False, default='Micolog')
     subtitle = db.StringProperty(multiline=False, default='This is a micro blog.')
     entrycount = db.IntegerProperty(default=0)
@@ -50,7 +50,7 @@ class Blog(db.Model):
 
     domain = db.StringProperty()
     show_excerpt = db.BooleanProperty(default=True)
-    version = 0.736
+    version = 0.8
     timedelta = db.FloatProperty(default=8.0)# hours
     language = db.StringProperty(default="en-us")
 
@@ -63,13 +63,50 @@ class Blog(db.Model):
     #default_theme = Theme("default")
 
 
-    allow_pingback = db.BooleanProperty(default=False)
-    allow_trackback = db.BooleanProperty(default=False)
+    #remove it
+    #allow_pingback = db.BooleanProperty(default=False)
+    #allow_trackback = db.BooleanProperty(default=False)
 
     theme = None
     langs = None
     application = None
 
+    @classmethod
+    def getBlog(cls):
+        blog=memcache.get("gblog")
+        if not blog:
+            blog=Blog.get_by_key_name('default')
+            if not blog:
+                blog=Blog(key_name = 'default')
+                blog.InitBlogData()
+            memcache.set("gblog",blog)
+        return blog
+
+    def InitBlogData(self):
+
+        OptionSet.setValue('PluginActive',[u'googleAnalytics', u'wordpress', u'sys_plugin'])
+        self.domain=os.environ['HTTP_HOST']
+        self.baseurl="http://"+self.domain
+        self.feedurl=self.baseurl+"/feed"
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+        self.admin_essential = False
+        if os.environ.has_key('HTTP_ACCEPT_LANGUAGE'):
+            lang=os.environ['HTTP_ACCEPT_LANGUAGE'].split(',')[0]
+        from django.utils.translation import  activate,to_locale
+        self.language=to_locale(lang)
+        self.admin_essential=False
+        from django.conf import settings
+        settings._target = None
+        activate(self.language)
+        self.save()
+
+        entry=Entry(title="Hello world!".decode('utf8'))
+        entry.content='<p>Welcome to micolog %s. This is your first post. Edit or delete it, then start blogging!</p>'%g_blog.version
+        entry.save(True)
+        link=Link(href='http://xuming.net',linktext="Xuming's blog".decode('utf8'))
+        link.put()
+        link=Link(href='http://eric.cloud-mes.com/',linktext="Eric Guo's blog".decode('utf8'))
+        link.put()
 
 
 
@@ -79,7 +116,7 @@ class Blog(db.Model):
                        _app=None,
                        _from_entity=False,
                        **kwds):
-        from micolog_plugin import Plugins
+        from plugin import Plugins
         self.plugins = Plugins(self)
         db.Model.__init__(self, parent, key_name, _app, _from_entity, **kwds)
 
@@ -116,18 +153,24 @@ class Blog(db.Model):
     def rootpath(self):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-    @vcache("blog.hotposts")
-    def hotposts(self):
-        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-readtimes').fetch(8)
+    @vcache("blog.hotposts",args=("count"))
+    def hotposts(self,count=8):
+        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-readtimes').fetch(count)
 
-    @vcache("blog.recentposts")
-    def recentposts(self):
-        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-date').fetch(8)
+    @vcache("blog.recentposts",args=("count"))
+    def recentposts(self,count=8):
+        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-date').fetch(count)
 
     @vcache("blog.postscount")
     def postscount(self):
         return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-date').count()
 
+    @vcache("blog.sticky_entries")
+    def sticky_entries(self):
+        return Entry.all().filter('entrytype =','post')\
+            .filter('published =',True)\
+            .filter('sticky =',True)\
+            .order('-date')
 
 class Category(db.Model):
     uid = db.IntegerProperty()
@@ -266,318 +309,318 @@ class Link(db.Model):
         db.Model.delete(self)
         g_blog().tigger_action("delete_link", self)
 
-##class Entry(db.Model):
-##    author = db.UserProperty()
-##    author_name = db.StringProperty()
-##    published = db.BooleanProperty(default=False)
-##    content = db.TextProperty(default='')
-##    readtimes = db.IntegerProperty(default=0)
-##    title = db.StringProperty(multiline=False, default='')
-##    date = db.DateTimeProperty(auto_now_add=True)
-##    mod_date = db.DateTimeProperty(auto_now_add=True)
-##    tags = db.StringListProperty()
-##    categorie_keys = db.ListProperty(db.Key)
-##    slug = db.StringProperty(multiline=False, default='')
-##    link = db.StringProperty(multiline=False, default='')
-##    monthyear = db.StringProperty(multiline=False)
-##    entrytype = db.StringProperty(multiline=False, default='post', choices=[
-##            'post', 'page'])
-##    entry_parent = db.IntegerProperty(default=0)#When level=0 show on main menu.
-##    menu_order = db.IntegerProperty(default=0)
-##    commentcount = db.IntegerProperty(default=0)
-##    trackbackcount = db.IntegerProperty(default=0)
-##
-##    allow_comment = db.BooleanProperty(default=True) #allow comment
-##    #allow_pingback=db.BooleanProperty(default=False)
-##    allow_trackback = db.BooleanProperty(default=True)
-##    password = db.StringProperty()
-##
-##    #compatible with wordpress
-##    is_wp = db.BooleanProperty(default=False)
-##    post_id = db.IntegerProperty()
-##    excerpt = db.StringProperty(multiline=True)
-##
-##    #external page
-##    is_external_page = db.BooleanProperty(default=False)
-##    target = db.StringProperty(default="_self")
-##    external_page_address = db.StringProperty()
-##
-##    #keep in top
-##    sticky = db.BooleanProperty(default=False)
-##
-##
-##    postname = ''
-##    _relatepost = None
-##
-##    @property
-##    def content_excerpt(self):
-##        return self.get_content_excerpt(_('..more').decode('utf8'))
-##
-##    def meta_description(self):
-##        return trim_excerpt(self.content)
-##
-##    def get_content(self):
-##        return self.content#parse(self.content)
-##    def get_author_user(self):
-##        if not self.author:
-##            self.author = g_blog.owner
-##        return User.all().filter('email =', self.author.email()).get()
-##
-##    def get_content_excerpt(self, more='..more'):
-##        if g_blog.show_excerpt:
-##            if self.excerpt:
-##                return self.excerpt+' <a href="/%s" class="e_more">%s</a>'%(self.link, more)
-##            else:
-##                sc = self.content.split('<!--more-->')
-##                if len(sc) > 1:
-##                    return sc[0]+u' <a href="/%s" class="e_more">%s</a>'%(self.link, more)
-##                else:
-##                    return sc[0]
-##        else:
-##            return self.content
-##
-##    def slug_onchange(self, curval, newval):
-##        if not (curval==newval):
-##            self.setpostname(newval)
-##
-##    def setpostname(self, newval):
-##        #check and fix double slug
-##        if newval:
-##            slugcount = Entry.all()\
-##                              .filter('entrytype', self.entrytype)\
-##                              .filter('date <', self.date)\
-##                              .filter('slug =', newval)\
-##                              .filter('published', True)\
-##                              .count()
-##            if slugcount > 0:
-##                self.postname = newval+str(slugcount)
-##            else:
-##                self.postname = newval
-##        else:
-##            self.postname = ""
-##
-##
-##
-##
-##    @property
-##    def fullurl(self):
-##        return g_blog.baseurl+'/'+self.link;
-##
-##    @property
-##    def categories(self):
-##        try:
-##            return db.get(self.categorie_keys)
-##        except:
-##            return []
-##
-##    @property
-##    def post_status(self):
-##        return  self.published and 'publish' or 'draft'
-##
-##    def settags(self, values):
-##        if not values:tags = []
-##        if type(values) == type([]):
-##            tags = values
-##        else:
-##            tags = values.split(',')
-##
-##
-##
-##        if not self.tags:
-##            removelist = []
-##            addlist = tags
-##        else:
-##            #search different  tags
-##            removelist = [n.strip() for n in self.tags if n not in tags]
-##            addlist = [n.strip() for n in tags if n not in self.tags]
-##        for v in removelist:
-##            Tag.remove(v)
-##        for v in addlist:
-##            Tag.add(v)
-##        self.tags = [t.strip() for t in tags]
-##
-##    def get_comments_by_page(self, index, psize):
-##        return self.comments().fetch(psize, offset=(index-1) * psize)
-##
-##    @property
-##    def strtags(self):
-##        return ','.join(self.tags)
-##
-##    @property
-##    def edit_url(self):
-##        return '/admin/%s?key=%s&action=edit'%(self.entrytype, self.key())
-##
-##    def comments(self):
-##        if g_blog.comments_order:
-##            return Comment.all().filter('entry =', self).order('-date')
-##        else:
-##            return Comment.all().filter('entry =', self).order('date')
-##
-##    def purecomments(self):
-##        if g_blog.comments_order:
-##            return Comment.all().filter('entry =', self).filter('ctype =', 0).order('-date')
-##        else:
-##            return Comment.all().filter('entry =', self).filter('ctype =', 0).order('date')
-##
-##    def trackcomments(self):
-##        if g_blog.comments_order:
-##            return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('-date')
-##        else:
-##            return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('date')
-##
-##    def commentsTops(self):
-##        return [c for c  in self.purecomments() if c.parent_key() == None]
-##
-##    def delete_comments(self):
-##        cmts = Comment.all().filter('entry =', self)
-##        for comment in cmts:
-##            comment.delete()
-##        self.commentcount = 0
-##        self.trackbackcount = 0
-##    def update_commentno(self):
-##        cmts = Comment.all().filter('entry =', self).order('date')
-##        i = 1
-##        for comment in cmts:
-##            comment.no = i
-##            i += 1
-##            comment.store()
-##
-##    def update_archive(self, cnt=1):
-##        """Checks to see if there is a month-year entry for the
-##        month of current blog, if not creates it and increments count"""
-##        my = self.date.strftime('%B %Y') # September-2008
-##        sy = self.date.strftime('%Y') #2008
-##        sm = self.date.strftime('%m') #09
-##
-##
-##        archive = Archive.all().filter('monthyear', my).get()
-##        if self.entrytype == 'post':
-##            if not archive:
-##                archive = Archive(monthyear=my, year=sy, month=sm, entrycount=1)
-##                self.monthyear = my
-##                archive.put()
-##            else:
-##                # ratchet up the count
-##                archive.entrycount += cnt
-##                archive.put()
-##        g_blog.entrycount += cnt
-##        g_blog.put()
-##
-##    def get_min_category(self):
-##        min = self.categories[0].ID()
-##        category = self.categories[0]
-##        for cat in self.categories:
-##            if min > cat.ID():
-##                min = cat.ID()
-##                category = cat
-##
-##        return category
-##    def save(self, is_publish=False):
-##        """
-##        Use this instead of self.put(), as we do some other work here
-##        @is_pub:Check if need publish id
-##        """
-##        g_blog.tigger_action("pre_save_post", self, is_publish)
-##        my = self.date.strftime('%B %Y') # September 2008
-##        self.monthyear = my
-##        old_publish = self.published
-##        self.mod_date = datetime.now()
-##
-##        if is_publish:
-##            if not self.is_wp:
-##                self.put()
-##                self.post_id = self.key().id()
-##
-##            #fix for old version
-##            if not self.postname:
-##                self.setpostname(self.slug)
-##
-##
-##            vals = {'year':self.date.year, 'month':str(self.date.month).zfill(2), 'day':self.date.day,
-##                    'postname':self.postname, 'post_id':self.post_id}
-##
-##
-##            if self.entrytype == 'page':
-##                if self.slug:
-##                    self.link = self.postname
-##                else:
-##                    #use external page address as link
-##                    if self.is_external_page:
-##                        self.link = self.external_page_address
-##                    else:
-##                        self.link = g_blog.default_link_format%vals
-##            else:
-##                if g_blog.link_format and self.postname:
-##                    self.link = g_blog.link_format.strip()%vals
-##                else:
-##                    self.link = g_blog.default_link_format%vals
-##
-##        self.published = is_publish
-##        self.put()
-##
-##        if is_publish:
-##            if g_blog.sitemap_ping:
-##                Sitemap_NotifySearch()
-##
-##        if old_publish and not is_publish:
-##            self.update_archive(-1)
-##        if not old_publish and is_publish:
-##            self.update_archive(1)
-##
-##        self.removecache()
-##
-##        self.put()
-##        g_blog.tigger_action("save_post", self, is_publish)
-##
-##
-##
-##
-##    def removecache(self):
-##        memcache.delete('/')
-##        memcache.delete('/'+self.link)
-##        memcache.delete('/sitemap')
-##        memcache.delete('blog.postcount')
-##        g_blog.tigger_action("clean_post_cache", self)
-##
-##    @property
-##    def next(self):
-##        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('date').filter('date >', self.date).fetch(1)
-##
-##
-##    @property
-##    def prev(self):
-##        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-date').filter('date <', self.date).fetch(1)
-##
-##    @property
-##    def relateposts(self):
-##        if  self._relatepost:
-##            return self._relatepost
-##        else:
-##            if self.tags:
-##                self._relatepost = Entry.gql("WHERE published=True and tags IN :1 and post_id!=:2 order by post_id desc ", self.tags, self.post_id).fetch(5)
-##            else:
-##                self._relatepost = []
-##            return self._relatepost
-##
-##    @property
-##    def trackbackurl(self):
-##        if self.link.find("?") > -1:
-##            return g_blog.baseurl+"/"+self.link+"&code="+str(self.key())
-##        else:
-##            return g_blog.baseurl+"/"+self.link+"?code="+str(self.key())
-##
-##    def getbylink(self):
-##        pass
-##
-##    def delete(self):
-##        g_blog.tigger_action("pre_delete_post", self)
-##        if self.published:
-##            self.update_archive(-1)
-##        self.delete_comments()
-##        db.Model.delete(self)
-##        g_blog.tigger_action("delete_post", self)
-##
-##
+class Entry(db.Model):
+    author = db.UserProperty()
+    author_name = db.StringProperty()
+    published = db.BooleanProperty(default=False)
+    content = db.TextProperty(default='')
+    readtimes = db.IntegerProperty(default=0)
+    title = db.StringProperty(multiline=False, default='')
+    date = db.DateTimeProperty(auto_now_add=True)
+    mod_date = db.DateTimeProperty(auto_now_add=True)
+    tags = db.StringListProperty()
+    categorie_keys = db.ListProperty(db.Key)
+    slug = db.StringProperty(multiline=False, default='')
+    link = db.StringProperty(multiline=False, default='')
+    monthyear = db.StringProperty(multiline=False)
+    entrytype = db.StringProperty(multiline=False, default='post', choices=[
+            'post', 'page'])
+    entry_parent = db.IntegerProperty(default=0)#When level=0 show on main menu.
+    menu_order = db.IntegerProperty(default=0)
+    commentcount = db.IntegerProperty(default=0)
+    trackbackcount = db.IntegerProperty(default=0)
+
+    allow_comment = db.BooleanProperty(default=True) #allow comment
+    #allow_pingback=db.BooleanProperty(default=False)
+    allow_trackback = db.BooleanProperty(default=True)
+    password = db.StringProperty()
+
+    #compatible with wordpress
+    is_wp = db.BooleanProperty(default=False)
+    post_id = db.IntegerProperty()
+    excerpt = db.StringProperty(multiline=True)
+
+    #external page
+    is_external_page = db.BooleanProperty(default=False)
+    target = db.StringProperty(default="_self")
+    external_page_address = db.StringProperty()
+
+    #keep in top
+    sticky = db.BooleanProperty(default=False)
+
+
+    postname = ''
+    _relatepost = None
+
+    @property
+    def content_excerpt(self):
+        return self.get_content_excerpt(_('..more').decode('utf8'))
+
+    def meta_description(self):
+        return trim_excerpt(self.content)
+
+    def get_content(self):
+        return self.content#parse(self.content)
+    def get_author_user(self):
+        if not self.author:
+            self.author = g_blog.owner
+        return User.all().filter('email =', self.author.email()).get()
+
+    def get_content_excerpt(self, more='..more'):
+        if g_blog.show_excerpt:
+            if self.excerpt:
+                return self.excerpt+' <a href="/%s" class="e_more">%s</a>'%(self.link, more)
+            else:
+                sc = self.content.split('<!--more-->')
+                if len(sc) > 1:
+                    return sc[0]+u' <a href="/%s" class="e_more">%s</a>'%(self.link, more)
+                else:
+                    return sc[0]
+        else:
+            return self.content
+
+    def slug_onchange(self, curval, newval):
+        if not (curval==newval):
+            self.setpostname(newval)
+
+    def setpostname(self, newval):
+        #check and fix double slug
+        if newval:
+            slugcount = Entry.all()\
+                              .filter('entrytype', self.entrytype)\
+                              .filter('date <', self.date)\
+                              .filter('slug =', newval)\
+                              .filter('published', True)\
+                              .count()
+            if slugcount > 0:
+                self.postname = newval+str(slugcount)
+            else:
+                self.postname = newval
+        else:
+            self.postname = ""
+
+
+
+
+    @property
+    def fullurl(self):
+        return g_blog.baseurl+'/'+self.link;
+
+    @property
+    def categories(self):
+        try:
+            return db.get(self.categorie_keys)
+        except:
+            return []
+
+    @property
+    def post_status(self):
+        return  self.published and 'publish' or 'draft'
+
+    def settags(self, values):
+        if not values:tags = []
+        if type(values) == type([]):
+            tags = values
+        else:
+            tags = values.split(',')
+
+
+
+        if not self.tags:
+            removelist = []
+            addlist = tags
+        else:
+            #search different  tags
+            removelist = [n.strip() for n in self.tags if n not in tags]
+            addlist = [n.strip() for n in tags if n not in self.tags]
+        for v in removelist:
+            Tag.remove(v)
+        for v in addlist:
+            Tag.add(v)
+        self.tags = [t.strip() for t in tags]
+
+    def get_comments_by_page(self, index, psize):
+        return self.comments().fetch(psize, offset=(index-1) * psize)
+
+    @property
+    def strtags(self):
+        return ','.join(self.tags)
+
+    @property
+    def edit_url(self):
+        return '/admin/%s?key=%s&action=edit'%(self.entrytype, self.key())
+
+    def comments(self,order,ctype,count=0):
+        if g_blog.comments_order:
+            return Comment.all().filter('entry =', self).order('-date')
+        else:
+            return Comment.all().filter('entry =', self).order('date')
+
+    def purecomments(self):
+        if g_blog.comments_order:
+            return Comment.all().filter('entry =', self).filter('ctype =', 0).order('-date')
+        else:
+            return Comment.all().filter('entry =', self).filter('ctype =', 0).order('date')
+
+    def trackcomments(self):
+        if g_blog.comments_order:
+            return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('-date')
+        else:
+            return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('date')
+
+    def commentsTops(self):
+        return [c for c  in self.purecomments() if c.parent_key() == None]
+
+    def delete_comments(self):
+        cmts = Comment.all().filter('entry =', self)
+        for comment in cmts:
+            comment.delete()
+        self.commentcount = 0
+        self.trackbackcount = 0
+    def update_commentno(self):
+        cmts = Comment.all().filter('entry =', self).order('date')
+        i = 1
+        for comment in cmts:
+            comment.no = i
+            i += 1
+            comment.store()
+
+    def update_archive(self, cnt=1):
+        """Checks to see if there is a month-year entry for the
+        month of current blog, if not creates it and increments count"""
+        my = self.date.strftime('%B %Y') # September-2008
+        sy = self.date.strftime('%Y') #2008
+        sm = self.date.strftime('%m') #09
+
+
+        archive = Archive.all().filter('monthyear', my).get()
+        if self.entrytype == 'post':
+            if not archive:
+                archive = Archive(monthyear=my, year=sy, month=sm, entrycount=1)
+                self.monthyear = my
+                archive.put()
+            else:
+                # ratchet up the count
+                archive.entrycount += cnt
+                archive.put()
+        g_blog.entrycount += cnt
+        g_blog.put()
+
+    def get_min_category(self):
+        min = self.categories[0].ID()
+        category = self.categories[0]
+        for cat in self.categories:
+            if min > cat.ID():
+                min = cat.ID()
+                category = cat
+
+        return category
+    def save(self, is_publish=False):
+        """
+        Use this instead of self.put(), as we do some other work here
+        @is_pub:Check if need publish id
+        """
+        g_blog.tigger_action("pre_save_post", self, is_publish)
+        my = self.date.strftime('%B %Y') # September 2008
+        self.monthyear = my
+        old_publish = self.published
+        self.mod_date = datetime.now()
+
+        if is_publish:
+            if not self.is_wp:
+                self.put()
+                self.post_id = self.key().id()
+
+            #fix for old version
+            if not self.postname:
+                self.setpostname(self.slug)
+
+
+            vals = {'year':self.date.year, 'month':str(self.date.month).zfill(2), 'day':self.date.day,
+                    'postname':self.postname, 'post_id':self.post_id}
+
+
+            if self.entrytype == 'page':
+                if self.slug:
+                    self.link = self.postname
+                else:
+                    #use external page address as link
+                    if self.is_external_page:
+                        self.link = self.external_page_address
+                    else:
+                        self.link = g_blog.default_link_format%vals
+            else:
+                if g_blog.link_format and self.postname:
+                    self.link = g_blog.link_format.strip()%vals
+                else:
+                    self.link = g_blog.default_link_format%vals
+
+        self.published = is_publish
+        self.put()
+
+        if is_publish:
+            if g_blog.sitemap_ping:
+                Sitemap_NotifySearch()
+
+        if old_publish and not is_publish:
+            self.update_archive(-1)
+        if not old_publish and is_publish:
+            self.update_archive(1)
+
+        self.removecache()
+
+        self.put()
+        g_blog.tigger_action("save_post", self, is_publish)
+
+
+
+
+    def removecache(self):
+        memcache.delete('/')
+        memcache.delete('/'+self.link)
+        memcache.delete('/sitemap')
+        memcache.delete('blog.postcount')
+        g_blog.tigger_action("clean_post_cache", self)
+
+    @property
+    def next(self):
+        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('date').filter('date >', self.date).fetch(1)
+
+
+    @property
+    def prev(self):
+        return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-date').filter('date <', self.date).fetch(1)
+
+    @property
+    def relateposts(self):
+        if  self._relatepost:
+            return self._relatepost
+        else:
+            if self.tags:
+                self._relatepost = Entry.gql("WHERE published=True and tags IN :1 and post_id!=:2 order by post_id desc ", self.tags, self.post_id).fetch(5)
+            else:
+                self._relatepost = []
+            return self._relatepost
+
+    @property
+    def trackbackurl(self):
+        if self.link.find("?") > -1:
+            return g_blog.baseurl+"/"+self.link+"&code="+str(self.key())
+        else:
+            return g_blog.baseurl+"/"+self.link+"?code="+str(self.key())
+
+    def getbylink(self):
+        pass
+
+    def delete(self):
+        g_blog.tigger_action("pre_delete_post", self)
+        if self.published:
+            self.update_archive(-1)
+        self.delete_comments()
+        db.Model.delete(self)
+        g_blog.tigger_action("delete_post", self)
+
+
 USER_LEVEL_AUTHOR=1
 USER_LEVEL_ADMIN=3
 class User(db.Model):
@@ -613,14 +656,10 @@ class User(db.Model):
         return self.level & 1
 
 
-COMMENT_TYPE_NORMAL = 0
-COMMENT_TYPE_TRACKBACK = 1
-COMMENT_TYPE_PINGBACK = 2
-
-COMMENT_HOLD=0
-COMMENT_APPROVE=1
-COMMENT_SPAM=2
-COMMENT_TRASH=3
+MESSAGE_HOLD=0
+MESSAGE_APPROVE=1
+MESSAGE_SPAM=2
+MESSAGE_TRASH=3
 
 ##class CommentEntry(db.Model):
 ##    """
@@ -633,73 +672,74 @@ COMMENT_TRASH=3
 ##    title=db.StringProperty()
 ##    link=db.StringProperty()
 
-class Comment(db.Model):
+class Message(db.Model):
     """
-    Comment object.
+    message object.
 
     ..  warning::
-        In micolog 0.8. Comment don't belongs to any entry.
-        Every thing can be commented if it has a unique comment entry key.
+        In micolog 0.8. message don't belongs to any entry.
+        Every thing can be messaged if it has a unique message entry key.
     """
-    #: db.StringProperty() - The unique key of a comment.
-    comment_entry_key=db.StringProperty()
-    #: db.SelfReference() - Parent comment.
-    comment_parent=db.SelfReference()
-    #: db.DateTimeProperty(auto_now_add=True) - The date of the comment created.
+    #: db.StringProperty() - The unique key of a message.
+    message_entry_key=db.StringProperty()
+    #: db.SelfReference() - Parent message.
+    message_parent=db.SelfReference()
+    #: db.DateTimeProperty(auto_now_add=True) - The date of the message created.
     date = db.DateTimeProperty(auto_now_add=True)
-    #: db.TextProperty(required=True)- Comment content.
+    #: db.TextProperty(required=True)- message content.
     content = db.TextProperty(required=True)
-    #: db.StringProperty() - Author of this comment.
+    #: db.StringProperty() - Author of this message.
     author = db.StringProperty()
     #: db.EmailProperty() - Email address
     email = db.EmailProperty()
     #: db.URLProperty() - Web url
     weburl = db.URLProperty()
-    status = db.IntegerProperty(default=COMMENT_APPROVE)
+    status = db.IntegerProperty(default=MESSAGE_APPROVE)
     """
-    db.IntegerProperty(default=COMMENT_APPROVE)
+    db.IntegerProperty(default=MESSAGE_APPROVE)
 
     Comment status:
-        * COMMENT_HOLD=0
-        * COMMENT_APPROVE=1
-        * COMMENT_SPAM=2
-        * COMMENT_TRASH=3
+        * MESSAGE_HOLD=0
+        * MESSAGE_APPROVE=1
+        * MESSAGE_SPAM=2
+        * MESSAGE_TRASH=3
     """
     #: db.BooleanProperty(default=False)
-    #: Whether need send mail to commenter when a reply occurred
+    #: Whether need send mail to messageer when a reply occurred
     reply_notify_mail = db.BooleanProperty(default=False)
     #: db.StringProperty() - Ip address.
     ip = db.StringProperty()
 
-    ctype = db.IntegerProperty(default=COMMENT_TYPE_NORMAL)
-    """
-    db.IntegerProperty(default=COMMENT_TYPE_NORMAL)
+##    #ctype = db.IntegerProperty(default=0)
+##    """
+##    db.IntegerProperty(default=MESSAGE_TYPE_NORMAL)
+##
+##    Comment Type.
+##        * MESSAGE_TYPE_NORMAL = 0
+##        * MESSAGE_TYPE_TRACKBACK = 1
+##        * MESSAGE_TYPE_PINGBACK = 2
+##    """
 
-    Comment Type.
-        * COMMENT_TYPE_NORMAL = 0
-        * COMMENT_TYPE_TRACKBACK = 1
-        * COMMENT_TYPE_PINGBACK = 2
-    """
 ##    #: Comment No.
 ##    no = db.IntegerProperty(default=0)
 ##    Comment order.
-##    comment_order = db.IntegerProperty(default=1)
+##    message_order = db.IntegerProperty(default=1)
 ##
 ##    @property
 ##    def mpindex(self):
-##        count = self.entry.commentcount
+##        count = self.entry.messagecount
 ##        no = self.no
-##        if g_blog.comments_order:
+##        if g_blog.messages_order:
 ##            no = count-no+1
-##        index = no / g_blog.comments_per_page
-##        if no % g_blog.comments_per_page or no == 0:
+##        index = no / g_blog.messages_per_page
+##        if no % g_blog.messages_per_page or no == 0:
 ##            index += 1
 ##        return index
 
     @property
     def shortcontent(self, len=20):
         """
-        Short string for this comment.
+        Short string for this message.
         """
         scontent = self.content
         scontent = re.sub(r'<br\s*/>', ' ', scontent)
@@ -733,23 +773,23 @@ class Comment(db.Model):
 
     def put(self):
         """
-        Save comment to db.
+        Save message to db.
         """
-        g_blog().tigger_action("pre_comment", self)
+        g_blog().tigger_action("pre_message", self)
         db.Model.put(self)
-        g_blog().tigger_action("save_comment", self)
+        g_blog().tigger_action("save_message", self)
 
     def delete(self):
         """
-        Delete comment.
+        Delete message.
         """
         db.Model.delete(self)
-        g_blog.tigger_action("delete_comment", self)
+        g_blog.tigger_action("delete_message", self)
 
     @property
     def children(self):
-        """Children comments."""
-        comments = Comment.all().filter("comment_parent =",self)
+        """Children messages."""
+        messages = Message.all().filter("message_parent =",self)
 
     def store(self, **kwargs):
         """

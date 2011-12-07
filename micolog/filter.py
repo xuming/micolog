@@ -4,10 +4,10 @@ from django import template
 from model import *
 import  django.template.defaultfilters as defaultfilters
 import urllib
-from app.utils import trim_excerpt_without_filters
+#from utils import trim_excerpt_without_filters
 register = template.Library()
 from datetime import *
-from app.utils import slugify as slugify_function
+from utils import slugify as slugify_function
 
 @register.filter
 def month_name(value):

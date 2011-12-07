@@ -2,10 +2,10 @@
 # Name:        cache.py
 # Purpose:
 #
-# Author:      Administrator
+# Author:      xuming
 #
 # Created:     23-01-2011
-# Copyright:   (c) Administrator 2011
+# Copyright:   (c) xuming 2011
 # Licence:     GPL
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
@@ -14,28 +14,36 @@
 The main purpose of this module is to design a common layer to deal with all
 methods which need been cached!
 """
+from google.appengine.api import memcache
+from utils import format_date
+from datetime import datetime
 ENABLE_MEMCACHE=True
-def vcache(key="", time=3600):
+def vcache(key="", time=0,args=()):
     """
     Cache for normal method which return some object
 
     example::
 
-        @vcache("blog.hotposts")
-        def hotposts(self):
-            return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-readtimes').fetch(8)
+        @vcache("blog.hotposts",args=('count'))
+        def hotposts(self,count=8):
+            return Entry.all().filter('entrytype =', 'post').filter("published =", True).order('-readtimes').fetch(count)
 
     args:
         key: keyname fo memcache
+        args: the list of cached args
         time: relative number of seconds from current time.
+
 
     """
     def _decorate(method):
-        def _wrapper(*args, **kwargs):
+        def _wrapper(*cargs, **kwargs):
             if  not ENABLE_MEMCACHE:
-                return method(*args, **kwargs)
+                return method(*cargs, **kwargs)
 
-            result = method(*args, **kwargs)
+            for arg in args:
+                key+="_"+str(kwargs[arg])
+
+            result = method(*cargs, **kwargs)
             memcache.set(key, result, time)
             return result
 
@@ -43,7 +51,7 @@ def vcache(key="", time=3600):
     return _decorate
 
 
-def cache(key="",time=3600):
+def cache(key="",time=0):
     """
     Cache for request handler method, such as: get or post.
     It will cache the web page.
@@ -60,7 +68,7 @@ def cache(key="",time=3600):
 
     def _decorate(method):
         def _wrapper(*args, **kwargs):
-            from model import g_blog
+
             if not ENABLE_MEMCACHE:
                 method(*args, **kwargs)
                 return
@@ -73,7 +81,7 @@ def cache(key="",time=3600):
             #arg[0] is BaseRequestHandler object
 
             if html:
-                 logging.info('cache:'+skey)
+                 #logging.info('cache:'+skey)
                  response.last_modified =html[1]
                  ilen=len(html)
                  if ilen>=3:
@@ -85,11 +93,9 @@ def cache(key="",time=3600):
             else:
                 if 'last-modified' not in response.headers:
                     response.last_modified = format_date(datetime.utcnow())
-
                 method(*args, **kwargs)
-                result=response.out.getvalue()
-                status_code = response._Response__status[0]
-                logging.debug("Cache:%s"%status_code)
+                result=response.body
+                status_code = response.status_int
                 memcache.set(skey,(result,response.last_modified,status_code,response.headers),time)
 
         return _wrapper
