@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os,logging
-import functools,webapp2
+import functools
+import webapp2 as webapp
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
@@ -15,7 +16,7 @@ from mimetypes import types_map
 from datetime import datetime
 import urllib
 import traceback
-import template
+import template as micolog_template
 
 def requires_admin(method):
     @functools.wraps(method)
@@ -167,7 +168,7 @@ def Sitemap_NotifySearch():
             logging.error('Cannot contact: %s' % ping[1])
 
 
-class BaseRequestHandler(webapp2.RequestHandler):
+class BaseRequestHandler(webapp.RequestHandler):
 
 
 
@@ -176,7 +177,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
 
     def initialize(self, request, response):
         self.current='home'
-        webapp2.RequestHandler.initialize(self, request, response)
+        webapp.RequestHandler.initialize(self, request, response)
         os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
         from model import User,Blog
         self.blog = Blog.getBlog()
@@ -231,20 +232,26 @@ class BaseRequestHandler(webapp2.RequestHandler):
             self.response.set_status(errorcode)
 
 
+
         #errorfile=getattr(self.blog.theme,'error'+str(errorcode))
         #logging.debug(errorfile)
 ##		if not errorfile:
 ##			errorfile=self.blog.theme.error
         errorfile='error'+str(errorcode)+".html"
+
         try:
             content=micolog_template.render(self.blog.theme,errorfile, self.template_vals)
         except TemplateDoesNotExist:
             try:
                 content=micolog_template.render(self.blog.theme,"error.html", self.template_vals)
+
             except TemplateDoesNotExist:
                 content=micolog_template.render(self.blog.default_theme,"error.html", self.template_vals)
         except:
+            message+="<p><pre>"+traceback.format_exc()+"</pre><br></p>"
             content=message
+
+
         self.response.out.write(content)
 
     def get_render(self,template_file,values):
@@ -254,10 +261,10 @@ class BaseRequestHandler(webapp2.RequestHandler):
         try:
             #sfile=getattr(self.blog.theme, template_file)
             logging.debug("get_render:"+template_file)
-            html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
+            html = template.render(self.blog.theme, template_file, self.template_vals)
         except TemplateDoesNotExist:
             #sfile=getattr(self.blog.default_theme, template_file)
-            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
+            html = template.render(self.blog.default_theme, template_file, self.template_vals)
 
         return html
 

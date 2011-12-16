@@ -17,7 +17,7 @@ methods which need been cached!
 from google.appengine.api import memcache
 from utils import format_date
 from datetime import datetime
-ENABLE_MEMCACHE=True
+ENABLE_MEMCACHE=False
 def vcache(key="", time=0,args=()):
     """
     Cache for normal method which return some object

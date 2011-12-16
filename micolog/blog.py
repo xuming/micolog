@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cgi, os
+import cgi, os,logging
 
 import wsgiref.handlers
 
@@ -9,7 +9,7 @@ import wsgiref.handlers
 from datetime import timedelta
 import random
 from django.utils import simplejson
-import filter as myfilter
+
 from app.safecode import Image
 from app.gmemsess import Session
 from base import *
@@ -67,18 +67,29 @@ class MainPage(BasePublicPage):
 
     @cache()
     def get(self,page=1):
-        self.write("ok")
-##
-##        postid=self.param('p')
-##        if postid:
-##            try:
-##                postid=int(postid)
-##                return doRequestHandle(self,SinglePost(),postid=postid)  #singlepost.get(postid=postid)
-##            except:
-##                return self.error(404)
-##        if g_blog.allow_pingback :
-##            self.response.headers['X-Pingback']="%s/rpc"%str(g_blog.baseurl)
-##        self.doget(page)
+        page=int(page)
+        entrycount=self.blog.postscount()
+        max_page = entrycount / self.blog.posts_per_page + ( entrycount % self.blog.posts_per_page and 1 or 0 )
+
+        if entrycount==0:
+            self.write("Please init")
+            return
+
+        if page < 1 or page > max_page:
+
+                return	self.error(404)
+
+        entries = Entry.all().filter('entrytype =','post').\
+                filter("published =", True).order('-sticky').order('-date').\
+                fetch(self.blog.posts_per_page, offset = (page-1) * self.blog.posts_per_page)
+
+        show_prev =entries and  (not (page == 1))
+        show_next =entries and  (not (page == max_page))
+        return self.render('index',
+            dict(entries=entries, show_prev=show_prev, show_next=show_next, pageindex=page, ishome=True,
+            pagecount=max_page, postscounts=entrycount))
+
+
 
     def post(self):
         postid=self.param('p')
@@ -92,6 +103,7 @@ class MainPage(BasePublicPage):
 
     @cache()
     def doget(self,page):
+
         page=int(page)
         entrycount=g_blog.postscount()
         max_page = entrycount / g_blog.posts_per_page + ( entrycount % g_blog.posts_per_page and 1 or 0 )

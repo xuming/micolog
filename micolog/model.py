@@ -18,6 +18,8 @@ import zipfile, re, pickle, uuid
 ##from micolog.utils import slugify
 ##from theme import Theme
 from cache import *
+from theme import Theme
+
 
 class Blog(db.Model):
     owner = db.UserProperty()
@@ -50,7 +52,7 @@ class Blog(db.Model):
 
     domain = db.StringProperty()
     show_excerpt = db.BooleanProperty(default=True)
-    version = 0.8
+    version = 1.0
     timedelta = db.FloatProperty(default=8.0)# hours
     language = db.StringProperty(default="en-us")
 
@@ -67,17 +69,20 @@ class Blog(db.Model):
     #allow_pingback = db.BooleanProperty(default=False)
     #allow_trackback = db.BooleanProperty(default=False)
 
-    theme = None
+    @property
+    def theme (self):
+       return  self.get_theme()
+
     langs = None
     application = None
 
     @classmethod
-    def getBlog(cls):
+    def getBlog(cls,keyname='default'):
         blog=memcache.get("gblog")
         if not blog:
-            blog=Blog.get_by_key_name('default')
+            blog=Blog.get_by_key_name(keyname)
             if not blog:
-                blog=Blog(key_name = 'default')
+                blog=Blog(key_name = keyname)
                 blog.InitBlogData()
             memcache.set("gblog",blog)
         return blog
@@ -95,14 +100,15 @@ class Blog(db.Model):
         from django.utils.translation import  activate,to_locale
         self.language=to_locale(lang)
         self.admin_essential=False
-        from django.conf import settings
-        settings._target = None
-        activate(self.language)
-        self.save()
+        #from django.conf import settings
+        #settings._target = None
+        #activate(self.language)
+        self.put()
 
         entry=Entry(title="Hello world!".decode('utf8'))
-        entry.content='<p>Welcome to micolog %s. This is your first post. Edit or delete it, then start blogging!</p>'%g_blog.version
-        entry.save(True)
+        entry.content='<p>Welcome to micolog %s. This is your first post. Edit or delete it, then start blogging!</p>'%self.version
+        entry.published=True
+        entry.put()
         link=Link(href='http://xuming.net',linktext="Xuming's blog".decode('utf8'))
         link.put()
         link=Link(href='http://eric.cloud-mes.com/',linktext="Eric Guo's blog".decode('utf8'))
@@ -140,8 +146,7 @@ class Blog(db.Model):
         self.subtitle = 'Your Blog Subtitle'
 
     def get_theme(self):
-        self.theme = Theme(self.theme_name);
-        return self.theme
+        return Theme(self.theme_name);
 
     def get_langs(self):
         self.langs = LangIterator()
@@ -172,12 +177,20 @@ class Blog(db.Model):
             .filter('sticky =',True)\
             .order('-date')
 
-class Category(db.Model):
+class BlogModel(db.Model):
+    @property
+    def blog(self):
+        return Blog.getBlog()
+
+class Category(BlogModel):
     uid = db.IntegerProperty()
     name = db.StringProperty(multiline=False)
     slug = db.StringProperty(multiline=False)
     parent_cat = db.SelfReferenceProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+
+
+
     @property
     def posts(self):
         return Entry.all().filter('entrytype =', 'post').filter("published =", True).filter('categorie_keys =', self)
@@ -188,7 +201,7 @@ class Category(db.Model):
 
     def put(self):
         db.Model.put(self)
-        g_blog.tigger_action("save_category", self)
+        self.blog.tigger_action("save_category", self)
 
     def delete(self):
         for entry in Entry.all().filter('categorie_keys =', self):
@@ -197,7 +210,7 @@ class Category(db.Model):
         for cat in Category.all().filter('parent_cat =', self):
             cat.delete()
         db.Model.delete(self)
-        g_blog.tigger_action("delete_category", self)
+        self.blog.tigger_action("delete_category", self)
 
     def ID(self):
         try:
@@ -241,17 +254,20 @@ class Category(db.Model):
     def allTops(self):
         return [c for c in Category.all() if not c.parent_cat]
 
-class Archive(db.Model):
+class Archive(BlogModel):
     monthyear = db.StringProperty(multiline=False)
     year = db.StringProperty(multiline=False)
     month = db.StringProperty(multiline=False)
     entrycount = db.IntegerProperty(default=0)
     date = db.DateTimeProperty(auto_now_add=True)
 
-class Tag(db.Model):
+
+class Tag(BlogModel):
     tag = db.StringProperty(multiline=False)
     slug = db.StringProperty(multiline=False)
     tagcount = db.IntegerProperty(default=0)
+
+
     @property
     def posts(self):
         return Entry.all('entrytype =', 'post').filter("published =", True).filter('tags =', self)
@@ -286,7 +302,7 @@ class Tag(db.Model):
         return self.tag
 
 
-class Link(db.Model):
+class Link(BlogModel):
     href = db.StringProperty(multiline=False, default='')
     linktype = db.StringProperty(multiline=False, default='blogroll')
     linktext = db.StringProperty(multiline=False, default='')
@@ -302,14 +318,14 @@ class Link(db.Model):
 
     def put(self):
         db.Model.put(self)
-        g_blog().tigger_action("save_link", self)
+        self.blog.tigger_action("save_link", self)
 
 
     def delete(self):
         db.Model.delete(self)
-        g_blog().tigger_action("delete_link", self)
+        self.blog.tigger_action("delete_link", self)
 
-class Entry(db.Model):
+class Entry(BlogModel):
     author = db.UserProperty()
     author_name = db.StringProperty()
     published = db.BooleanProperty(default=False)
@@ -352,6 +368,7 @@ class Entry(db.Model):
     postname = ''
     _relatepost = None
 
+
     @property
     def content_excerpt(self):
         return self.get_content_excerpt(_('..more').decode('utf8'))
@@ -363,11 +380,11 @@ class Entry(db.Model):
         return self.content#parse(self.content)
     def get_author_user(self):
         if not self.author:
-            self.author = g_blog.owner
+            self.author = self.blog.owner
         return User.all().filter('email =', self.author.email()).get()
 
     def get_content_excerpt(self, more='..more'):
-        if g_blog.show_excerpt:
+        if self.blog.show_excerpt:
             if self.excerpt:
                 return self.excerpt+' <a href="/%s" class="e_more">%s</a>'%(self.link, more)
             else:
@@ -404,7 +421,7 @@ class Entry(db.Model):
 
     @property
     def fullurl(self):
-        return g_blog.baseurl+'/'+self.link;
+        return self.blog.baseurl+'/'+self.link;
 
     @property
     def categories(self):
@@ -451,19 +468,19 @@ class Entry(db.Model):
         return '/admin/%s?key=%s&action=edit'%(self.entrytype, self.key())
 
     def comments(self,order,ctype,count=0):
-        if g_blog.comments_order:
+        if self.blog.comments_order:
             return Comment.all().filter('entry =', self).order('-date')
         else:
             return Comment.all().filter('entry =', self).order('date')
 
     def purecomments(self):
-        if g_blog.comments_order:
+        if self.blog.comments_order:
             return Comment.all().filter('entry =', self).filter('ctype =', 0).order('-date')
         else:
             return Comment.all().filter('entry =', self).filter('ctype =', 0).order('date')
 
     def trackcomments(self):
-        if g_blog.comments_order:
+        if self.blog.comments_order:
             return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('-date')
         else:
             return Comment.all().filter('entry =', self).filter('ctype IN', [1, 2]).order('date')
@@ -503,8 +520,8 @@ class Entry(db.Model):
                 # ratchet up the count
                 archive.entrycount += cnt
                 archive.put()
-        g_blog.entrycount += cnt
-        g_blog.put()
+        self.blog.entrycount += cnt
+        self.blog.put()
 
     def get_min_category(self):
         min = self.categories[0].ID()
@@ -515,12 +532,13 @@ class Entry(db.Model):
                 category = cat
 
         return category
+
     def save(self, is_publish=False):
         """
         Use this instead of self.put(), as we do some other work here
-        @is_pub:Check if need publish id
+        @is_publish:Check if need publish id
         """
-        g_blog.tigger_action("pre_save_post", self, is_publish)
+        self.blog.tigger_action("pre_save_post", self, is_publish)
         my = self.date.strftime('%B %Y') # September 2008
         self.monthyear = my
         old_publish = self.published
@@ -548,18 +566,18 @@ class Entry(db.Model):
                     if self.is_external_page:
                         self.link = self.external_page_address
                     else:
-                        self.link = g_blog.default_link_format%vals
+                        self.link = self.blog.default_link_format%vals
             else:
-                if g_blog.link_format and self.postname:
-                    self.link = g_blog.link_format.strip()%vals
+                if self.blog.link_format and self.postname:
+                    self.link = self.blog.link_format.strip()%vals
                 else:
-                    self.link = g_blog.default_link_format%vals
+                    self.link = self.blog.default_link_format%vals
 
         self.published = is_publish
         self.put()
 
         if is_publish:
-            if g_blog.sitemap_ping:
+            if self.blog.sitemap_ping:
                 Sitemap_NotifySearch()
 
         if old_publish and not is_publish:
@@ -570,7 +588,7 @@ class Entry(db.Model):
         self.removecache()
 
         self.put()
-        g_blog.tigger_action("save_post", self, is_publish)
+        self.blog.tigger_action("save_post", self, is_publish)
 
 
 
@@ -580,7 +598,7 @@ class Entry(db.Model):
         memcache.delete('/'+self.link)
         memcache.delete('/sitemap')
         memcache.delete('blog.postcount')
-        g_blog.tigger_action("clean_post_cache", self)
+        self.blog.tigger_action("clean_post_cache", self)
 
     @property
     def next(self):
@@ -605,25 +623,25 @@ class Entry(db.Model):
     @property
     def trackbackurl(self):
         if self.link.find("?") > -1:
-            return g_blog.baseurl+"/"+self.link+"&code="+str(self.key())
+            return self.blog.baseurl+"/"+self.link+"&code="+str(self.key())
         else:
-            return g_blog.baseurl+"/"+self.link+"?code="+str(self.key())
+            return self.blog.baseurl+"/"+self.link+"?code="+str(self.key())
 
     def getbylink(self):
         pass
 
     def delete(self):
-        g_blog.tigger_action("pre_delete_post", self)
+        self.blog.tigger_action("pre_delete_post", self)
         if self.published:
             self.update_archive(-1)
         self.delete_comments()
         db.Model.delete(self)
-        g_blog.tigger_action("delete_post", self)
+        self.blog.tigger_action("delete_post", self)
 
 
 USER_LEVEL_AUTHOR=1
 USER_LEVEL_ADMIN=3
-class User(db.Model):
+class User(BlogModel):
     #: db.UserProperty(required=False) - google user
     user = db.UserProperty(required=False)
     #: db.StringProperty() - display name
@@ -656,23 +674,39 @@ class User(db.Model):
         return self.level & 1
 
 
+#用于兼容旧版本，新版本中不再使用Comment对象
+COMMENT_NORMAL=0
+COMMENT_TRACKBACK=1
+COMMENT_PINGBACK=2
+
+COMMENT_HOLD=0
+COMMENT_APPROVE=1
+COMMENT_SPAM=2
+COMMENT_TRASH=3
+
+class Comment(BlogModel):
+    entry = db.ReferenceProperty(Entry)
+    date = db.DateTimeProperty(auto_now_add=True)
+    content = db.TextProperty(required=True)
+    author=db.StringProperty()
+    email=db.EmailProperty()
+    weburl=db.URLProperty()
+    status=db.IntegerProperty(default=0)
+    reply_notify_mail=db.BooleanProperty(default=False)
+    ip=db.StringProperty()
+    ctype=db.IntegerProperty(default=COMMENT_NORMAL)
+    no=db.IntegerProperty(default=0)
+    comment_order=db.IntegerProperty(default=1)
+
+
+#从1.0版本开始，使用Message取代Comment
 MESSAGE_HOLD=0
 MESSAGE_APPROVE=1
 MESSAGE_SPAM=2
 MESSAGE_TRASH=3
 
-##class CommentEntry(db.Model):
-##    """
-##    The object which can be commented.
-##    This class store the entry's comment count, title and url.
-##    Use this entry's keyname as a unique comment entry key.
-##    """
-##    comment_entry_key=db.StringProperty()
-##    count=db.IntegerProperty(default=0)
-##    title=db.StringProperty()
-##    link=db.StringProperty()
 
-class Message(db.Model):
+class Message(BlogModel):
     """
     message object.
 
@@ -694,6 +728,7 @@ class Message(db.Model):
     email = db.EmailProperty()
     #: db.URLProperty() - Web url
     weburl = db.URLProperty()
+
     status = db.IntegerProperty(default=MESSAGE_APPROVE)
     """
     db.IntegerProperty(default=MESSAGE_APPROVE)
@@ -709,6 +744,7 @@ class Message(db.Model):
     reply_notify_mail = db.BooleanProperty(default=False)
     #: db.StringProperty() - Ip address.
     ip = db.StringProperty()
+
 
 ##    #ctype = db.IntegerProperty(default=0)
 ##    """
@@ -729,10 +765,10 @@ class Message(db.Model):
 ##    def mpindex(self):
 ##        count = self.entry.messagecount
 ##        no = self.no
-##        if g_blog.messages_order:
+##        if self.blog.messages_order:
 ##            no = count-no+1
-##        index = no / g_blog.messages_per_page
-##        if no % g_blog.messages_per_page or no == 0:
+##        index = no / self.blog.messages_per_page
+##        if no % self.blog.messages_per_page or no == 0:
 ##            index += 1
 ##        return index
 
@@ -751,8 +787,8 @@ class Message(db.Model):
 ##    def gravatar_url(self):
 ##
 ##        # Set your variables here
-##        if g_blog.avatar_style == 0:
-##            default = g_blog.baseurl+'/static/images/homsar.jpeg'
+##        if self.blog.avatar_style == 0:
+##            default = self.blog.baseurl+'/static/images/homsar.jpeg'
 ##        else:
 ##            default = 'identicon'
 ##
@@ -775,16 +811,16 @@ class Message(db.Model):
         """
         Save message to db.
         """
-        g_blog().tigger_action("pre_message", self)
+        self.blog.tigger_action("pre_message", self)
         db.Model.put(self)
-        g_blog().tigger_action("save_message", self)
+        self.blog.tigger_action("save_message", self)
 
     def delete(self):
         """
         Delete message.
         """
         db.Model.delete(self)
-        g_blog.tigger_action("delete_message", self)
+        self.blog.tigger_action("delete_message", self)
 
     @property
     def children(self):
@@ -799,7 +835,7 @@ class Message(db.Model):
         self._populate_internal_entity()
         return datastore.Put(self._entity, rpc=rpc)
 
-class Media(db.Model):
+class Media(BlogModel):
     """
     Media object. Used to store files. Such as: gif,jpeg,txt ... and so on.
     """
@@ -815,6 +851,7 @@ class Media(db.Model):
     #: db.IntegerProperty(default=0) - download times of this media.
     download = db.IntegerProperty(default=0)
 
+
     @property
     def size(self):
         """
@@ -824,7 +861,7 @@ class Media(db.Model):
 
 
 
-class OptionSet(db.Model):
+class OptionSet(BlogModel):
     """
     This class provide some methods to get and set value from GAE db store.
     Usually, it used by micolog plugins.
@@ -841,6 +878,7 @@ class OptionSet(db.Model):
 
     name = db.StringProperty() #: db.StringProperty() - key name
     value = db.TextProperty() #: db.TextProperty() - key value
+
 
     @classmethod
     def getValue(cls, name, default=None):
@@ -874,56 +912,4 @@ class OptionSet(db.Model):
         if opt:
             opt.delete()
 
-##
-##__current_blog=None
-##def g_blog():
-##    """
-##    Global unique blog variable.
-##    Only one blog instance can be created.
-##    """
-##    global __current_blog
-##    if __current_blog==None:
-##        key = "g_blog"
-##        obj = memcache.get(key)
-##        if obj is None:
-##            obj = Blog.get_by_key_name('default')
-##            if not obj:
-##                obj = InitBlogData()
-##            obj.rootdir = os.path.dirname(__file__)
-##            obj.get_theme()
-##            memcache.add(key, obj, 3600)
-##        __current_blog=obj
-##    return __current_blog
-##
-##def flush_g_blog():
-##    memcache.remove("g_blog")
-##    __current_blog=None
-##
-##def InitBlogData():
-##    OptionSet.setValue('PluginActive', [u'googleAnalytics', u'wordpress', u'sys_plugin'])
-##
-##    blog = Blog(key_name='default')
-##    blog.domain = os.environ['HTTP_HOST']
-##    blog.baseurl = "http://"+g_blog.domain
-##    blog.feedurl = g_blog.baseurl+"/feed"
-##    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-##    lang = "zh-cn"
-##    if os.environ.has_key('HTTP_ACCEPT_LANGUAGE'):
-##        lang = os.environ['HTTP_ACCEPT_LANGUAGE'].split(',')[0]
-##    from django.utils.translation import  activate, to_locale
-##    blog.language = to_locale(lang)
-##    from django.conf import settings
-##    settings._target = None
-##    activate(blog.language)
-##    blog.save()
-##
-##    cate = Category(name=_("Uncategorized").decode('utf8'), slug=_("uncategorized").decode('utf8'))
-##    cate.put()
-##    entry = Entry(title=_("Hello world!").decode('utf8'))
-##    entry.content = _('<p>Welcome to micolog. This is your first post. Edit or delete it, then start blogging!</p>').decode('utf8')
-##    entry.categorie_keys = [cate.key()]
-##    entry.save(True)
-##    link = Link(href='http://xuming.net', linktext=_("Xuming's blog").decode('utf8'))
-##    link.put()
-##    return blog
-##
+

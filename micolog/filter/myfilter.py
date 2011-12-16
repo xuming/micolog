@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 import logging
 from django import template
-from model import *
 import  django.template.defaultfilters as defaultfilters
 import urllib
 #from utils import trim_excerpt_without_filters
 register = template.Library()
 from datetime import *
-from utils import slugify as slugify_function
-
+from micolog.utils import slugify as slugify_function
+from micolog.model import Blog
 @register.filter
 def month_name(value):
 	months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	return months[int(value)-1]
+
+@register.filter
+def month_name_cn(value):
+	months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
 	return months[int(value)-1]
 
 @register.filter
@@ -108,4 +112,4 @@ class MfNode(template.Node):
 			raise TemplateSyntaxError, "'mf' tag takes one argument: the filter name is needed"
 		fname=tokens[1]
 		output = self.nodelist.render(context)
-		return g_blog.tigger_filter(fname,output)
+		return Blog.getBlog().tigger_filter(fname,output)
