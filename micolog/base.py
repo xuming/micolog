@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import os,logging
+import os,logging,settings
 import functools
 import webapp2 as webapp
 from google.appengine.api import users
-from google.appengine.ext.webapp import template
+import template as micolog_template
 from google.appengine.api import memcache
 ##import app.webapp as webapp2
 from django.template import TemplateDoesNotExist
@@ -16,7 +16,8 @@ from mimetypes import types_map
 from datetime import datetime
 import urllib
 import traceback
-import template as micolog_template
+
+import settings
 
 def requires_admin(method):
     @functools.wraps(method)
@@ -257,14 +258,14 @@ class BaseRequestHandler(webapp.RequestHandler):
     def get_render(self,template_file,values):
         template_file=template_file+".html"
         self.template_vals.update(values)
-
+        logging.info("-----------------")
         try:
             #sfile=getattr(self.blog.theme, template_file)
             logging.debug("get_render:"+template_file)
-            html = template.render(self.blog.theme, template_file, self.template_vals)
+            html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
         except TemplateDoesNotExist:
             #sfile=getattr(self.blog.default_theme, template_file)
-            html = template.render(self.blog.default_theme, template_file, self.template_vals)
+            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
 
         return html
 
@@ -283,8 +284,8 @@ class BaseRequestHandler(webapp.RequestHandler):
         Helper method to render the appropriate template
         """
         self.template_vals.update(template_vals)
-        path = os.path.join(os.path.dirname(__file__), template_file)
-        self.response.out.write(template.render(path, self.template_vals))
+        path = os.path.join(settings.ROOT_PATH, template_file)
+        self.response.out.write(micolog_template.render2(path, self.template_vals))
 
     def param(self, name, **kw):
         return self.request.get(name, **kw)

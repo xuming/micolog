@@ -44,8 +44,6 @@ http://www.djangoproject.com/documentation/templates/
 
 import hashlib
 import os,logging
-from google.appengine.dist import use_library
-use_library('django', '1.2')
 import django
 
 import django.conf
@@ -74,13 +72,17 @@ def render(theme,template_file, template_dict, debug=False):
     template_path: path to a Django template
     template_dict: dictionary of values to apply to the template
   """
-  t = load(theme,template_file, debug)
+  t = loadbytheme(theme,template_file, debug)
   return t.render(Context(template_dict))
 
+def render2(template_path, template_dict, debug=False):
+    from google.appengine.ext.webapp import template
+    t=load(template_path)
+    return t.render(Context(template_dict))
 
 template_cache = {}
 
-def load(theme,template_file, debug=False):
+def loadbytheme(theme,template_file, debug=False):
   """Loads the Django template from the given path.
 
   It is better to use this function than to construct a Template using the
@@ -132,6 +134,54 @@ def load(theme,template_file, debug=False):
 
   return template
 
+def load(path, debug=False):
+  """Loads the Django template from the given path.
+
+  It is better to use this function than to construct a Template using the
+  class below because Django requires you to load the template with a method
+  if you want imports and extends to work in the template.
+  """
+  #template_file=os.path.join("templates",template_file)
+
+  abspath =os.path.abspath(path)
+  #logging.debug("theme_path:%s,abspath:%s"%(theme_path,abspath))
+
+  if not debug:
+    template = template_cache.get(abspath)
+  else:
+    template = None
+
+  if not template:
+    #file_name = os.path.split(abspath)
+    directory, file_name = os.path.split(abspath)
+    new_settings = {
+        'TEMPLATE_DIRS': (directory,),
+        'TEMPLATE_DEBUG': debug,
+        'DEBUG': debug,
+        }
+    old_settings = _swap_settings(new_settings)
+    try:
+      template = django.template.loader.get_template(abspath)
+    finally:
+        _swap_settings(old_settings)
+
+    if not debug:
+      template_cache[abspath] = template
+
+    def wrap_render(context, orig_render=template.render):
+      URLNode = django.template.defaulttags.URLNode
+      save_urlnode_render = URLNode.render
+      old_settings = _swap_settings(new_settings)
+      try:
+        URLNode.render = _urlnode_render_replacement
+        return orig_render(context)
+      finally:
+        _swap_settings(old_settings)
+        URLNode.render = save_urlnode_render
+
+    template.render = wrap_render
+
+  return template
 
 def _swap_settings(new):
   """Swap in selected Django settings, returning old settings.
@@ -222,3 +272,4 @@ def _urlnode_render_replacement(self, context):
     return handler.get_url(implicit_args=True, *args)
   except webapp.NoUrlFoundError:
     return ''
+

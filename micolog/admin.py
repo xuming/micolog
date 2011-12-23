@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from google.appengine.dist import use_library
-use_library('django', '1.2')
+#os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import wsgiref.handlers
-from django.conf import settings
-settings._target = None
+#from django.conf import settings
+#settings._target = None
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
-import base
+import base,theme
 from model import *
-
-from app.pingback import autoPingback
-from app.trackback import TrackBack
+##from app.pingback import autoPingback
+##from app.trackback import TrackBack
 import xmlrpclib
 from xmlrpclib import Fault
+
+
 
 class Error404(base.BaseRequestHandler):
     #@printinfo
@@ -35,9 +34,9 @@ class setlanguage(base.BaseRequestHandler):
         settings._target = None
 
         if lang_code and check_for_language(lang_code):
-            g_blog.language=lang_code
-            activate(g_blog.language)
-            g_blog.save()
+            self.blog.language=lang_code
+            activate(self.blog.language)
+            self.blog.save()
         self.redirect(next)
 
 ##			if hasattr(request, 'session'):
@@ -120,8 +119,8 @@ class admin_do_action(base.BaseRequestHandler):
 
         if link_format:
             link_format=link_format.strip()
-            g_blog.link_format=link_format
-            g_blog.save()
+            self.blog.link_format=link_format
+            self.blog.save()
             for entry in Entry.all():
                 vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
                 'postname':entry.slug,'post_id':entry.post_id}
@@ -129,7 +128,7 @@ class admin_do_action(base.BaseRequestHandler):
                 if entry.slug:
                     newlink=link_format%vals
                 else:
-                    newlink=g_blog.default_link_format%vals
+                    newlink=self.blog.default_link_format%vals
 
                 if entry.link<>newlink:
                     entry.link=newlink
@@ -147,7 +146,7 @@ class admin_do_action(base.BaseRequestHandler):
         for entry in Entry.all():
             entry.delete()
 
-        g_blog.entrycount=0
+        self.blog.entrycount=0
         self.write(_('"Init has succeed."'))
 
     @base.requires_admin
@@ -256,30 +255,30 @@ class admin_sitemap(base.BaseRequestHandler):
         str_options= self.param('str_options').split(',')
         for name in str_options:
             value=self.param(name)
-            setattr(g_blog,name,value)
+            setattr(self.blog,name,value)
 
         bool_options= self.param('bool_options').split(',')
         for name in bool_options:
             value=self.param(name)=='on'
-            setattr(g_blog,name,value)
+            setattr(self.blog,name,value)
 
         int_options= self.param('int_options').split(',')
         for name in int_options:
             try:
                 value=int( self.param(name))
-                setattr(g_blog,name,value)
+                setattr(self.blog,name,value)
             except:
                 pass
         float_options= self.param('float_options').split(',')
         for name in float_options:
             try:
                 value=float( self.param(name))
-                setattr(g_blog,name,value)
+                setattr(self.blog,name,value)
             except:
                 pass
 
 
-        g_blog.save()
+        self.blog.save()
         self.render2('views/admin/sitemap.html',{})
 
 class admin_import(base.BaseRequestHandler):
@@ -330,52 +329,51 @@ class admin_import(base.BaseRequestHandler):
 ##			self.render2('views/admin/import.html',{'error':'import faiure.'})
 
 class admin_setup(base.BaseRequestHandler):
-    def __init__(self):
-        self.current='config'
+    #def __init__(self):
+       #self.current='config'
 
     @base.requires_admin
     def get(self,slug=None):
-        vals={'themes':ThemeIterator()}
+        vals={'themes':theme.ThemeIterator()}
         self.render2('views/admin/setup.html',vals)
 
     @base.requires_admin
     def post(self):
-        old_theme=g_blog.theme_name
+        old_theme=self.blog.theme_name
         str_options= self.param('str_options').split(',')
         for name in str_options:
             value=self.param(name)
-            setattr(g_blog,name,value)
+            setattr(self.blog,name,value)
 
         bool_options= self.param('bool_options').split(',')
         for name in bool_options:
             value=self.param(name)=='on'
-            setattr(g_blog,name,value)
+            setattr(self.blog,name,value)
 
         int_options= self.param('int_options').split(',')
         for name in int_options:
             try:
                 value=int( self.param(name))
-                setattr(g_blog,name,value)
+                setattr(self.blog,name,value)
             except:
                 pass
         float_options= self.param('float_options').split(',')
         for name in float_options:
             try:
                 value=float( self.param(name))
-                setattr(g_blog,name,value)
+                setattr(self.blog,name,value)
             except:
                 pass
 
 
-        if old_theme !=g_blog.theme_name:
-            g_blog.get_theme()
+        if old_theme !=self.blog.theme_name:
+            self.blog.get_theme()
 
 
-        g_blog.owner=self.login_user
-        g_blog.author=g_blog.owner.nickname()
-        g_blog.save()
-        gblog_init()
-        vals={'themes':ThemeIterator()}
+        self.blog.owner=self.login_user
+        self.blog.author=self.blog.owner.nickname()
+        self.blog.save()
+        vals={'themes':theme.ThemeIterator()}
         memcache.flush_all()
         self.render2('views/admin/setup.html',vals)
 
@@ -491,7 +489,7 @@ class admin_entry(base.BaseRequestHandler):
 
                 vals.update({'action':'edit','result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
                 self.render2('views/admin/entry.html',vals)
-                if published and entry.allow_trackback and g_blog.allow_pingback:
+                if published and entry.allow_trackback and self.blog.allow_pingback:
                     try:
                         autoPingback(str(entry.fullurl),HTML=content)
                     except:
@@ -534,7 +532,7 @@ class admin_entry(base.BaseRequestHandler):
                     vals.update({'result':True,'msg':smsg%{'link':str(base.urlencode( entry.link))},'entry':entry})
 
                     self.render2('views/admin/entry.html',vals)
-                    if published and entry.allow_trackback and g_blog.allow_pingback:
+                    if published and entry.allow_trackback and self.blog.allow_pingback:
                         try:
                             autoPingback(entry.fullurl,HTML=content)
                         except:
@@ -580,7 +578,7 @@ class admin_entries(base.BaseRequestHandler):
                 #entry.delete_comments()
 
                 entry.delete()
-                g_blog.entrycount-=1
+                self.blog.entrycount-=1
         finally:
 
             self.redirect('/admin/entries/'+slug)
@@ -901,7 +899,7 @@ class admin_author(base.BaseRequestHandler):
                     author.user=db.users.User(slug)
                     author.put()
                     if author.isadmin:
-                        g_blog.author=name
+                        self.blog.author=name
                     self.redirect('/admin/authors')
 
                 except:
@@ -1079,41 +1077,41 @@ class admin_ThemeEdit(base.BaseRequestHandler):
             self.write(item.filename+"<br>")
 
 
-def main():
-    base.webapp.template.register_template_library('app.filter')
-    base.webapp.template.register_template_library('app.recurse')
-
-    application = base.webapp.WSGIApplication(
-                    [
-                    ('/admin/{0,1}',admin_main),
-                    ('/admin/setup',admin_setup),
-                    ('/admin/entries/(post|page)',admin_entries),
-                    ('/admin/links',admin_links),
-                    ('/admin/categories',admin_categories),
-                    ('/admin/comments',admin_comments),
-                    ('/admin/link',admin_link),
-                    ('/admin/category',admin_category),
-                     ('/admin/(post|page)',admin_entry),
-                     ('/admin/status',admin_status),
-                     ('/admin/authors',admin_authors),
-                     ('/admin/author',admin_author),
-                     ('/admin/import',admin_import),
-                     ('/admin/tools',admin_tools),
-                     ('/admin/plugins',admin_plugins),
-                     ('/admin/plugins/(\w+)',admin_plugins_action),
-                     ('/admin/sitemap',admin_sitemap),
-                     ('/admin/export/micolog.xml',WpHandler),
-                     ('/admin/do/(\w+)',admin_do_action),
-                     ('/admin/lang',setlanguage),
-                     ('/admin/theme/edit/(\w+)',admin_ThemeEdit),
-                     ('/admin/upload', Upload),
-                     ('/admin/filemanager', FileManager),
-                     ('/admin/uploadex', UploadEx),
-                     ('.*',Error404),
-                     ],debug=True)
-    g_blog.application=application
-    g_blog.plugins.register_handlerlist(application)
-    wsgiref.handlers.CGIHandler().run(application)
-
-if __name__ == "__main__":
-    main()
+##def main():
+##    base.webapp.template.register_template_library('app.filter')
+##    base.webapp.template.register_template_library('app.recurse')
+##
+##    application = base.webapp.WSGIApplication(
+##                    [
+##                    ('/admin/{0,1}',admin_main),
+##                    ('/admin/setup',admin_setup),
+##                    ('/admin/entries/(post|page)',admin_entries),
+##                    ('/admin/links',admin_links),
+##                    ('/admin/categories',admin_categories),
+##                    ('/admin/comments',admin_comments),
+##                    ('/admin/link',admin_link),
+##                    ('/admin/category',admin_category),
+##                     ('/admin/(post|page)',admin_entry),
+##                     ('/admin/status',admin_status),
+##                     ('/admin/authors',admin_authors),
+##                     ('/admin/author',admin_author),
+##                     ('/admin/import',admin_import),
+##                     ('/admin/tools',admin_tools),
+##                     ('/admin/plugins',admin_plugins),
+##                     ('/admin/plugins/(\w+)',admin_plugins_action),
+##                     ('/admin/sitemap',admin_sitemap),
+##                     ('/admin/export/micolog.xml',WpHandler),
+##                     ('/admin/do/(\w+)',admin_do_action),
+##                     ('/admin/lang',setlanguage),
+##                     ('/admin/theme/edit/(\w+)',admin_ThemeEdit),
+##                     ('/admin/upload', Upload),
+##                     ('/admin/filemanager', FileManager),
+##                     ('/admin/uploadex', UploadEx),
+##                     ('.*',Error404),
+##                     ],debug=True)
+##    self.blog.application=application
+##    self.blog.plugins.register_handlerlist(application)
+##    wsgiref.handlers.CGIHandler().run(application)
+##
+##if __name__ == "__main__":
+##    main()

@@ -17,7 +17,7 @@ methods which need been cached!
 from google.appengine.api import memcache
 from utils import format_date
 from datetime import datetime
-ENABLE_MEMCACHE=False
+from  settings import ENABLE_MEMCACHE
 def vcache(key="", time=0,args=()):
     """
     Cache for normal method which return some object
@@ -39,12 +39,17 @@ def vcache(key="", time=0,args=()):
         def _wrapper(*cargs, **kwargs):
             if  not ENABLE_MEMCACHE:
                 return method(*cargs, **kwargs)
+            skey=key
+            if hasattr(cargs[0],"vkey"):
+                skey=key+cargs[0].vkey
 
             for arg in args:
-                key+="_"+str(kwargs[arg])
-
-            result = method(*cargs, **kwargs)
-            memcache.set(key, result, time)
+                if kwargs.has_key(arg):
+                    skey+="_"+str(arg)+"_"+str(kwargs[arg])
+            result=memcache.get(skey)
+            if result==None:
+                result = method(*cargs, **kwargs)
+                memcache.set(skey, result, time)
             return result
 
         return _wrapper

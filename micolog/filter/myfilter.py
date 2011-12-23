@@ -12,7 +12,6 @@ from micolog.model import Blog
 def month_name(value):
 	months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	return months[int(value)-1]
-
 @register.filter
 def month_name_cn(value):
 	months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
@@ -24,8 +23,8 @@ def slugify(value):
 
 @register.filter
 def datetz(date,format):  #datetime with timedelta
-	t=timedelta(seconds=3600*g_blog.timedelta)
-	return defaultfilters.date(date+t,format)
+    t=timedelta(seconds=3600*(Blog.getBlog().timedelta))
+    return defaultfilters.date(date+t,format)
 
 @register.filter
 def TimestampISO8601(t):

@@ -2,7 +2,7 @@
 """
 Common class and functions used by micolog.
 """
-import re
+import re,urllib
 
 def slugify(inStr):
     """Conver string to slug.

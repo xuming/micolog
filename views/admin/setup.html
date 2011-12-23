@@ -61,11 +61,7 @@
                </td>
                 </tr>
                 </tr>
-                  <tr valign="top">
-                <th scope="row">{% trans "Micolog Address(URL):"%}</th>
-                <td><input type="text" size="45" value="{{ blog.baseurl }}"  id="baseurl" name="baseurl" />
-               </td>
-                </tr>
+
 
                  <tr valign="top">
                 <th scope="row">{% trans "RSS Feed URL:"%}</th>
@@ -172,7 +168,7 @@
 
 <p class="submit"><input type="submit" value="{% trans "Save Changes"%}" name="Submit"/>
 <input type="hidden" value="update" name="action"/>
-<input type="hidden" value="title,subtitle,baseurl,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice,link_format" name="str_options"/>
+<input type="hidden" value="title,subtitle,feedurl,rpcuser,rpcpassword,theme_name,domain,default_link_format,blognotice,link_format" name="str_options"/>
 <input type="hidden" value="enable_memcache,comment_notify_mail,allow_trackback,allow_pingback,admin_essential" name="bool_options"/>
 <input type="hidden" value="posts_per_page,comments_order,comments_per_page,comment_check_type,avatar_style" name="int_options"/>
 <input type="hidden" value="timedelta" name="float_options"/>

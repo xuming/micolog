@@ -112,6 +112,12 @@ indexes:
   - name: entrytype
   - name: published
   - name: date
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: date
     direction: desc
 
 - kind: Entry

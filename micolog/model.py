@@ -17,9 +17,11 @@ from google.appengine.api import memcache
 import zipfile, re, pickle, uuid
 ##from micolog.utils import slugify
 ##from theme import Theme
+
 from cache import *
 from theme import Theme
-
+from base import LangIterator
+from django.utils.translation import ugettext as _
 
 class Blog(db.Model):
     owner = db.UserProperty()
@@ -37,7 +39,7 @@ class Blog(db.Model):
     #blogversion = db.StringProperty(multiline=False, default='0.30')
     theme_name = db.StringProperty(multiline=False, default='default')
     enable_memcache = db.BooleanProperty(default=False)
-    link_format = db.StringProperty(multiline=False, default='%(year)s/%(month)s/%(day)s/%(postname)s.html')
+    link_format = db.StringProperty(multiline=False, default='%(year)s/%(month)s/%(day)s/%(post_id)s.html')
     comment_notify_mail = db.BooleanProperty(default=True)
     #评论顺序
     comments_order = db.IntegerProperty(default=0)
@@ -60,7 +62,7 @@ class Blog(db.Model):
     sitemap_include_category = db.BooleanProperty(default=False)
     sitemap_include_tag = db.BooleanProperty(default=False)
     sitemap_ping = db.BooleanProperty(default=False)
-    default_link_format = db.StringProperty(multiline=False, default='?p=%(post_id)s')
+    default_link_format = db.StringProperty(multiline=False, default='post/%(post_id)s')
     #todo
     #default_theme = Theme("default")
 
@@ -87,11 +89,18 @@ class Blog(db.Model):
             memcache.set("gblog",blog)
         return blog
 
+    @property
+    def vkey(self):
+        return str(self.key.id)
+
+    @property
+    def baseurl(self):
+        return "http://"+self.domain
+
     def InitBlogData(self):
 
         OptionSet.setValue('PluginActive',[u'googleAnalytics', u'wordpress', u'sys_plugin'])
         self.domain=os.environ['HTTP_HOST']
-        self.baseurl="http://"+self.domain
         self.feedurl=self.baseurl+"/feed"
         os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
         self.admin_essential = False
@@ -177,10 +186,41 @@ class Blog(db.Model):
             .filter('sticky =',True)\
             .order('-date')
 
+    @vcache("blog.get_entries_paged",args=("entrytype","published","pindex","size"))
+    def get_entries_paged(self,entrytype='post',published=True,pindex=1,size=20):
+        return Entry.all().filter('entrytype =',entrytype).\
+                filter("published =", published).order('-sticky').order('-date').\
+                fetch(size, offset = (pindex-1) * size)
+
+    @vcache("blog.get_blogrolls")
+    def blogrolls(self):
+        return Link.all().filter('linktype =','blogroll')
+
+    @vcache("blog.get_archives")
+    def archives(self):
+        return Archive.all().order('-year').order('-month').fetch(12)
+
+    @vcache("blog.get_alltags")
+    def tags(self):
+        return Tag.all()
+
+    @vcache("blog.recent_comments",args=("count"))
+    def recent_comments(self,count=5):
+        return Comment.all().order('-date').fetch(count)
+
+    @vcache("blog.get_categories")
+    def categories(self):
+        return Category.all()
+
+
+
 class BlogModel(db.Model):
     @property
     def blog(self):
         return Blog.getBlog()
+    @property
+    def vkey(self):
+        return str(self.key.id)
 
 class Category(BlogModel):
     uid = db.IntegerProperty()
@@ -353,7 +393,7 @@ class Entry(BlogModel):
 
     #compatible with wordpress
     is_wp = db.BooleanProperty(default=False)
-    post_id = db.IntegerProperty()
+    #post_id = db.IntegerProperty()
     excerpt = db.StringProperty(multiline=True)
 
     #external page
@@ -368,6 +408,9 @@ class Entry(BlogModel):
     postname = ''
     _relatepost = None
 
+    @property
+    def post_id(self):
+       return self.key().id()
 
     @property
     def content_excerpt(self):
@@ -421,7 +464,10 @@ class Entry(BlogModel):
 
     @property
     def fullurl(self):
-        return self.blog.baseurl+'/'+self.link;
+        if self.link:
+            return self.blog.baseurl+'/'+self.link;
+        else:
+            return self.blog.baseurl+'/post/'+str(self.post_id)
 
     @property
     def categories(self):
@@ -456,6 +502,7 @@ class Entry(BlogModel):
             Tag.add(v)
         self.tags = [t.strip() for t in tags]
 
+    @vcache("entry.get_comments_by_page",args=["index","psize"])
     def get_comments_by_page(self, index, psize):
         return self.comments().fetch(psize, offset=(index-1) * psize)
 
@@ -467,7 +514,7 @@ class Entry(BlogModel):
     def edit_url(self):
         return '/admin/%s?key=%s&action=edit'%(self.entrytype, self.key())
 
-    def comments(self,order,ctype,count=0):
+    def comments(self):
         if self.blog.comments_order:
             return Comment.all().filter('entry =', self).order('-date')
         else:
@@ -547,7 +594,7 @@ class Entry(BlogModel):
         if is_publish:
             if not self.is_wp:
                 self.put()
-                self.post_id = self.key().id()
+                #self.post_id = self.key().id()
 
             #fix for old version
             if not self.postname:

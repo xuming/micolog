@@ -9,6 +9,9 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 DEBUG = True
 TEMPLATE_DEBUG = False
 
+ENABLE_MEMCACHE=True
+
+
 ##LANGUAGE_CODE = 'zh-CN'
 ##LANGUAGE_CODE = 'fr'
 LOCALE_PATHS = 'locale'
