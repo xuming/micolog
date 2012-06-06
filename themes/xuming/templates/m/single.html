@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{{self.blog.title}}-{{entry.title}}
         </title>
+                 <link rel="apple-touch-icon-precomposed" href="/themes/{{ blog.theme_name }}/icon.png" />
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
 
         <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/my.css" type="text/css" />
@@ -84,12 +85,18 @@
                     </ul>
             </div>
             <div id="comment_area"></div>
-            <div id="comment_edit">	{% include "m/comment_edit.html" %}
+            <div id="comment_edit">
             </div>
 
 
         </div>
  <script>
+        $('#comment_edit').load('/do/getcomment_edit?key={{entry.key.id}}',function(){
+            $('#commentform textarea').textinput();
+            $('#commentform #submit').button();
+
+        });
+
         var nextcur=''
          function todom(dom){
             var body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');

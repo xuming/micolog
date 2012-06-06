@@ -147,7 +147,8 @@ class SinglePost(BasePublicPage):
         #entry.readtimes += 1
         #entry.put()
         self.entry=entry
-        loginurl=users.create_login_url(entry.fullurl+"#comment_area")
+
+        loginurl=users.create_login_url(entry.fullurl+(self.isPhone() and "" or "#comment_area"))
         @request_memcache(key_prefix='single_post',entry_id=entry.vkey)
         def render_single(self):
             if entry.entrytype=='post':
