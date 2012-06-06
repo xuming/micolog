@@ -82,10 +82,10 @@ function SplitFile()
         {% for file in files %}
             <tr>
 				<td  class="check-column" scope="row"><input type="checkbox" name="del" value="{{ file.key.id }}" /></td>
-                <td><a href="/media/{{ file.key }}/{{file.name}}">{{ file.name|escape }}</a></td>
+                <td><a href="/media/{{ file.key.id }}/{{file.name}}">{{ file.name|escape }}</a></td>
                 <td>{{ file.size|filesizeformat }}</td>
                 <td>{{ file.date|datetz:"Y-m-d H:i:s" }}</td>
-                <td><a href="/media/{{ file.key }}/{{file.name}}?a=download">{{ file.name|escape }}</a></td>
+                <td><a href="/media/{{ file.key.id }}/{{file.name}}?a=download">{{ file.name|escape }}</a></td>
 				<td>{{ file.download }}</td>
 
             </tr>

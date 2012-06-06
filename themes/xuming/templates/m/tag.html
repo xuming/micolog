@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{self.blog.title}}-{{tag}}
+        </title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+
+        <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/my.css" type="text/css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
+        </script>
+        <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
+        </script>
+    </head>
+    <body>
+        <div data-role="page" id="tagpage">
+            <div data-theme="a" data-role="header">
+
+                    <h3>
+                        {{tag}}
+                    </h3>
+                    <a href="/" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+		            <a href="/do/mobile_more" data-icon="grid" data-iconpos="notext" data-rel="dialog" data-transition="fade">Search</a>
+          </div>
+            <div data-role="content">
+                <ul data-role="listview" data-divider-theme="" >
+
+ {% for entry in entries %}
+
+    <li data-theme="c" >
+                        <a  href="{{entry.fullurl}}" data-transition="slide">
+                            {{ entry.title }}
+                        </a>
+
+                    </li>
+
+
+
+	 {% endfor %}
+
+
+                </ul>
+
+
+            </div>
+             <!--navbar-->
+    <div data-role="navbar" data-iconpos="top">
+                        <ul>
+                            <li>
+                              {% if pager.prev %}
+                                <a href="/?prev={{pager.prev }}" data-theme="" >
+                                    上一页
+                                </a>
+                                {%else%}
+                                <a href="#" data-theme="" >
+                                &nbsp;
+                                </a>
+
+                                	{% endif %}
+                            </li>
+                            <li>
+                            	{% if pager.next %}
+                                <a href="/?next={{ pager.next }}" data-theme="">
+                                    下一页
+                                </a>
+                                 {%else%}
+                                <a href="#" data-theme="" >
+    &nbsp;
+                                </a>
+
+
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>    <!-- navbar end-->
+    <div data-role="footer">
+
+    </div>
+
+        </div>
+        <script>
+            //App custom javascript
+        </script>
+
+    </body>
+</html>
+

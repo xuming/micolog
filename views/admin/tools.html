@@ -54,7 +54,7 @@
 		$.getJSON("/admin/do/update_archives", function(json){
 			   $('#bmsg').html(json+'<br/><input type="button" value="Ok" onclick="$.unblockUI()"></input>');
 			   $('.blockUI').css('cursor','');
-	
+
 			});
 	}
 	 function update_tags()
@@ -114,13 +114,7 @@
 <p>{%trans "It will refresh the number of comments for each entry."%}</p>
 
 </div>
-<div class="grid">
-<input type='button' class="runbtn" value='{% trans "Run"%}' id='update_commentno' onclick="javascript:if (confirm('Do you really want to do this action?')) update_commentno(); else return false;"/>
 
-<b>{% trans "Update comment number"%}</b>
-<p>{%trans "It will refresh the number for each comment."%}</p>
-
-</div>
 <div class="grid">
 <input type='button'   class="runbtn" value='{% trans "Run"%}' id='update_link' onclick="javascript:if (confirm('Do you really want to do this action?')) update_link(); else return false;"/>
 

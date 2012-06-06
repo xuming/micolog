@@ -181,9 +181,7 @@
 	<input type="checkbox" style="margin-left:10px;" id="sticky" {%if entry.sticky%} checked="checked" {%endif%}  name="sticky"/><label for="sticky">{% trans "Sticky it." %}</label>
 <br>
   <input type="checkbox" style="margin-left:10px;" tabindex="4" id="allow_comment" name="allow_comment" class="button button-highlighted" {%if entry.allow_comment%}checked="checked"{%endif%} {%if not entry%}checked="checked"{%endif%}/><label for="allow_comment">{% trans "allow comment" %}</label>
-    <br>
-  <input type="checkbox" style="margin-left:10px;" tabindex="4" id="allow_trackback" name="allow_trackback" class="button button-highlighted"  {%if not blog.allow_trackback%}disabled="disabled"{%else%}{%if entry.allow_trackback%}checked="checked"{%endif%} {%if not entry%}checked="checked"{%endif%} {%endif%} /><label for="allow_trackback">{% trans "allow trackback" %}</label>
-  </p>
+</p>
 </div>
 <div class="side-info">
 <h5>{%trans "Related" %}</h5>
@@ -315,7 +313,7 @@
 </div>
 
 
-<input type="hidden" value="{{entry.key}}" name="key"/>
+<input type="hidden" value="{{entry.key.id}}" name="key"/>
 <input type="hidden" value="{{action}}" name="action"/>
 
 </div>

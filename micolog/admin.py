@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-import os
-#os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+import os,sys
 import wsgiref.handlers
-#from django.conf import settings
-#settings._target = None
+from django.conf import settings
+settings._target = None
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
-import base,theme
+import base,theme,utils
 from model import *
+from cache import *
+
 ##from app.pingback import autoPingback
 ##from app.trackback import TrackBack
 import xmlrpclib
@@ -23,20 +24,26 @@ class Error404(base.BaseRequestHandler):
 class setlanguage(base.BaseRequestHandler):
     def get(self):
         lang_code = self.param('language')
+
         next = self.param('next')
         if (not next) and os.environ.has_key('HTTP_REFERER'):
             next = os.environ['HTTP_REFERER']
         if not next:
             next = '/'
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+        #os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
         from django.utils.translation import check_for_language, activate
         from django.conf import settings
-        settings._target = None
+        #settings._target = None
 
         if lang_code and check_for_language(lang_code):
+            self.write(lang_code)
+
             self.blog.language=lang_code
             activate(self.blog.language)
-            self.blog.save()
+
+            self.blog.put()
+
         self.redirect(next)
 
 ##			if hasattr(request, 'session'):
@@ -95,23 +102,20 @@ class admin_do_action(base.BaseRequestHandler):
 
     @base.requires_admin
     def action_cacheclear(self):
+        ObjCache.flush_all()
         memcache.flush_all()
         self.write(_('"Cache cleared successful"'))
 
     @base.requires_admin
     def action_updatecomments(self):
-        for entry in Entry.all():
-            cnt=entry.comments().count()
+        for entry in Entry.query().fetch():
+            cnt=len(entry.comments(1))
             if cnt<>entry.commentcount:
                 entry.commentcount=cnt
                 entry.put()
         self.write(_('"All comments updated"'))
 
-    @base.requires_admin
-    def action_updatecommentno(self):
-        for entry in Entry.all():
-            entry.update_commentno()
-        self.write(_('"All comments number Updates."'))
+
 
     @base.requires_admin
     def action_updatelink(self):
@@ -120,8 +124,8 @@ class admin_do_action(base.BaseRequestHandler):
         if link_format:
             link_format=link_format.strip()
             self.blog.link_format=link_format
-            self.blog.save()
-            for entry in Entry.all():
+            self.blog.put()
+            for entry in Entry.query():
                 vals={'year':entry.date.year,'month':str(entry.date.month).zfill(2),'day':entry.date.day,
                 'postname':entry.slug,'post_id':entry.post_id}
 
@@ -140,10 +144,10 @@ class admin_do_action(base.BaseRequestHandler):
     @base.requires_admin
     def action_init_blog(self,slug=None):
 
-        for com in Comment.all():
+        for com in Comment.query():
             com.delete()
 
-        for entry in Entry.all():
+        for entry in Entry.query():
             entry.delete()
 
         self.blog.entrycount=0
@@ -151,9 +155,9 @@ class admin_do_action(base.BaseRequestHandler):
 
     @base.requires_admin
     def action_update_tags(self,slug=None):
-        for tag in Tag.all():
+        for tag in Tag.query():
             tag.delete()
-        for entry in Entry.all().filter('entrytype =','post'):
+        for entry in Entry.query().filter(Entry.entrytype =='post'):
             if entry.tags:
                 for t in entry.tags:
                     try:
@@ -165,9 +169,9 @@ class admin_do_action(base.BaseRequestHandler):
 
     @base.requires_admin
     def action_update_archives(self,slug=None):
-        for archive in Archive.all():
+        for archive in Archive.query():
             archive.delete()
-        entries=Entry.all().filter('entrytype =','post')
+        entries=Entry.query().filter(Entry.entrytype =='post')
 
         archives={}
 
@@ -189,50 +193,50 @@ class admin_do_action(base.BaseRequestHandler):
         self.write(_('"All entries have been updated."'))
 
 
-    def action_trackback_ping(self):
-        tbUrl=self.param('tbUrl')
-        title=self.param('title')
-        excerpt=self.param('excerpt')
-        url=self.param('url')
-        blog_name=self.param('blog_name')
-        tb=TrackBack(tbUrl,title,excerpt,url,blog_name)
-        tb.ping()
-
-    def action_pingback_ping(self):
-        """Try to notify the server behind `target_uri` that `source_uri`
-        points to `target_uri`.  If that fails an `PingbackError` is raised.
-        """
-        source_uri=self.param('source')
-        target_uri=self.param('target')
-        try:
-            #response =urlfetch.fetch(target_uri)
-            response=fetch_result(target_uri) #retry up to 5 times
-        except:
-            raise base.PingbackError(32)
-
-        try:
-            pingback_uri = response.headers['X-Pingback']
-        except KeyError:
-            _pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
-            match = _pingback_re.search(response.content)
-            if match is None:
-                raise base.PingbackError(33)
-            pingback_uri =base.urldecode(match.group(1))
-
-        rpc = xmlrpclib.ServerProxy(pingback_uri)
-        try:
-            return rpc.pingback.ping(source_uri, target_uri)
-        except Fault, e:
-            raise base.PingbackError(e.faultCode)
-        except:
-            raise base.PingbackError(32)
+##    def action_trackback_ping(self):
+##        tbUrl=self.param('tbUrl')
+##        title=self.param('title')
+##        excerpt=self.param('excerpt')
+##        url=self.param('url')
+##        blog_name=self.param('blog_name')
+##        tb=TrackBack(tbUrl,title,excerpt,url,blog_name)
+##        tb.ping()
+##
+##    def action_pingback_ping(self):
+##        """Try to notify the server behind `target_uri` that `source_uri`
+##        points to `target_uri`.  If that fails an `PingbackError` is raised.
+##        """
+##        source_uri=self.param('source')
+##        target_uri=self.param('target')
+##        try:
+##            #response =urlfetch.fetch(target_uri)
+##            response=fetch_result(target_uri) #retry up to 5 times
+##        except:
+##            raise base.PingbackError(32)
+##
+##        try:
+##            pingback_uri = response.headers['X-Pingback']
+##        except KeyError:
+##            _pingback_re = re.compile(r'<link rel="pingback" href="([^"]+)" ?/?>(?i)')
+##            match = _pingback_re.search(response.content)
+##            if match is None:
+##                raise base.PingbackError(33)
+##            pingback_uri =base.urldecode(match.group(1))
+##
+##        rpc = xmlrpclib.ServerProxy(pingback_uri)
+##        try:
+##            return rpc.pingback.ping(source_uri, target_uri)
+##        except Fault, e:
+##            raise base.PingbackError(e.faultCode)
+##        except:
+##            raise base.PingbackError(32)
 
 
 
 
 class admin_tools(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current="config"
 
     @base.requires_admin
@@ -241,8 +245,8 @@ class admin_tools(base.BaseRequestHandler):
 
 
 class admin_sitemap(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current="config"
 
     @base.requires_admin
@@ -278,17 +282,16 @@ class admin_sitemap(base.BaseRequestHandler):
                 pass
 
 
-        self.blog.save()
+        self.blog.put()
         self.render2('views/admin/sitemap.html',{})
 
 class admin_import(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current='config'
 
     @base.requires_admin
     def get(self,slug=None):
-        gblog_init()
         self.render2('views/admin/import.html',{'importitems':
             self.blog.plugins.filter('is_import_plugin',True)})
 
@@ -329,8 +332,8 @@ class admin_import(base.BaseRequestHandler):
 ##			self.render2('views/admin/import.html',{'error':'import faiure.'})
 
 class admin_setup(base.BaseRequestHandler):
-    #def __init__(self):
-       #self.current='config'
+    def setup(self):
+        self.current='config'
 
     @base.requires_admin
     def get(self,slug=None):
@@ -370,24 +373,24 @@ class admin_setup(base.BaseRequestHandler):
             self.blog.get_theme()
 
 
-        self.blog.owner=self.login_user
-        self.blog.author=self.blog.owner.nickname()
-        self.blog.save()
+        self.blog.owner=self.author.key
+        self.blog.author=self.author.dispname
+        self.blog.put()
         vals={'themes':theme.ThemeIterator()}
         memcache.flush_all()
         self.render2('views/admin/setup.html',vals)
 
 class admin_entry(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
         self.current='write'
 
     @base.requires_admin
     def get(self,slug='post'):
+
         action=self.param("action")
         entry=None
-        cats=Category.all()
-        alltags=Tag.all()
+        cats=Category.query()
+        alltags=Tag.query()
         if action and  action=='edit':
                 try:
                     key=self.param('key')
@@ -399,7 +402,7 @@ class admin_entry(base.BaseRequestHandler):
             action='add'
 
         def mapit(cat):
-            return {'name':cat.name,'slug':cat.slug,'select':entry and cat.key() in entry.categorie_keys}
+            return {'name':cat.name,'slug':cat.slug,'select':entry and cat.key in entry.categorie_keys}
 
         vals={'action':action,'entry':entry,'entrytype':slug,'cats':map(mapit,cats),'alltags':alltags}
         self.render2('views/admin/entry.html',vals)
@@ -435,8 +438,8 @@ class admin_entry(base.BaseRequestHandler):
         def mapit(cat):
             return {'name':cat.name,'slug':cat.slug,'select':cat.slug in cats}
 
-        vals={'action':action,'postback':True,'cats':Category.all(),'entrytype':slug,
-              'cats':map(mapit,Category.all()),
+        vals={'action':action,'postback':True,'cats':Category.query(),'entrytype':slug,
+              'cats':map(mapit,Category.query()),
               'entry':{ 'title':title,'content':content,'strtags':tags,'key':key,'published':published,
                          'allow_comment':allow_comment,
                          'allow_trackback':allow_trackback,
@@ -469,16 +472,16 @@ class admin_entry(base.BaseRequestHandler):
                 newcates=[]
                 entry.allow_comment=allow_comment
                 entry.allow_trackback=allow_trackback
-                entry.author=self.author.user
+                entry.author=self.author.key
                 entry.author_name=self.author.dispname
                 entry.password=password
                 entry.sticky=sticky
                 if cats:
 
                     for cate in cats:
-                        c=Category.all().filter('slug =',cate)
+                        c=Category.query().filter(Category.slug ==cate).fetch(1)
                         if c:
-                            newcates.append(c[0].key())
+                            newcates.append(c[0].key)
                 entry.categorie_keys=newcates;
 
                 entry.save(published)
@@ -489,11 +492,11 @@ class admin_entry(base.BaseRequestHandler):
 
                 vals.update({'action':'edit','result':True,'msg':smsg%{'link':str(entry.link)},'entry':entry})
                 self.render2('views/admin/entry.html',vals)
-                if published and entry.allow_trackback and self.blog.allow_pingback:
-                    try:
-                        autoPingback(str(entry.fullurl),HTML=content)
-                    except:
-                        pass
+##                if published and entry.allow_trackback and self.blog.allow_pingback:
+##                    try:
+##                        autoPingback(str(entry.fullurl),HTML=content)
+##                    except:
+##                        pass
             elif action=='edit':
                 try:
                     entry=Entry.get(key)
@@ -507,7 +510,7 @@ class admin_entry(base.BaseRequestHandler):
                     entry.target=target
                     entry.external_page_address=external_page_address
                     entry.settags(tags)
-                    entry.author=self.author.user
+                    entry.author=self.author.key
                     entry.author_name=self.author.dispname
                     entry.password=password
                     entry.sticky=sticky
@@ -516,9 +519,9 @@ class admin_entry(base.BaseRequestHandler):
                     if cats:
 
                         for cate in cats:
-                            c=Category.all().filter('slug =',cate)
+                            c=Category.query().filter(Category.slug ==cate).fetch(1)
                             if c:
-                                newcates.append(c[0].key())
+                                newcates.append(c[0].key)
                     entry.categorie_keys=newcates;
                     entry.allow_comment=allow_comment
                     entry.allow_trackback=allow_trackback
@@ -529,18 +532,19 @@ class admin_entry(base.BaseRequestHandler):
                         smsg=_('Saved ok. <a href="/%(link)s" target="_blank">View it now!</a>')
                     else:
                         smsg=_('Saved ok.')
-                    vals.update({'result':True,'msg':smsg%{'link':str(base.urlencode( entry.link))},'entry':entry})
+                    vals.update({'result':True,'msg':smsg%{'link':str(utils.urlencode( entry.link))},'entry':entry})
 
                     self.render2('views/admin/entry.html',vals)
-                    if published and entry.allow_trackback and self.blog.allow_pingback:
-                        try:
-                            autoPingback(entry.fullurl,HTML=content)
-                        except:
-                            pass
+##                    if published and entry.allow_trackback and self.blog.allow_pingback:
+##                        try:
+##                            autoPingback(entry.fullurl,HTML=content)
+##                        except:
+##                            pass
 
                 except:
-                    vals.update({'result':False,'msg':_('Error:Entry can''t been saved.')})
-                    self.render2('views/admin/entry.html',vals)
+                    raise
+                    #vals.update({'result':False,'msg':_('Error:Entry can''t been saved.')})
+                    #self.render2('views/admin/entry.html',vals)
 
 
 class admin_entries(base.BaseRequestHandler):
@@ -554,7 +558,7 @@ class admin_entries(base.BaseRequestHandler):
 
 
 
-        entries=Entry.all().filter('entrytype =',slug).order('-date')
+        entries=Entry.query().filter(Entry.entrytype ==slug).order(-Entry.sticky).order(-Entry.date)
         entries,links=base.Pager(query=entries,items_per_page=15).fetch(page_index)
 
         self.render2('views/admin/'+slug+'s.html',
@@ -612,9 +616,10 @@ class admin_categories(base.BaseRequestHandler):
             linkcheck= self.request.get_all('checks')
             for key in linkcheck:
 
-                cat=Category.get(key)
+                cat=ndb.Key(urlsafe=key)
                 if cat:
                     cat.delete()
+
         finally:
             self.redirect('/admin/categories')
 
@@ -622,19 +627,21 @@ class admin_comments(base.BaseRequestHandler):
     @base.requires_admin
     def get(self,slug=None):
         try:
-            page_index=int(self.param('page'))
+            sPrev=self.param('prev')
+            sNext=self.param('next')
         except:
-            page_index=1
+            sPrev=''
+            sNext=''
 
 
 
         cq=self.param('cq')
         cv=self.param('cv')
         if cq and cv:
-            query=Comment.all().filter(cq+' =',cv).order('-date')
+            query=Comment.query().filter(getattr(Comment,cq)==cv)
         else:
-            query=Comment.all().order('-date')
-        comments,pager=base.Pager(query=query,items_per_page=15).fetch(page_index)
+            query=Comment.query()
+        comments,pager=base.Pager(query=query,items_per_page=15).fetch_cursor(sNext,sPrev,-Comment.date)
 
         self.render2('views/admin/comments.html',
          {
@@ -654,14 +661,14 @@ class admin_comments(base.BaseRequestHandler):
             for key in linkcheck:
 
                 comment=Comment.get(key)
-                comment.delit()
-                entrykeys.append(comment.entry.key())
-            entrykeys=set(entrykeys)
-            for key in entrykeys:
-                e=Entry.get(key)
-                e.update_commentno()
-                e.removecache()
-            memcache.delete("/feed/comments")
+                comment.delete()
+##                entrykeys.append(comment.entry.key())
+##            entrykeys=set(entrykeys)
+##            for key in entrykeys:
+##                e=Entry.get(key)
+##                e.update_commentno()
+##                e.removecache()
+##            memcache.delete("/feed/comments")
         finally:
             self.redirect(self.request.uri)
 
@@ -671,7 +678,7 @@ class admin_links(base.BaseRequestHandler):
         self.render2('views/admin/links.html',
          {
           'current':'links',
-          'links':Link.all().filter('linktype =','blogroll')#.order('-createdate')
+          'links':Link.query().filter(Link.linktype =='blogroll')#.order('-createdate')
           }
         )
     @base.requires_admin
@@ -734,8 +741,8 @@ class admin_link(base.BaseRequestHandler):
                     self.render2('views/admin/link.html',vals)
 
 class admin_category(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current='categories'
 
     @base.requires_admin
@@ -745,25 +752,26 @@ class admin_category(base.BaseRequestHandler):
         category=None
         if action and  action=='edit':
                 try:
-
-                    category=Category.get(key)
+                    vkey=ndb.Key(urlsafe=key)
+                    category=vkey.get()
 
                 except:
                     pass
         else:
             action='add'
-        vals={'action':action,'category':category,'key':key,'categories':[c for c in Category.all() if not category or c.key()!=category.key()]}
+
+        vals={'action':action,'category':category,'key':key,'categories':[c for c in Category.allTops() if not category or c.key!=category.key]}
         self.render2('views/admin/category.html',vals)
 
     @base.requires_admin
     def post(self):
         def check(cate):
             parent=cate.parent_cat
-            skey=cate.key()
+            skey=cate.key
             while parent:
-                if parent.key()==skey:
+                if parent==skey:
                     return False
-                parent=parent.parent_cat
+                parent=parent.get().parent_cat
             return True
 
         action=self.param("action")
@@ -778,11 +786,13 @@ class admin_category(base.BaseRequestHandler):
         try:
 
                 if action=='add':
-                    cat= Category(name=name,slug=slug)
+                    cat= Category()
+                    cat.name=name
+                    cat.slug=slug
                     if not (name and slug):
                         raise Exception(_('Please input name and slug.'))
                     if parentkey:
-                        cat.parent_cat=Category.get(parentkey)
+                        cat.parent_cat=ndb.Key(urlsafe=parentkey)
 
                     cat.put()
                     self.redirect('/admin/categories')
@@ -791,13 +801,13 @@ class admin_category(base.BaseRequestHandler):
                     #self.render2('views/admin/category.html',vals)
                 elif action=='edit':
 
-                        cat=Category.get(key)
+                        cat=ndb.Key(urlsafe=key).get()
                         cat.name=name
                         cat.slug=slug
                         if not (name and slug):
                             raise Exception(_('Please input name and slug.'))
                         if parentkey:
-                            cat.parent_cat=Category.get(parentkey)
+                            cat.parent_cat=ndb.Key(urlsafe=parentkey)
                             if not check(cat):
                                 raise Exception(_('A circle declaration found.'))
                         else:
@@ -806,10 +816,10 @@ class admin_category(base.BaseRequestHandler):
                         self.redirect('/admin/categories')
 
         except Exception ,e :
-            if cat.is_saved():
-                cates=[c for c in Category.all() if c.key()!=cat.key()]
+            if action=='add':
+                cates=[c for c in Category.allTops() if c.key!=cat.key]
             else:
-                cates= Category.all()
+                cates= Category.allTops()
 
             vals.update({'result':False,'msg':e.message,'category':cat,'key':key,'categories':cates})
             self.render2('views/admin/category.html',vals)
@@ -817,7 +827,7 @@ class admin_category(base.BaseRequestHandler):
 class admin_status(base.BaseRequestHandler):
     @base.requires_admin
     def get(self):
-        self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'current':'status','environ':os.environ})
+        self.render2('views/admin/status.html',{'cache':memcache.get_stats(),'objcache':ObjCache.all().count(),'current':'status','environ':os.environ})
 class admin_authors(base.BaseRequestHandler):
     @base.requires_admin
     def get(self):
@@ -829,7 +839,7 @@ class admin_authors(base.BaseRequestHandler):
 
 
 
-        authors=User.all().filter('isAuthor =',True)
+        authors=User.query().filter(User.isAuthor==True)
         entries,pager=base.Pager(query=authors,items_per_page=15).fetch(page_index)
 
         self.render2('views/admin/authors.html',
@@ -853,8 +863,8 @@ class admin_authors(base.BaseRequestHandler):
             self.redirect('/admin/authors')
 
 class admin_author(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current='authors'
 
     @base.requires_admin
@@ -898,7 +908,7 @@ class admin_author(base.BaseRequestHandler):
                     author.email=slug
                     author.user=db.users.User(slug)
                     author.put()
-                    if author.isadmin:
+                    if author.isAdmin:
                         self.blog.author=name
                     self.redirect('/admin/authors')
 
@@ -907,8 +917,7 @@ class admin_author(base.BaseRequestHandler):
                     self.render2('views/admin/author.html',vals)
 
 class admin_plugins(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
         self.current='plugins'
 
     @base.requires_admin
@@ -929,8 +938,8 @@ class admin_plugins(base.BaseRequestHandler):
             self.render2('views/admin/plugins.html',vals)
 
 class admin_plugins_action(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current='plugins'
 
     @base.requires_admin
@@ -983,7 +992,7 @@ class WpHandler(base.BaseRequestHandler):
             all=False
 
         if(all):
-            entries = Entry.all().order('-date')
+            entries = Entry.query().order(-Entry.date)
             filename='micolog.%s.xml'%datetime.now().strftime('%Y-%m-%d')
         else:
             str_date_begin=self.param('date_begin')
@@ -991,14 +1000,14 @@ class WpHandler(base.BaseRequestHandler):
             try:
                 date_begin=datetime.strptime(str_date_begin,"%Y-%m-%d")
                 date_end=datetime.strptime(str_date_end,"%Y-%m-%d")
-                entries = Entry.all().filter('date >=',date_begin).filter('date <',date_end).order('-date')
+                entries = Entry.query().filter(Entry.date >=date_begin).filter(Entry.date <date_end).order(-Entry.date)
                 filename='micolog.%s.%s.xml'%(str(str_date_begin),str(str_date_end))
             except:
                 self.render2('views/admin/404.html')
                 return
 
-        cates=Category.all()
-        tags=Tag.all()
+        cates=Category.query()
+        tags=Tag.query()
 
         self.response.headers['Content-Type'] = 'binary/octet-stream'#'application/atom+xml'
         self.response.headers['Content-Disposition'] = 'attachment; filename=%s'%filename
@@ -1036,8 +1045,8 @@ class UploadEx(base.BaseRequestHandler):
         self.write(simplejson.dumps({'name':media.name,'size':media.size,'id':str(media.key())}))
 
 class FileManager(base.BaseRequestHandler):
-    def __init__(self):
-        base.BaseRequestHandler.__init__(self)
+    def setup(self):
+
         self.current = 'files'
 
     @base.requires_admin
@@ -1046,7 +1055,7 @@ class FileManager(base.BaseRequestHandler):
             page_index=int(self.param('page'))
         except:
             page_index=1
-        files = Media.all().order('-date')
+        files = Media.query().order(-Media.date)
         files,links=base.Pager(query=files,items_per_page=15).fetch(page_index)
         self.render2('views/admin/filemanager.html',{'files' : files,'pager':links})
 

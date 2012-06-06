@@ -6,7 +6,7 @@ RE_FIND_GROUPS = re.compile('\(.*?\)')
 class PluginIterator:
 	def __init__(self, plugins_path='plugins'):
 		self.iterating = False
-		self.plugins_path = plugins_path
+		self.plugins_path =os.path.join( os.path.dirname(os.path.dirname(__file__)),plugins_path)
 		self.list = []
 		self.cursor = 0
 
@@ -201,14 +201,14 @@ class Plugins:
 			return self._urlmap[url]
 		else:
 			return None
-	
+
 	def get_setupmenu(self):
 		#Get menu list for admin setup page
 		if not self._setupmenu:
 			for item in self:
 				if item.active:
 					self._setupmenu+=item._setupmenu
-		return self._setupmenu	
+		return self._setupmenu
 
 	def get_handlerlist(self,url):
 		if not self._handlerlist:
@@ -286,7 +286,7 @@ class Plugin:
 	def register_urlzip(self,name,zipfile):
 		zipfile=os.path.join(self.dir,zipfile)
 		self._handlerlist[name]=zipserve.make_zip_handler(zipfile)
-		
+
 	def register_setupmenu(self,m_id,title,url):
 		#Add menu to admin setup page.
 		#m_id is a flag to check current page

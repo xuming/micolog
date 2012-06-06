@@ -44,6 +44,21 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: ctype
+  - name: entry
+  - name: status
+  - name: date
+
+- kind: Comment
+  properties:
+  - name: ctype
+  - name: entry
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
   - name: email
   - name: date
 
@@ -81,6 +96,12 @@ indexes:
   - name: categorie_keys
   - name: published
   - name: date
+
+- kind: Entry
+  properties:
+  - name: categorie_keys
+  - name: published
+  - name: date
     direction: desc
 
 - kind: Entry
@@ -89,6 +110,11 @@ indexes:
   - name: entrytype
   - name: published
   - name: menu_order
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: date
 
 - kind: Entry
   properties:
@@ -139,6 +165,13 @@ indexes:
   - name: entrytype
   - name: published
   - name: sticky
+  - name: date
+
+- kind: Entry
+  properties:
+  - name: entrytype
+  - name: published
+  - name: sticky
     direction: desc
   - name: date
 
@@ -146,6 +179,14 @@ indexes:
   properties:
   - name: entrytype
   - name: published
+  - name: sticky
+    direction: desc
+  - name: date
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: entrytype
   - name: sticky
     direction: desc
   - name: date
@@ -161,6 +202,19 @@ indexes:
   properties:
   - name: published
   - name: tags
+  - name: __key__
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: published
+  - name: tags
+  - name: date
+
+- kind: Entry
+  properties:
+  - name: published
+  - name: tags
   - name: date
     direction: desc
 
@@ -169,6 +223,13 @@ indexes:
   - name: published
   - name: tags
   - name: post_id
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: sticky
+    direction: desc
+  - name: date
     direction: desc
 
 - kind: Entry

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{self.blog.title}}-{{entry.title}}
+        </title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+
+        <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/my.css" type="text/css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
+        </script>
+        <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
+        </script>
+    </head>
+    <body>
+        <div data-role="page" id="singlepage">
+            <div data-theme="a" data-role="header">
+
+                    <h3>
+                        {{self.blog.title}}
+                    </h3>
+                    <a href="/" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+		            <a href="/do/mobile_more" data-icon="grid" data-iconpos="notext" data-rel="dialog" data-transition="fade">Search</a>
+            </div>
+            <div data-role="content">
+               	<div class="post" id="post-{{ entry.id }}">
+				<h2><a href="{{ entry.fullurl }}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
+				<div class="greytext">{{ entry.date|datetz:"F jS, Y " }} </div>
+
+				<div class="entry">
+					{{ entry.content|safe }}
+				</div>
+
+        		<p class="postmetadata">{% if entry.tags%}关键字: {%for tag in entry.tags%}<a href="/tag/{{tag|urlencode}}">{{tag}}</a> {%endfor%}{%endif%} </p>
+
+				{%if entry.relateposts%}
+                <h4>相关阅读：</h4>
+                  <ul data-role="listview" data-inset="true">
+                {%for post in entry.relateposts%}
+                  <li><a href="{{post.fullurl}}">{{post.title}}</a></li>
+                {%endfor%}
+                </ul>
+                {%endif%}
+
+
+			</div>
+            <div data-role="navbar" data-iconpos="top">
+                    <ul>
+                        <li>
+                        <a data-role="button" href='/'>首页</a>
+
+                        </li>
+                          {% if entry.prev|length > 0 %}
+                        <li >
+
+
+                            {%for prev in entry.prev%}
+                            <a data-role="button"   href="/{{prev.link}}">上一篇</a>
+                            {%endfor%}
+
+
+
+
+
+                        </li>
+                        {%endif%}
+                          {% if entry.next|length > 0 %}
+                        <li >
+
+                            {%for next in entry.next%}
+                            <a data-role="button"  href="/{{next.link}}">下一篇</a>
+                            {%endfor%}
+
+
+                        </li>
+                        {%endif%}
+                        <li>
+                        <a href='javascript:void(0)' style='border-right-width:1px' onclick="showcomment()">看评论({{entry.commentcount}})</a>
+                        </li>
+                    </ul>
+            </div>
+            <div id="comment_area"></div>
+            <div id="comment_edit">	{% include "m/comment_edit.html" %}
+            </div>
+
+
+        </div>
+ <script>
+        var nextcur=''
+         function todom(dom){
+            var body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
+            body.animate({scrollTop: $(dom).offset().top}, 500);
+        }
+
+
+        function showcomment()
+        {
+            $.mobile.showPageLoadingMsg()
+            $(".ui-page-active #comment_area").load("/do/getcomments?key={{entry.key.id}}", {}, function(){
+               $.mobile.hidePageLoadingMsg();
+               todom('#comment_area');
+                //$('.load-more-comments-link').button();
+               //$(this).children('ul').listview();
+            });
+
+        }
+
+        function showcommentmore()
+        {
+
+            $.mobile.showPageLoadingMsg()
+             $.get('/do/getcomments_more?key={{entry.key.id}}&next='+nextcur, function(data){
+                               $('#comments').append(data);
+                               $.mobile.hidePageLoadingMsg();
+            });
+
+        }
+
+        function backcomment(author,id){
+            backdb=document.getElementById('comment');
+            backdb.focus();
+            backdb.value=backdb.value+'<a href=\"#comment-'+id+'\">@'+author+'<\/a>'+'\n';
+            return false;
+        }
+        </script>
+
+    </body>
+</html>

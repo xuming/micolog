@@ -1,11 +1,12 @@
-
-import settings
+import os,logging
 import template
 template.register_template_library('micolog.filter.myfilter')
+#template.register_template_library('micolog.filter.filter')
+template.register_template_library('micolog.filter.recurse')
 import webapp2
-
-import blog,theme,admin
-
+from webapp2_extras import routes
+import blog,theme,admin,cache
+from google.appengine.ext import zipserve
 
 admin_app=webapp2.WSGIApplication(
             [
@@ -18,6 +19,7 @@ admin_app=webapp2.WSGIApplication(
                 ('/admin/link',admin.admin_link),
                 ('/admin/category',admin.admin_category),
                 ('/admin/(post|page)',admin.admin_entry),
+
                 ('/admin/status',admin.admin_status),
                 ('/admin/authors',admin.admin_authors),
                 ('/admin/author',admin.admin_author),
@@ -33,6 +35,7 @@ admin_app=webapp2.WSGIApplication(
                 ('/admin/upload', admin.Upload),
                 ('/admin/filemanager',admin.FileManager),
                 ('/admin/uploadex', admin.UploadEx),
+
                 ('.*',admin.Error404)
             ],debug=True)
 
@@ -40,11 +43,11 @@ admin_app=webapp2.WSGIApplication(
 micolog_app = webapp2.WSGIApplication(
             [
                 ('/', blog.MainPage),
-                ('/post/(?P<postid>\d+)',blog.SinglePost),
-                ('/page/(?P<page>\d+)', blog.SinglePost),
+                webapp2.Route('/post/<postid:\d+>', blog.SinglePost),
+                webapp2.Route('/page/<page:\d+>', blog.SinglePost),
                 ('/themes/[\\w\\-]+/templates/.*',theme.NotFound),
                 ('/themes/(?P<prefix>[\\w\\-]+)/(?P<name>.+)', theme.GetFile),
-
+                ('/tinymce/(.*)', zipserve.make_zip_handler('tinymce.zip')),
                 ('/media/([^/]*)/{0,1}.*',blog.getMedia),
                 ('/checkimg/', blog.CheckImg),
                 ('/checkcode/', blog.CheckCode),
@@ -57,9 +60,31 @@ micolog_app = webapp2.WSGIApplication(
                 ('/category/(.*)',blog.entriesByCategory),
                 ('/(\d{4})/(\d{1,2})',blog.archive_by_month),
                 ('/tag/(.*)',blog.entriesByTag),
-                ('/do/(\w+)', blog.do_action),
-                ('/e/(.*)',blog.Other),
+
+                webapp2.Route('/do/<slug:\w+>', blog.do_action),
+                #('/e/(.*)',blog.Other),
                 ('/([\\w\\-\\./%]+)', blog.SinglePost),
+
                 ('.*',blog.Error404)
             ],debug=True)
 
+
+
+def main():
+    #webapp2.template.register_template_library('filter.filter')
+    #webapp2.template.register_template_library('filter.recurse')
+
+    from model import Blog
+    g_blog=Blog.getBlog()
+    if not g_blog:
+            g_blog=Blog(id='default')
+            g_blog.put()
+            g_blog.InitBlogData()
+
+    g_blog.application=micolog_app
+    g_blog.plugins.register_handlerlist(micolog_app)
+    from django.utils.translation import  activate
+    activate(g_blog.language)
+    logging.getLogger().setLevel(logging.DEBUG)
+#if __name__ == "__main__":
+main()

@@ -35,11 +35,11 @@
 			</thead>
 			<tbody>
             {%for author in authors%}
-		<tr valign="middle" id="link-{{category.key}}"><th class="check-column" scope="row"><input type="checkbox" value="{{author.key}}" name="checks"/></th>
+		<tr valign="middle" id="link-{{category.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{author.key.id}}" name="checks"/></th>
 
-                           <td><strong><a class="row-title" title='Edit "{{author.dispname}}"' href="/admin/author?key={{author.key}}&amp;action=edit">{{author.dispname}}</a></strong><br/></td>
+                           <td><strong><a class="row-title" title='Edit "{{author.dispname}}"' href="/admin/author?key={{author.key.id}}&amp;action=edit">{{author.dispname}}</a></strong><br/></td>
                             <td>{{author.email}}</td>
-                            <td>{%if author.isadmin %} True{%else%}False{%endif%}</td>
+                            <td>{%if author.isAdmin %} True{%else%}False{%endif%}</td>
         		</tr>
 			{%endfor%}
 			</tbody>

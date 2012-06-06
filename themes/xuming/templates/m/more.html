@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{self.blog.title}}
+        </title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+
+        <link rel="stylesheet" href="/themes/{{ blog.theme_name }}/my.css" type="text/css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
+        </script>
+        <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
+        </script>
+    </head>
+    <body>
+
+       <div data-role="dialog" >
+
+		<div data-role="header" data-theme="c">
+			<h1>{{self.blog.title}}</h1>
+		</div>
+
+		<div data-role="content" data-theme="c">
+              <ul data-role='listview'>
+               {{self.m_list_pages|safe}}
+
+
+              </ul>
+
+		</div>
+<div data-role="footer" data-theme="c">
+			<h1>&nbsp;</h1>
+		</div>
+	</div>
+
+
+
+    </body>
+</html>
+

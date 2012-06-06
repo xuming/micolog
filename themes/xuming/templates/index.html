@@ -1,0 +1,54 @@
+﻿{% extends "base.html" %}
+
+{% block head_block %}
+<meta name="verify-v1" content="EjkoZwrUyHnlwjyUkbFXVJ2Ioms9m4NTUETFhrIyoNY=" />
+<meta name="Keywords" content="徐明,xuming.net,python,google app engine">
+<meta name="Description" content="我是徐明，这是我的个人博客，在这里我会发表对人生的感悟，工作生活的点滴，我的创业历史，人生的风风雨雨。这是徐明目前唯一正式的博客，欢迎大家一起讨论.">
+
+{% endblock %}
+
+{% block content %}
+<div id="gc-home">
+
+    <div class="g-section g-tpl-330-alt">
+
+
+      <div class="g-unit">
+        <div class="g-c-gc-home">
+  {% for entry in entries %}
+
+			<div class="post" id="post-{{ entry.id }}">
+				<h2><a href="{{entry.fullurl}}" rel="bookmark" title="Permanent Link to {{ entry.title }}">{{ entry.title }}</a></h2>
+				<div class="greytext">{{ entry.date|datetz:"F jS, Y " }} </div>
+
+				<div class="entry">
+					{{entry|excerpt_more:"(..More)"|safe}}
+				</div>
+
+				<p class="postmetadata">Topics: {%for cate in entry.categories%} <a href="/category/{{cate.slug}}">{{cate.name}}</a> {%endfor%} | <a href="{{entry.fullurl}}#comments">评论({{entry.commentcount}})</a></p>
+			</div>
+
+	 {% endfor %}
+
+
+		<div class="navigation">
+			{% if pager.prev %}
+			<div class="alignleft"><a href="/?prev={{pager.prev }}">&laquo; 上一页</a></div>
+			{% endif %}
+			{% if pager.next %}
+			<div class="alignright"><a href="/?next={{ pager.next }}">下一页 &raquo;</a></div>
+			{% endif %}
+		</div>
+      </div><!-- end g-c-gc-home -->
+    </div><!-- end g-unit -->
+ <div class="g-unit g-first">
+      	{% include "sidebar.html" %}
+
+      </div>
+  </div><!-- end g-sections 0 -->
+
+
+
+
+</div><!-- end gc-home -->
+{% endblock %}

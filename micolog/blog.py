@@ -9,10 +9,11 @@ import wsgiref.handlers
 from datetime import timedelta
 import random
 from django.utils import simplejson
-
+from google.appengine.api import users
 from app.safecode import Image
 from app.gmemsess import Session
 from base import *
+from utils import *
 from model import *
 from django.utils.translation import ugettext as _
 
@@ -22,33 +23,33 @@ from django.utils.translation import ugettext as _
 ##settings._target = None
 ##activate(self.blog.language)
 from google.appengine.ext import zipserve
-import utils
+from google.appengine.datastore import datastore_query
+import utils,filter
+
+def doRequestHandle(old_handler,new_handler,**args):
+        new_handler.initialize(old_handler.request,old_handler.response)
+        return  new_handler.get(**args)
+
+def doRequestPostHandle(old_handler,new_handler,**args):
+        new_handler.initialize(old_handler.request,old_handler.response)
+        return  new_handler.post(**args)
+
 
 class BasePublicPage(BaseRequestHandler):
     def initialize(self, request, response):
         BaseRequestHandler.initialize(self,request, response)
-##        m_pages=Entry.all().filter('entrytype =','page')\
-##            .filter('published =',True)\
-##            .filter('entry_parent =',0)\
-##            .order('menu_order')
-##        blogroll=Link.all().filter('linktype =','blogroll')
-##        archives=Archive.all().order('-year').order('-month').fetch(12)
-##        alltags=Tag.all()
-##        self.template_vals.update(
-##            dict(menu_pages=m_pages, categories=Category.all(), blogroll=blogroll, archives=archives, alltags=alltags,
-##                 recent_comments=Comment.all().order('-date').fetch(5)))
 
     def m_list_pages(self):
         menu_pages=None
         entry=None
-        if self.template_vals.has_key('menu_pages'):
-            menu_pages= self.template_vals['menu_pages']
+        menu_pages=self.blog.menu_pages()
+
         if self.template_vals.has_key('entry'):
             entry=self.template_vals['entry']
         ret=''
         current=''
         for page in menu_pages:
-            if entry and entry.entrytype=='page' and entry.key()==page.key():
+            if entry and entry.entrytype=='page' and entry.key==page.key:
                 current= 'current_page_item'
             else:
                 current= 'page_item'
@@ -66,166 +67,192 @@ class MainPage(BasePublicPage):
         pass
 
 
-    @cache()
-    def get(self,page=1):
-        page=int(page)
-        entrycount=self.blog.postscount()
-        max_page = entrycount / self.blog.posts_per_page + ( entrycount % self.blog.posts_per_page and 1 or 0 )
+    @request_cache(key_prefix='HomePage', is_entry=True)
+    def get(self):
 
-        if entrycount==0:
-            self.write("Please init")
-            return
+        try:
+            sPrev=self.param('prev')
+            sNext=self.param('next')
+        except:
+            sPrev=''
+            sNext=''
 
-        if page < 1 or page > max_page:
-                return	self.error(404)
 
-        entries = self.blog.get_entries_paged(size=self.blog.posts_per_page)
+        orders= datastore_query.CompositeOrder([-Entry.sticky,-Entry.date])
+        entries = Entry.query().filter(Entry.entrytype=='post',Entry.published==True)
 
-        show_prev =entries and  (not (page == 1))
-        show_next =entries and  (not (page == max_page))
+        entries,links=Pager(query=entries,items_per_page=self.blog.posts_per_page).fetch_cursor(sNext,sPrev,orders)
 
         return self.render('index',
-            dict(entries=entries, show_prev=show_prev, show_next=show_next, pageindex=page, ishome=True,
-            pagecount=max_page, postscounts=entrycount))
+            dict(entries=entries, pager=links))
 
-
-
-class SinglePost(BasePublicPage):
-    def head(self,slug=None,postid=None):
+class OtherHandler(BasePublicPage):
+    def  get(self,slug=None,postid=None):
         pass
 
-    @cache()
+##def getSinglePostHtml(req=None,entry=None):
+##    if not (req and entry):
+##        return ""
+##
+##    mp=req.paramint("mp",1)
+##
+##    if entry.is_external_page:
+##        return self.redirect(entry.external_page_address,True)
+##
+##    self.entry=entry
+##
+##
+##    comments=entry.get_comments_by_page(mp,self.blog.comments_per_page)
+####
+##    commentuser=['','','']
+####
+##    comments_nav=self.get_comments_nav(mp,entry.commentcount)
+##
+##    if entry.entrytype=='post':
+##        self.render('single',
+##                    dict(entry=entry,comments=comments,comments_nav=comments_nav))
+##
+##    else:
+##        self.render('page',
+##                    dict(entry=entry,comments=comments,comments_nav=comments_nav))
+
+class SinglePost(BasePublicPage):
+    #def head(self,slug=None,postid=None):
+    #    pass
+
+    #@request_memcache(key_prefix='single_post')
     def get(self,slug=None,postid=None):
+
         entries=[]
         if postid:
             entry=Entry.get_by_id(long(postid))
             if entry and entry.published:
                 entries=[entry]
+
         else:
             #slug=utils.urldecode(self.request.path[1:])
-            entries = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
+            entries = Entry.query().filter(Entry.published == True).filter(Entry.link == slug).fetch(1)
         if not entries or len(entries) == 0:
             return self.error(404)
 
-        mp=self.paramint("mp",1)
+
 
         entry=entries[0]
         if entry.is_external_page:
             return self.redirect(entry.external_page_address,True)
+
 ##        if self.blog.allow_pingback and entry.allow_trackback:
 ##            self.response.headers['X-Pingback']="%s/rpc"%str(self.blog.baseurl)
+        #不再统计阅读数
         #entry.readtimes += 1
         #entry.put()
         self.entry=entry
+        loginurl=users.create_login_url(entry.fullurl+"#comment_area")
+        @request_memcache(key_prefix='single_post',entry_id=entry.vkey)
+        def render_single(self):
+            if entry.entrytype=='post':
+                self.render('single',
+                            dict(entry=entry,loginurl=loginurl))
+
+            else:
+                self.render('page',
+                            dict(entry=entry,loginurl=loginurl))
+        render_single(self)
 
 
-##        comments=entry.get_comments_by_page(mp,self.blog.comments_per_page)
+##    def post(self,slug=None,postid=None):
+##        '''handle trackback'''
+##        error = '''<?xml version="1.0" encoding="utf-8"?>
+##<response>
+##<error>1</error>
+##<message>%s</message>
+##</response>
+##'''
+##        success = '''<?xml version="1.0" encoding="utf-8"?>
+##<response>
+##<error>0</error>
+##</response>
+##'''
 ##
-##        commentuser=['','','']
+##        if not self.blog.allow_trackback:
+##            self.response.out.write(error % "Trackback denied.")
+##            return
+##        self.response.headers['Content-Type'] = "text/xml"
+##        if postid:
+##            entries = Entry.all().filter("published =", True).filter('post_id =', postid).fetch(1)
+##        else:
+##            slug=urldecode(slug)
+##            entries = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
 ##
-##        comments_nav=self.get_comments_nav(mp,entry.purecomments().count())
-
-        if entry.entrytype=='post':
-            self.render('single',
-                        dict(entry=entry))
-
-        else:
-            self.render('page',
-                        dict(entry=entry))
-
-    def post(self,slug=None,postid=None):
-        '''handle trackback'''
-        error = '''<?xml version="1.0" encoding="utf-8"?>
-<response>
-<error>1</error>
-<message>%s</message>
-</response>
-'''
-        success = '''<?xml version="1.0" encoding="utf-8"?>
-<response>
-<error>0</error>
-</response>
-'''
-
-        if not self.blog.allow_trackback:
-            self.response.out.write(error % "Trackback denied.")
-            return
-        self.response.headers['Content-Type'] = "text/xml"
-        if postid:
-            entries = Entry.all().filter("published =", True).filter('post_id =', postid).fetch(1)
-        else:
-            slug=urldecode(slug)
-            entries = Entry.all().filter("published =", True).filter('link =', slug).fetch(1)
-
-        if not entries or len(entries) == 0 :#or  (postid and not entries[0].link.endswith(self.blog.default_link_format%{'post_id':postid})):
-            self.response.out.write(error % "empty slug/postid")
-            return
-        #check code ,rejest spam
-        entry=entries[0]
-        logging.info(self.request.remote_addr+self.request.path+" "+entry.trackbackurl)
-        #key=self.param("code")
-        #if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
-        #import cgi
-        from urlparse import urlparse
-        param=urlparse(self.request.uri)
-        code=param[4]
-        param=cgi.parse_qs(code)
-        if param.has_key('code'):
-            code=param['code'][0]
-
-        if  (not str(entry.key())==code) or entry.is_external_page or not entry.allow_trackback:
-            self.response.out.write(error % "Invalid trackback url.")
-            return
-
-
-        coming_url = self.param('url')
-        blog_name = myfilter.do_filter(self.param('blog_name'))
-        excerpt = myfilter.do_filter(self.param('excerpt'))
-        title = myfilter.do_filter(self.param('title'))
-
-        if not coming_url or not blog_name or not excerpt or not title:
-            self.response.out.write(error % "not enough post info")
-            return
-
-        import time
-        #wait for half second in case otherside hasn't been published
-        time.sleep(0.5)
-
-##		#also checking the coming url is valid and contains our link
-##		#this is not standard trackback behavior
-##		try:
+##        if not entries or len(entries) == 0 :#or  (postid and not entries[0].link.endswith(self.blog.default_link_format%{'post_id':postid})):
+##            self.response.out.write(error % "empty slug/postid")
+##            return
+##        #check code ,rejest spam
+##        entry=entries[0]
+##        logging.info(self.request.remote_addr+self.request.path+" "+entry.trackbackurl)
+##        #key=self.param("code")
+##        #if (self.request.uri!=entry.trackbackurl) or entry.is_external_page or not entry.allow_trackback:
+##        #import cgi
+##        from urlparse import urlparse
+##        param=urlparse(self.request.uri)
+##        code=param[4]
+##        param=cgi.parse_qs(code)
+##        if param.has_key('code'):
+##            code=param['code'][0]
 ##
-##			result = urlfetch.fetch(coming_url)
-##			if result.status_code != 200 :
-##				#or ((self.blog.baseurl + '/' + slug) not in result.content.decode('ascii','ignore')):
-##				self.response.out.write(error % "probably spam")
-##				return
-##		except Exception, e:
-##			logging.info("urlfetch error")
-##			self.response.out.write(error % "urlfetch error")
-##			return
-
-        comment = Comment.all().filter("entry =", entry).filter("weburl =", coming_url).get()
-        if comment:
-            self.response.out.write(error % "has pinged before")
-            return
-
-        comment=Comment(author=blog_name,
-                content="...<strong>"+title[:250]+"</strong> " +
-                        excerpt[:250] + '...',
-                weburl=coming_url,
-                entry=entry)
-
-        comment.ip=self.request.remote_addr
-        comment.ctype=COMMENT_TRACKBACK
-        try:
-            comment.save()
-
-            memcache.delete("/"+entry.link)
-            self.write(success)
-            self.blog.tigger_action("pingback_post",comment)
-        except:
-            self.response.out.write(error % "unknow error")
+##        if  (not str(entry.key())==code) or entry.is_external_page or not entry.allow_trackback:
+##            self.response.out.write(error % "Invalid trackback url.")
+##            return
+##
+##
+##        coming_url = self.param('url')
+##        blog_name = myfilter.do_filter(self.param('blog_name'))
+##        excerpt = myfilter.do_filter(self.param('excerpt'))
+##        title = myfilter.do_filter(self.param('title'))
+##
+##        if not coming_url or not blog_name or not excerpt or not title:
+##            self.response.out.write(error % "not enough post info")
+##            return
+##
+##        import time
+##        #wait for half second in case otherside hasn't been published
+##        time.sleep(0.5)
+##
+####		#also checking the coming url is valid and contains our link
+####		#this is not standard trackback behavior
+####		try:
+####
+####			result = urlfetch.fetch(coming_url)
+####			if result.status_code != 200 :
+####				#or ((self.blog.baseurl + '/' + slug) not in result.content.decode('ascii','ignore')):
+####				self.response.out.write(error % "probably spam")
+####				return
+####		except Exception, e:
+####			logging.info("urlfetch error")
+####			self.response.out.write(error % "urlfetch error")
+####			return
+##
+##        comment = Comment.all().filter("entry =", entry).filter("weburl =", coming_url).get()
+##        if comment:
+##            self.response.out.write(error % "has pinged before")
+##            return
+##
+##        comment=Comment(author=blog_name,
+##                content="...<strong>"+title[:250]+"</strong> " +
+##                        excerpt[:250] + '...',
+##                weburl=coming_url,
+##                entry=entry)
+##
+##        comment.ip=self.request.remote_addr
+##        comment.ctype=COMMENT_TRACKBACK
+##        try:
+##            comment.save()
+##
+##            memcache.delete("/"+entry.link)
+##            self.write(success)
+##            self.blog.tigger_action("pingback_post",comment)
+##        except:
+##            self.response.out.write(error % "unknow error")
 
     def get_comments_nav(self,pindex,count):
         maxpage=count / self.blog.comments_per_page + ( count % self.blog.comments_per_page and 1 or 0 )
@@ -265,67 +292,79 @@ class SinglePost(BasePublicPage):
             return "/"+url+"?mp="+str(pindex)+"#comments"
 
 class entriesByCategory(BasePublicPage):
-    @cache()
+    @request_cache(key_prefix='entriesByCategory',time=3600*24)
     def get(self,slug=None):
         if not slug:
             self.error(404)
             return
 
         try:
-            page_index=int(self.param('page'))
+            sPrev=self.param('prev')
+            sNext=self.param('next')
         except:
-            page_index=1
+            sPrev=''
+            sNext=''
+
 
         slug=urldecode(slug)
 
-        cats=Category.all().filter('slug =',slug).fetch(1)
+        cats=Category.query().filter(Category.slug ==slug).fetch(1)
         if cats:
-            entries=Entry.all().filter("published =", True).filter('categorie_keys =',cats[0].key()).order("-date")
-            entries,links=Pager(query=entries,items_per_page=20).fetch(page_index)
+
+            entries=Entry.query().filter(Entry.published == True).filter(Entry.categorie_keys ==cats[0].key)
+
+
+            #entries, cursor,more = q.fetch_page(20)
+            entries,links=Pager(query=entries,items_per_page=20).fetch_cursor(sNext,sPrev,-Entry.date)
             self.render('category', dict(entries=entries, category=cats[0], pager=links))
         else:
             self.error(404,slug)
 
 class archive_by_month(BasePublicPage):
-    @cache()
+    @request_memcache(key_prefix='archive',time=3600*24*3)
     def get(self,year,month):
         try:
-            page_index=int (self.param('page'))
+            sPrev=self.param('prev')
+            sNext=self.param('next')
         except:
-            page_index=1
+            sPrev=''
+            sNext=''
 
         firstday=datetime(int(year),int(month),1)
         if int(month)!=12:
             lastday=datetime(int(year),int(month)+1,1)
         else:
             lastday=datetime(int(year)+1,1,1)
-        entries=db.GqlQuery("SELECT * FROM Entry WHERE date > :1 AND date <:2 AND entrytype =:3 AND published = True ORDER BY date DESC",firstday,lastday,'post')
-        entries,links=Pager(query=entries).fetch(page_index)
+        entries=Entry.query().filter(Entry.date>firstday,Entry.date<lastday,Entry.entrytype=='post')
+        #entries=db.GqlQuery("SELECT * FROM Entry WHERE date > :1 AND date <:2 AND entrytype =:3 AND published = True ORDER BY date DESC",firstday,lastday,'post')
+        entries,links=Pager(query=entries).fetch_cursor(sNext,sPrev,-Entry.date)
 
         self.render('month', dict(entries=entries, year=year, month=month, pager=links))
 
 class entriesByTag(BasePublicPage):
-    @cache()
+    @request_memcache(key_prefix='tag',time=3600*24)
     def get(self,slug=None):
         if not slug:
              self.error(404)
              return
         try:
-            page_index=int (self.param('page'))
+            sPrev=self.param('prev')
+            sNext=self.param('next')
         except:
-            page_index=1
+            sPrev=''
+            sNext=''
         slug=urldecode(slug)
 
-        entries=Entry.all().filter("published =", True).filter('tags =',slug).order("-date")
-        entries,links=Pager(query=entries,items_per_page=20).fetch(page_index)
+        entries=Entry.query().filter(Entry.published == True).filter(Entry.tags ==slug)
+        entries,links=Pager(query=entries,items_per_page=20).fetch_cursor(sNext,sPrev,-Entry.date)
         self.render('tag',{'entries':entries,'tag':slug,'pager':links})
 
 
 
 class FeedHandler(BaseRequestHandler):
-    @cache(time=600)
+    @request_cache(key_prefix='feed',is_entry=True)
     def get(self,tags=None):
-        entries = Entry.all().filter('entrytype =','post').filter('published =',True).order('-date').fetch(10)
+        entries = Entry.query().filter(Entry.entrytype =='post').filter(Entry.published ==True).order(-Entry.date).fetch(10)
         if entries and entries[0]:
             last_updated = entries[0].date
             last_updated = last_updated.strftime("%a, %d %b %Y %H:%M:%S +0000")
@@ -335,9 +374,9 @@ class FeedHandler(BaseRequestHandler):
         self.render2('views/rss.xml',{'entries':entries,'last_updated':last_updated})
 
 class CommentsFeedHandler(BaseRequestHandler):
-    @cache(time=600)
+    @request_memcache(key_prefix='commentsfeedhandler',time=3600*24,is_comment=True)
     def get(self,tags=None):
-        comments = Comment.all().order('-date').filter('ctype =',0).fetch(10)
+        comments = Comment.query().order(-Comment.date).filter(Comment.ctype ==0).fetch(10)
         if comments and comments[0]:
             last_updated = comments[0].date
             last_updated = last_updated.strftime("%a, %d %b %Y %H:%M:%S +0000")
@@ -347,7 +386,7 @@ class CommentsFeedHandler(BaseRequestHandler):
         self.render2('views/comments.xml',{'comments':comments,'last_updated':last_updated})
 
 class SitemapHandler(BaseRequestHandler):
-    @cache(time=36000)
+    @request_cache(key_prefix='sitemap',is_entry=True,is_page=True)
     def get(self,tags=None):
         urls = []
         def addurl(loc,lastmod=None,changefreq=None,priority=None):
@@ -361,20 +400,20 @@ class SitemapHandler(BaseRequestHandler):
 
         addurl(self.blog.baseurl,changefreq='daily',priority=0.9 )
 
-        entries = Entry.all().filter('published =',True).order('-date').fetch(self.blog.sitemap_entries)
+        entries = Entry.query().filter(Entry.published ==True).order(-Entry.date).fetch(self.blog.sitemap_entries)
 
         for item in entries:
             loc = "%s/%s" % (self.blog.baseurl, item.link)
             addurl(loc,item.mod_date or item.date,'never',0.6)
 
         if self.blog.sitemap_include_category:
-            cats=Category.all()
+            cats=Category.query()
             for cat in cats:
                 loc="%s/category/%s"%(self.blog.baseurl,cat.slug)
                 addurl(loc,None,'weekly',0.5)
 
         if self.blog.sitemap_include_tag:
-            tags=Tag.all()
+            tags=Tag.query()
             for tag in tags:
                 loc="%s/tag/%s"%(self.blog.baseurl, urlencode(tag.tag))
                 addurl(loc,None,'weekly',0.5)
@@ -385,7 +424,7 @@ class SitemapHandler(BaseRequestHandler):
 
 
 class Error404(BaseRequestHandler):
-    @cache(time=36000)
+    @request_cache(key_prefix='error404')
     def get(self,slug=None):
         self.error(404)
 
@@ -393,9 +432,17 @@ class Post_comment(BaseRequestHandler):
     #@printinfo
     def post(self,slug=None):
         useajax=self.param('useajax')=='1'
+        ismobile=self.paramint('ismobile')==1
+        if not self.is_login:
+            if useajax:
+                    self.write(simplejson.dumps((False,-102,_('You must login before comment.')),ensure_ascii = False))
+            else:
+                    self.error(-102,_('You must login before comment .'))
+            return
 
-        name=self.param('author')
-        email=self.param('email')
+
+        name=self.login_user.nickname()
+        email=self.login_user.email()
         url=self.param('url')
 
         key=self.param('key')
@@ -403,50 +450,22 @@ class Post_comment(BaseRequestHandler):
         parent_id=self.paramint('parentid',0)
         reply_notify_mail=self.parambool('reply_notify_mail')
 
-        sess=Session(self,timeout=180)
-        if not self.is_login:
-            #if not (self.request.cookies.get('comment_user', '')):
-            try:
-                check_ret=True
-                if self.blog.comment_check_type in (1,2)  :
-                    checkret=self.param('checkret')
-                    check_ret=(int(checkret) == sess['code'])
-                elif  self.blog.comment_check_type ==3:
-                    import app.gbtools as gb
-                    checknum=self.param('checknum')
-                    checkret=self.param('checkret')
-                    check_ret=eval(checknum)==int(gb.stringQ2B( checkret))
-
-                if not check_ret:
-                    if useajax:
-                        self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')),ensure_ascii = False))
-                    else:
-                        self.error(-102,_('Your check code is invalid .'))
-                    return
-            except:
-                if useajax:
-                    self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')),ensure_ascii = False))
-                else:
-                    self.error(-102,_('Your check code is invalid .'))
-                return
-
-        sess.invalidate()
         content=content.replace('\n','<br />')
-        content=myfilter.do_filter(content)
+        content=filter.do_filter(content)
         name=cgi.escape(name)[:20]
         url=cgi.escape(url)[:100]
 
         if not (name and email and content):
             if useajax:
-                        self.write(simplejson.dumps((False,-101,_('Please input name, email and comment .'))))
+                        self.write(simplejson.dumps((False,-101,_('Please input comment .'))))
             else:
-                self.error(-101,_('Please input name, email and comment .'))
+                self.error(-101,_('Please input comment .'))
         else:
             comment=Comment(author=name,
                             content=content,
                             email=email,
                             reply_notify_mail=reply_notify_mail,
-                            entry=Entry.get(key))
+                            entry=ndb.Key(Entry,int(key)))
             if url:
                 try:
                     if not url.lower().startswith(('http://','https://')):
@@ -455,39 +474,149 @@ class Post_comment(BaseRequestHandler):
                 except:
                     comment.weburl=None
 
-            #name=name.decode('utf8').encode('gb2312')
 
-            info_str='#@#'.join([urlencode(name),urlencode(email),urlencode(url)])
-
-             #info_str='#@#'.join([name,email,url.encode('utf8')])
-            cookiestr='comment_user=%s;expires=%s;path=/;'%( info_str,
-                       (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT")
-                       )
             comment.ip=self.request.remote_addr
 
             if parent_id:
                 comment.parent=Comment.get_by_id(parent_id)
 
-            comment.no=comment.entry.commentcount+1
+            #comment.no=comment.entry.commentcount+1
             try:
                 comment.save()
-                memcache.delete("/"+comment.entry.link)
+                #memcache.delete("/"+comment.entry.link)
 
-                self.response.headers.add_header( 'Set-Cookie', cookiestr)
+                #self.response.headers.add_header( 'Set-Cookie', cookiestr)
                 if useajax:
-                    comment_c=self.get_render('comment',{'comment':comment})
-                    self.write(simplejson.dumps((True,comment_c.decode('utf8')),ensure_ascii = False))
+                    if ismobile:
+                        self.write(simplejson.dumps((True,'')))
+                    else:
+                        comment_c=self.get_render('comment',{'comment':comment})
+                        self.write(simplejson.dumps((True,comment_c.decode('utf8')),ensure_ascii = False))
                 else:
                     self.redirect(self.referer+"#comment-"+str(comment.key().id()))
 
-                comment.entry.removecache()
-                memcache.delete("/feed/comments")
-            except:
+                #comment.entry.removecache()
+                #memcache.delete("/feed/comments")
+            except Exception,e:
                 if useajax:
-                    self.write(simplejson.dumps((False,-102,_('Comment not allowed.'))))
+                    self.write(simplejson.dumps((False,-103,_('Comment not allowed.')+unicode(e))))
                 else:
-                    self.error(-102,_('Comment not allowed .'))
+                    self.error(-102,_('Comment not allowed .'+str(e)))
 
+##class Post_comment(BaseRequestHandler):
+##    #@printinfo
+##    def post(self,slug=None):
+##        useajax=self.param('useajax')=='1'
+##        if not self.blog.allow_guest_comment:
+##            if not self.is_login:
+##                if useajax:
+##                        self.write(simplejson.dumps((False,-102,_('You must login before comment.')),ensure_ascii = False))
+##                else:
+##                        self.error(-102,_('You must login before comment .'))
+##                return
+##
+##
+##
+##
+##        name=self.param('author')
+##        email=self.param('email')
+##        url=self.param('url')
+##
+##        key=self.param('key')
+##        content=self.param('comment')
+##        parent_id=self.paramint('parentid',0)
+##        reply_notify_mail=self.parambool('reply_notify_mail')
+##
+##
+##        if not self.is_login:
+##            sess=Session(self,timeout=180)
+##            #if not (self.request.cookies.get('comment_user', '')):
+##            try:
+##                check_ret=True
+##                if self.blog.comment_check_type==1:
+##                    checkret=self.param('checkret')
+##                    check_ret=(int(checkret) == sess['code'])
+##                elif self.blog.comment_check_type==2:
+##                    checkret=self.param('checkret')
+##
+##                    check_ret=(int(checkret) == sess['icode'])
+##
+##                elif  self.blog.comment_check_type ==3:
+##                    import app.gbtools as gb
+##                    checknum=self.param('checknum')
+##                    checkret=self.param('checkret')
+##                    check_ret=eval(checknum)==int(gb.stringQ2B( checkret))
+##
+##                if not check_ret:
+##                    if useajax:
+##                        self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')),ensure_ascii = False))
+##                    else:
+##                        self.error(-102,_('Your check code is invalid .'))
+##                    return
+##            except Exception,e:
+##                if useajax:
+##                    self.write(simplejson.dumps((False,-102,_('Your check code is invalid .')+unicode(e)),ensure_ascii = False))
+##                else:
+##                    self.error(-102,_('Your check code is invalid .'))
+##                return
+##
+##            sess.invalidate()
+##        content=content.replace('\n','<br />')
+##        content=filter.do_filter(content)
+##        name=cgi.escape(name)[:20]
+##        url=cgi.escape(url)[:100]
+##
+##        if not (name and email and content):
+##            if useajax:
+##                        self.write(simplejson.dumps((False,-101,_('Please input name, email and comment .'))))
+##            else:
+##                self.error(-101,_('Please input name, email and comment .'))
+##        else:
+##            comment=Comment(author=name,
+##                            content=content,
+##                            email=email,
+##                            reply_notify_mail=reply_notify_mail,
+##                            entry=ndb.Key(Entry,int(key)))
+##            if url:
+##                try:
+##                    if not url.lower().startswith(('http://','https://')):
+##                        url = 'http://' + url
+##                    comment.weburl=url
+##                except:
+##                    comment.weburl=None
+##
+##            #name=name.decode('utf8').encode('gb2312')
+##
+##            info_str='#@#'.join([utils.urlencode(name),utils.urlencode(email),utils.urlencode(url)])
+##
+##             #info_str='#@#'.join([name,email,url.encode('utf8')])
+##            cookiestr='comment_user=%s;expires=%s;path=/;'%( info_str,
+##                       (datetime.now()+timedelta(days=100)).strftime("%a, %d-%b-%Y %H:%M:%S GMT")
+##                       )
+##            comment.ip=self.request.remote_addr
+##
+##            if parent_id:
+##                comment.parent=Comment.get_by_id(parent_id)
+##
+##            #comment.no=comment.entry.commentcount+1
+##            try:
+##                comment.save()
+##                #memcache.delete("/"+comment.entry.link)
+##
+##                self.response.headers.add_header( 'Set-Cookie', cookiestr)
+##                if useajax:
+##                    comment_c=self.get_render('comment',{'comment':comment})
+##                    self.write(simplejson.dumps((True,comment_c.decode('utf8')),ensure_ascii = False))
+##                else:
+##                    self.redirect(self.referer+"#comment-"+str(comment.key().id()))
+##
+##                #comment.entry.removecache()
+##                #memcache.delete("/feed/comments")
+##            except Exception,e:
+##                if useajax:
+##                    self.write(simplejson.dumps((False,-103,_('Comment not allowed.')+unicode(e))))
+##                else:
+##                    self.error(-102,_('Comment not allowed .'+str(e)))
 class ChangeTheme(BaseRequestHandler):
     @requires_admin
     def get(self,slug=None):
@@ -497,17 +626,19 @@ class ChangeTheme(BaseRequestHandler):
        self.redirect('/')
 
 
-class do_action(BaseRequestHandler):
+class do_action(BasePublicPage):
     def get(self,slug=None):
 
         try:
+
             func=getattr(self,'action_'+slug)
             if func and callable(func):
                 func()
             else:
                 self.error(404)
         except BaseException,e:
-            self.error(404)
+            raise
+            #self.error(404)
 
     def post(self,slug=None):
         try:
@@ -528,8 +659,8 @@ class do_action(BaseRequestHandler):
         else:
             self.write(simplejson.dumps({'islogin':False}))
 
-    #@hostonly
-    @cache()
+##    #@hostonly
+##
     def action_proxy(self):
         result=urlfetch.fetch(self.param("url"), headers=self.request.headers)
         if result.status_code == 200:
@@ -539,27 +670,105 @@ class do_action(BaseRequestHandler):
             self.response.out.write(result.content)
         return
 
+
     def action_getcomments(self):
         key=self.param('key')
+        @request_memcache(key_prefix='',comment_entry_key=key,time=3600*24)
+        def get_comments(self,key):
+            entry=Entry.get(key)
+            comments,cursor,more=Comment.query().filter(Comment.entry ==entry.key).order(-Comment.date).fetch_page(10)
+
+
+
+            vals= dict(entry=entry, comments=comments,cursor=more and cursor.to_websafe_string() or '',more=more)
+            html=self.get_render('comments',vals)
+            self.write(html)
+        get_comments(self,key)
+        #self.write(simplejson.dumps(html.decode('utf8')))
+    def action_getcomments_more(self):
+        key=self.param('key')
+        @request_memcache(key_prefix='',comment_entry_key=key,time=3600*24)
+        def get_comments_more(self,key):
+            cursor=self.param('next')
+            entry=Entry.get(key)
+            from google.appengine.datastore.datastore_query import Cursor
+            cur=Cursor.from_websafe_string(cursor)
+
+            comments,cursor,more=Comment.query().filter(Comment.entry ==entry.key).order(-Comment.date).fetch_page(10,start_cursor=cur)
+
+            vals= dict(entry=entry, comments=comments,cursor=more and  cursor.to_websafe_string() or '',more=more)
+            html=self.get_render('comments_more',vals)
+            self.write(html)
+        get_comments_more(self,key)
+
+    def action_getcomment_edit(self):
+        key=self.param('key')
+        useajax=self.paramint('useajax',1)
+
         entry=Entry.get(key)
-        comments=Comment.all().filter("entry =",key)
+        loginurl=users.create_login_url(entry.fullurl+"#comment_area")
 
-        commentuser=self.request.cookies.get('comment_user', '')
-        if commentuser:
-            commentuser=commentuser.split('#@#')
-        else:
-            commentuser=['','','']
+        vals=dict(loginurl=loginurl,useajax=useajax,entry=entry,is_login=self.is_login,key=key)
+        self.render('comment_edit',vals)
 
 
-        vals= dict(entry=entry, comments=comments, user_name=commentuser[0], user_email=commentuser[1],
-                   user_url=commentuser[2], checknum1=random.randint(1, 10), checknum2=random.randint(1, 10))
-        html=self.get_render('comments',vals)
 
-        self.write(simplejson.dumps(html.decode('utf8')))
+        #以下代码不会被执行
 
+##        commentuser=self.request.cookies.get('comment_user', '')
+##        if commentuser:
+##            commentuser=commentuser.split('#@#')
+##        else:
+##            commentuser=['','','']
+##
+##
+##        vals= dict(useajax=useajax,entry=entry, user_name=commentuser[0], user_email=commentuser[1],
+##                   user_url=commentuser[2], checknum1=random.randint(1, 10), checknum2=random.randint(1, 10))
+##        html=self.get_render('comment_edit',vals)
+##        self.write(html)
+    def action_mobile_more(self):
+
+        self.render('more',{})
+
+    #@request_memcache("action_test")
     def action_test(self):
-        self.write(settings.LANGUAGE_CODE)
         self.write(_("this is a test"))
+        self.write("<br>")
+        blog1=Link.get_by_id_async(2)
+
+        #blog2=ndb.Key(Blog,'default').get_async()
+
+        #blog3=Blog.get_by_id_async('default')
+        link=blog1.get_result()
+        self.write(link.href)
+        #blog=blog2.get_result()
+
+        #self.write(blog.title)
+        #blog=blog3.get_result()
+        #self.write(blog.subtitle)
+        count=Link.query().count()
+        self.write(count)
+
+##        self.write(self.blog.test())
+##        from google.appengine.api import memcache
+##        for c in self.blog.recent_comments():
+##            self.write(str(c.content)+"<br>")
+
+##        memcache.set('mm_test2',122)
+##        s=memcache.get_multi(None,key_prefix='mm_')
+##        self.write(str(s))
+####
+##        entry=Entry.get_by_id(2004)
+##
+##        cats=entry.categories
+##        for c in cats:
+##            self.write(c.name+"<br>")
+
+    def action_test2(self):
+        ObjCache.flush_multi(is_category=True,cid=123)
+    def action_test3(self):
+        ObjCache.flush_all()
+
 
 
 class getMedia(webapp.RequestHandler):
@@ -585,7 +794,7 @@ class CheckImg(BaseRequestHandler):
         if not sess.is_new():
             sess.invalidate()
             sess=Session(self,timeout=900)
-        sess['code']=img.text
+        sess['icode']=img.text
         sess.save()
         self.response.headers['Content-Type'] = "image/png"
         self.response.out.write(imgdata)
