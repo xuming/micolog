@@ -1,1 +1,1 @@
-appcfg.py update .
+e:\python27\python.exe -u  "E:\Program Files\Google\google_appengine\appcfg.py" --no_cookies --email=coolchyni --passin update E:\\work\\micolog\\micolog

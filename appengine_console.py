@@ -12,17 +12,28 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 SCRIPT_DIR = os.path.join(DIR_PATH, 'google', 'appengine', 'tools')
 
+
+
 EXTRA_PATHS = [
   DIR_PATH,
   os.path.join(DIR_PATH, 'lib', 'antlr3'),
-  os.path.join(DIR_PATH, 'lib', 'django'),
+  os.path.join(DIR_PATH, 'lib', 'django_1_3'),
+  os.path.join(DIR_PATH, 'lib', 'fancy_urllib'),
+  os.path.join(DIR_PATH, 'lib', 'ipaddr'),
+  os.path.join(DIR_PATH, 'lib', 'jinja2'),
+  os.path.join(DIR_PATH, 'lib', 'protorpc'),
+  os.path.join(DIR_PATH, 'lib', 'markupsafe'),
   os.path.join(DIR_PATH, 'lib', 'webob'),
+  os.path.join(DIR_PATH, 'lib', 'webapp2'),
   os.path.join(DIR_PATH, 'lib', 'yaml', 'lib'),
-  os.path.join(DIR_PATH, 'lib', 'fancy_urllib')
+  os.path.join(DIR_PATH, 'lib', 'simplejson'),
+  os.path.join(DIR_PATH, 'lib', 'google.appengine._internal.graphy'),
 ]
+
 sys.path = EXTRA_PATHS + sys.path
 from google.appengine.ext.remote_api import remote_api_stub
-from google.appengine.ext import db
+#from google.appengine.ext import db
+from google.appengine.ext import ndb
 
 def auth_func():
   return raw_input('Username:'), getpass.getpass('Password:')
@@ -33,13 +44,13 @@ app_id = sys.argv[1]
 if len(sys.argv) > 2:
   host = sys.argv[2]
 else:
-  host = '%s.appspot.com' % app_id
+  host = 'localhost'
 os.environ['APPLICATION_ID']=app_id
 
 os.environ['AUTH_DOMAIN'] = 'gmail.com'
 os.environ['USER_EMAIL'] = 'test@gmail.com'
 os.environ['SERVER_NAME'] = 'testserver'
-os.environ['SERVER_PORT'] = '80'
+os.environ['SERVER_PORT'] = '8089'
 os.environ['USER_IS_ADMIN'] = '1' #admin user 0 | 1
 os.environ['HTTP_HOST']='localhost'
 
@@ -60,5 +71,5 @@ apiproxy_stub_map.apiproxy.RegisterStub('mail',mail_stub.MailServiceStub())
 apiproxy_stub_map.apiproxy.RegisterStub('memcache', memcache_stub.MemcacheServiceStub())
 
 #remote_api_stub.ConfigureRemoteDatastore(app_id, '/remote_api', auth_func, host)
-from model import *
+from micolog.model import *
 code.interact('App Engine interactive console for %s' % (app_id,), None, locals())

@@ -36,6 +36,13 @@ def urlencode(value):
 	return urllib.quote(value.encode('utf8'))
 
 @register.filter
+def word_repeat(value,count):
+    s=''
+    for c in range(1,int(count)):
+        s=s+value
+    return s
+
+@register.filter
 def check_current(v1,v2):
 	if v1==v2:
 		return "current"
@@ -51,7 +58,7 @@ def dict_value(v1,v2):
 	return v1[v2]
 
 
-from app.html_filter import html_filter
+from html_filter import html_filter
 
 plog_filter = html_filter()
 plog_filter.allowed = {

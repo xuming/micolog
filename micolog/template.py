@@ -47,16 +47,16 @@ import os,logging
 import django
 
 import django.conf
-try:
-  django.conf.settings.configure(
-    DEBUG=False,
-    TEMPLATE_DEBUG=False,
-    TEMPLATE_LOADERS=(
-      'django.template.loaders.filesystem.load_template_source',
-    ),
-  )
-except (EnvironmentError, RuntimeError):
-  pass
+##try:
+##  django.conf.settings.configure(
+##    DEBUG=False,
+##    TEMPLATE_DEBUG=False,
+##    TEMPLATE_LOADERS=(
+##      'django.template.loaders.filesystem.load_template_source',
+##    ),
+##  )
+##except (EnvironmentError, RuntimeError):
+##  pass
 import django.template
 import django.template.loader
 
@@ -96,7 +96,7 @@ def loadbytheme(theme,template_file, debug=False):
     theme_path=os.path.join( theme.server_dir,"templates")
 
   abspath =os.path.join( theme_path,template_file)
-  logging.debug("theme_path:%s,abspath:%s"%(theme_path,abspath))
+  logging.info("theme_path:%s,abspath:%s"%(theme_path,abspath))
 
   if not debug:
     template = template_cache.get(abspath)
@@ -107,7 +107,7 @@ def loadbytheme(theme,template_file, debug=False):
     #file_name = os.path.split(abspath)
     new_settings = {
         'TEMPLATE_DIRS': (theme_path,),
-        'TEMPLATE_DEBUG': debug,
+        'TEMPLATE_DEBUG': False,
         'DEBUG': debug,
         }
     old_settings = _swap_settings(new_settings)

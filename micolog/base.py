@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os,logging,settings
+import os,logging,re
 import functools
 import webapp2 as webapp
 from google.appengine.api import users
@@ -7,18 +7,12 @@ import template as micolog_template
 from google.appengine.api import memcache
 ##import app.webapp as webapp2
 from django.template import TemplateDoesNotExist
-#from django.conf import settings
-#settings._target = None
-#from model import g_blog,User
-#activate(g_blog.language)
+import settings
 from google.appengine.api import taskqueue
 from mimetypes import types_map
 from datetime import datetime
 import urllib
 import traceback
-
-import settings
-
 def requires_admin(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -69,7 +63,7 @@ class Pager(object):
 
     def __init__(self, model=None,query=None, items_per_page=10):
         if model:
-            self.query = model.all()
+            self.query = model.query()
         else:
             self.query=query
 
@@ -88,7 +82,7 @@ class Pager(object):
             p = 1
         offset = (p - 1) * self.items_per_page
         if hasattr(self.query,'fetch'):
-            results = self.query.fetch(self.items_per_page, offset)
+            results = self.query.fetch(self.items_per_page,offset= offset)
         else:
             results = self.query[offset:offset+self.items_per_page]
 
@@ -100,7 +94,46 @@ class Pager(object):
 
         return (results, links)
 
+    ###Order字段不能为空，否则会报异常
+    def fetch_cursor(self,next_cursor='',prev_cursor='',order=None):
+        from google.appengine.datastore.datastore_query import Cursor
+##        cur=Cursor.from_websafe_string(p)
+##        results,cur2,more= self.query.fetch_page(self.items_per_page,start_cursor=cur)
 
+##        # setup query
+        if prev_cursor:
+            query = self.query.order(order.reversed())
+            cur=Cursor.from_websafe_string(prev_cursor)
+        elif next_cursor:
+            query = self.query.order(order)
+            cur=Cursor.from_websafe_string(next_cursor)
+        else:
+            query = self.query.order(order)
+            cur=None
+
+        # fetch results
+        results,cur2,more = query.fetch_page(self.items_per_page,start_cursor=cur)
+        if prev_cursor:
+            results.reverse()
+        sPrev=''
+        sNext=''
+        # pagination
+        if prev_cursor:
+            sNext=cur.reversed().to_websafe_string()
+            sPrev=more and cur2.to_websafe_string() or ''
+
+
+        else:
+            if next_cursor:
+                 sPrev=cur.reversed().to_websafe_string()
+            sNext=more and cur2.to_websafe_string() or ''
+
+        links = {'prev': sPrev, 'next':sNext,'more':more }
+
+##
+##        links = {'prev': cur2.reversed().to_websafe_string(), 'next':more and cur2.to_websafe_string() or '','more':more }
+##
+        return (results, links)
 
 class LangIterator:
     def __init__(self, path='locale'):
@@ -140,46 +173,20 @@ class LangIterator:
         return {'code':'en_US', 'lang':'English'}
 
 
-def Sitemap_NotifySearch():
-    """ Send notification of the new Sitemap(s) to the search engines. """
 
-
-    url = g_blog.baseurl+"/sitemap"
-
-    # Cycle through notifications
-    # To understand this, see the comment near the NOTIFICATION_SITES comment
-    for ping in settings.NOTIFICATION_SITES:
-        query_map = ping[3]
-        query_attr = ping[5]
-        query_map[query_attr] = url
-        query = urllib.urlencode(query_map)
-        notify = urlparse.urlunsplit((ping[0], ping[1], ping[2], query, ping[4]))
-        # Send the notification
-        logging.info('Notifying search engines. %s'%ping[1])
-        logging.info('url: %s'%notify)
-        try:
-            result = urlfetch.fetch(notify)
-            if result.status_code == 200:
-                logging.info('Notify Result: %s' % result.content)
-            if result.status_code == 404:
-                logging.info('HTTP error 404: Not Found')
-                logging.warning('Cannot contact: %s' % ping[1])
-
-        except :
-            logging.error('Cannot contact: %s' % ping[1])
 
 
 class BaseRequestHandler(webapp.RequestHandler):
-
-
-
 ##	def head(self, *args):
 ##		return self.get(*args)
 
     def initialize(self, request, response):
         self.current='home'
+
         webapp.RequestHandler.initialize(self, request, response)
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+        if  hasattr(self,'setup'):
+            self.setup()
+
         from model import User,Blog
         self.blog = Blog.getBlog()
         self.login_user = users.get_current_user()
@@ -190,14 +197,14 @@ class BaseRequestHandler(webapp.RequestHandler):
 
         if self.is_admin:
             self.auth = 'admin'
-            self.author=User.all().filter('email =',self.login_user.email()).get()
+            self.author=User.query().filter(User.email ==self.login_user.email()).get()
             if not self.author:
                 self.author=User(dispname=self.login_user.nickname(),email=self.login_user.email())
-                self.author.isadmin=True
+                self.author.level=3
                 self.author.user=self.login_user
                 self.author.put()
         elif self.is_login:
-            self.author=User.all().filter('email =',self.login_user.email()).get()
+            self.author=User.query().filter(User.email ==self.login_user.email()).get()
             if self.author:
                 self.auth='author'
             else:
@@ -256,16 +263,19 @@ class BaseRequestHandler(webapp.RequestHandler):
         self.response.out.write(content)
 
     def get_render(self,template_file,values):
-        template_file=template_file+".html"
+        if self.isPhone():
+            template_file=os.path.join('m',template_file+".html")
+        else:
+            template_file=template_file+".html"
         self.template_vals.update(values)
         logging.info("-----------------")
         try:
             #sfile=getattr(self.blog.theme, template_file)
             logging.debug("get_render:"+template_file)
-            html = micolog_template.render(self.blog.theme, template_file, self.template_vals)
+            html = micolog_template.render(self.blog.theme, template_file, self.template_vals,debug=settings.DEBUG)
         except TemplateDoesNotExist:
             #sfile=getattr(self.blog.default_theme, template_file)
-            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals)
+            html = micolog_template.render(self.blog.default_theme, template_file, self.template_vals,debug=settings.DEBUG)
 
         return html
 
@@ -285,7 +295,7 @@ class BaseRequestHandler(webapp.RequestHandler):
         """
         self.template_vals.update(template_vals)
         path = os.path.join(settings.ROOT_PATH, template_file)
-        self.response.out.write(micolog_template.render2(path, self.template_vals))
+        self.response.out.write(micolog_template.render2(path, self.template_vals,debug=settings.DEBUG))
 
     def param(self, name, **kw):
         return self.request.get(name, **kw)
@@ -319,3 +329,11 @@ class BaseRequestHandler(webapp.RequestHandler):
             self.redirect(redirect_url)
             return False
 
+    def isPhone(self):
+        user_agent = self.request.headers['User-Agent']
+        result = {}
+        result['ua'] = user_agent
+        if (re.search('iPod|iPhone|Android|Opera Mini|BlackBerry|webOS|UCWEB|Blazer|PSP', user_agent)):
+            return True
+        else:
+            return False

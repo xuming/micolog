@@ -1,0 +1,43 @@
+﻿
+<ol class="commentlist rounded-corners-8px " id="comments">
+
+
+
+
+	{% for comment in comments %}
+		   <li class="comment" id="comment-{{comment.vkey}}">
+    <div class="comment-top first">
+    	<img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/>
+         <span class="fn n">{%if comment.weburl %}
+			     <a href="{{comment.weburl|safe}}" target="_blank">{{comment.author}}</a>
+			{% else %}{{comment.author}}{%endif%}
+      </span>    	<div class="comment-meta">
+	    	{{comment.date|datetz:"Y-m-d"}}  {{comment.date|datetz:"H:i"}} <span class="meta-sep"></span>	    	<div class="comment-buttons">
+		    				<a onclick="return backcomment('{{comment.author}}',{{comment.vkey}})" href="javascript:void(0)" class="comment-reply-link">回复</a>			</div>
+    	</div>
+			</div>
+
+	<div class="comment-content">
+		<p>{{comment.content|safe}}</p>
+	</div>
+
+</li>
+
+
+	{% endfor %}
+
+
+
+						</ol>
+{%if more%}
+<script>
+ nextcur='{{cursor}}';
+</script>
+<div id='li-load-more'>
+									<div class="load-more-comments-link">
+<a href="javascript:void(0);" onclick="showcommentmore()">更多评论>></a>
+                                    </div>
+         </div>
+                  {%endif%}
+
+

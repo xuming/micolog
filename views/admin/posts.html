@@ -34,17 +34,23 @@
 		<thead>
 			<tr>
 			<th class="check-column" scope="col"><input type="checkbox" onclick="$('input[name=checks]').attr('checked',this.checked);"/></th>
-		<th style="width: 15%;">{% trans "Date"%}</th><th>{%trans "Title"%}</th><th>{%trans "Author"%}</th>	<th class="num" scope="col"><div class="vers"><img src="/static/images/comment-grey-bubble.png" alt="Comments"/></div></th><th>{%trans "Status"%}</th><th>{%trans "allow comment"%}</th></tr>
+		<th style="width: 15%;">{% trans "Date"%}</th><th>{%trans "Title"%}</th><th>{%trans "Author"%}</th>	<th class="num" scope="col"><div class="vers"><img src="/static/images/comment-grey-bubble.png" alt="Comments"/></div></th><th>{%trans "Status"%}</th><th>{%trans "allow comment"%}</th>
+        <th>{%trans "sticky"%}</th>
+        <th></th>
+        </tr>
 			</thead>
 			<tbody>
             {%for entry in entries%}
 		<tr valign="middle" id="link-{{entry.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{entry.key.id}}" name="checks"/></th>
                            <td>{{entry.date.date}}</td>
-                           <td> <a class="row-title" style="color:gray" title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key}}&amp;action=edit">[{%trans "edit" %}]</a> <strong><a class="row-title" title='{{entry.title|escape}}' href="/{{entry.link}}" target="_blank">{{entry.title|escape}}</a></strong></td>
+                           <td> <strong><a class="row-title"  title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key.id}}&amp;action=edit">{{entry.title|escape}}</a> </strong></td>
                            <td>{{entry.author_name}}</td>
                            <td class="num" scope="col">{{entry.commentcount}}</td>
                            <td>{%if entry.published%}{% trans "Published"%}{%else%}{%trans "Unpublished"%} {%endif%}</td>
                            <td>{%if entry.allow_comment%}Yes{%else%}<span style="color:#f00">No</span>{%endif%}</td>
+                           <td>{%if entry.sticky%}Yes{%else%}<span style="color:#f00">No</span>{%endif%}</td>
+
+                           <td><a class="row-title"  title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key.id}}&amp;action=edit">[{%trans "edit" %}]</a> <a   href="/{{entry.link}}" target="_blank">[{%trans "view" %}]</a></td>
 			</tr>
 			{%endfor%}
 			</tbody>

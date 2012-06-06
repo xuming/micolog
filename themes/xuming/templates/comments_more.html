@@ -1,0 +1,38 @@
+﻿
+	{% for comment in comments %}
+
+		<div class="{%cycle alt1,alt %} divcomment" id="comment-{{comment.key.id}}">
+            <div style="float:left;padding-right:10px;margin-top:15px">
+            {{comment.no}}
+            </div>
+			<div class="gravatar add" title="回复{{comment.author}}" onclick="return backcomment('{{comment.author}}',{{comment.key.id}});" style="cursor: pointer;"><img height="50" width="50" class="avatar avatar-50" src="{{comment.gravatar_url}}" alt=""/></div>
+     <div class="comments">
+     				{%if comment.weburl %}
+			<a href="{{comment.weburl|safe}}" target="_blank">{{comment.author}}</a>
+			{% else %}{{comment.author}}{%endif%}
+			 On <small class="commentmetadata"><a href="#comment-{{comment.key.id}}" title="">{{comment.date|datetz:"Y-m-d"}} at {{comment.date|datetz:"H:i"}}</a> </small>
+
+			<br />
+
+			<p>{{comment.content|safe}}</p>
+
+			</div>
+			<div style="clear:both"></div>
+
+
+		</div>
+
+	{% endfor %}
+
+ {%if more%}
+
+      <div>
+
+<div id="commentsnavi">
+
+
+
+<a href="javascript:void(0);" onclick="$(this).parent().parent().load('/do/getcomments_more?key={{entry.key.id}}&next={{cursor}}');">更多评论>></a>
+</div>
+      </div>
+{%endif%}

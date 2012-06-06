@@ -1,0 +1,27 @@
+<input type="hidden" value="{{blog.comment_check_type}}" id="check_type"/>
+
+<h3 id="respond">我要留言</h3>
+{% if entry.allow_comment %}
+{%if self.is_login%}
+<div class="info" id="comment_info"></div>
+<form action="/post_comment" method="post" id="commentform">
+<p><textarea name="comment" id="comment" style="width:96%"  rows="10" tabindex="4"></textarea></p>
+<div id="s_msg" style="display:none;color:red">正在提交留言...</div>
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="提交留言" />
+<input type="checkbox" name="reply_notify_mail" id="reply_notify_mail" tabindex="4" />
+<label for="reply_notify_mail">有回复时邮件通知我</label></p>
+
+<input type="hidden" name="key" value="{{entry.key.id}}" />
+<input type="hidden" name="useajax" value="{{useajax}}" />
+</p>
+</form>
+{%else%}
+<p>
+请先<a href='{{loginurl}}'>登录后再评论</a>!
+</p>
+{%endif%}
+{% else %}
+<p class="nocomments">评论已关闭</p>
+{% endif %}
+
+<script type="text/javascript" src="/themes/{{ blog.theme_name }}/comment.js"></script>

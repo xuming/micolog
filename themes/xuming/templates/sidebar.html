@@ -1,0 +1,105 @@
+﻿<div class="g-c-gc-home" id="rightbar">
+<div>
+<div  class="rsstop" ><a href="{{ blog.feedurl }}"> 订阅 - 徐明的博客</a></div>
+
+
+
+<ul id="sidebar">
+<li>
+	<div id="blog-notice" class="line"></div>
+    <h2>博客公告</h2>
+    <ul>
+		{{blog.blognotice|safe}}
+	</ul>
+
+</li>
+
+<li>
+	<div id="hot-posts" class="line"></div>
+    <h2>热门文章</h2>
+    <ul>
+        {% for entry in blog.hotposts %}
+		<li><a href="/{{entry.link|escape}}" title="{{entry.title|escape}}">{{entry.title|escape}}({{entry.readtimes}})</a></li>
+        {%endfor%}
+	</ul>
+
+</li>
+<li>
+<div class="line"></div>
+    <h2>最近评论</h2>
+        <ul>
+        {% for comment in blog.recent_comments %}
+        <li><a href="/{{comment.entry.link}}#comment-{{comment.key.id}}">{{comment.author}}:</a> {{comment.shortcontent}}...</li>
+        {%endfor%}
+        </ul>
+</li>
+<li>
+	<div id="recent-posts-2" class="line"></div>
+    <h2>最近文章</h2>
+    <ul>
+        {% for entry in blog.recentposts %}
+		<li><a href="/{{entry.link|escape}}" title="{{entry.title|escape}}">{{entry.title|escape}}({{entry.readtimes}})</a></li>
+        {%endfor%}
+	</ul>
+
+</li>
+
+<li>
+  <div class="line"></div>
+ <h2>分类杂谈</h2>
+  <ul>
+ 	{%for cate in blog.categories%}
+  <li>	<a href="/category/{{cate.slug}}">{{cate.name}}</a>({{cate.count}})</li>
+ 	{%endfor%}
+ 	</ul>
+
+</li>
+    <li>
+
+
+<div class="line"></div>
+<h2>标签</h2>
+<div id='side-tag-ctn'>
+{% for t in blog.tags %}
+<a title="{{ t.tagcount }} " href="/tag/{{t.tag|urlencode}}"><span style='font-size:15px; font-sizes:{{ t.tagcount|add:12}}px;padding:8px;'>{{t.tag}}</span></a>
+{%endfor%}
+</div>
+</li>
+<li>
+<div class="line"></div>
+	<h2>归档</h2>
+		<ul>
+		{%for archive in blog.archives%}
+		<li><a href="/{{archive.year}}/{{archive.month}}">{{archive.year}}年{{archive.month}}月({{archive.entrycount}})</a></li>
+		{%endfor%}
+		</ul>
+</li>
+<li>
+<div class="line"></div>
+<h2>友情链接</h2>
+<ul>
+{%for link in blog.blogrolls%}
+<li><a href="{{link.href}}">{{link.linktext}}</a></li>
+{%endfor%}
+
+</ul>
+</li>
+</ul>
+
+
+        </div>
+
+<script type="text/javascript">
+function tagColor() {
+	var colors = ["#0cf","#06f","#900","#990","#f36","#639","#60f","#0c0","#f90","#c66","#9b0","#f0f","#00f","#333"]; //预设你想使用到的色彩，把他们保存为一个数组colors，可以随意增加减少
+	var tags = $("#side-tag-ctn a"); //标签选择器，id为side-tag-ctn的div的子标签a，保存为一个数组
+	var tagCount = tags.length; //统计所有要改变的标签的数量
+	for ( i=0; i<tagCount; i++ ) { //循环赋色开始
+		n = Math.floor( Math.random() * colors.length ); //把上面的色彩作随机排序
+    		tags.eq(i).css({"color":colors[n]}); //赋予每个标签随机获取到的颜色
+	}
+}
+tagColor();
+</script>
+
+

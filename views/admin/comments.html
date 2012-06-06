@@ -5,7 +5,7 @@
    <div class="wrap">
 
       <h2>{% trans "Manage Comments"%}</h2><form action="" method="get">
-      <div class="" style="padding:10px 5px 5px 5px"><B>{% trans "All Comments"%}</b><span style='color:gray'> ({{pager.count}}) </span>
+      <div class="" style="padding:10px 5px 5px 5px"><span style='color:gray'> </span>
 		&nbsp;&nbsp;
 
 		<b>{% trans "Filter:"%}</b>
@@ -27,12 +27,13 @@
 		  </div>
 		  <div class="alignright">
 	        {% if pager.prev %}
-			<div class="alignleft"><a href="/admin/comments?page={{ pager.prev}}">{% trans "&laquo; prev"%}</a></div>
+			<div class="alignleft" style="margin-right:10px"><a href="/admin/comments?prev={{ pager.prev }}">{% trans "&laquo; prev"%}</a></div>
 			{% endif %}
 
 			{% if pager.next %}
-			<div class="alignright"><a href="/admin/comments?page={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
-			{% endif %}	 <div class="alignright" style="padding:0px 10px;">{% blocktrans  with pager.page_index as pindex %}  Page {{pindex}}{% endblocktrans %}</div>
+			<div class="alignright"><a href="/admin/comments?next={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
+			{% endif %}
+            <div> </div>
          </div>
 
 		      <br class="clear"/>
@@ -47,14 +48,14 @@
 			</thead>
 			<tbody>
             {%for comment in comments%}
-		<tr valign="middle" id="link-{{comment.key}}"><th class="check-column" scope="row"><input type="checkbox" value="{{comment.key}}" name="checks"/></th>
+		<tr valign="middle" id="link-{{comment.key.id}}"><th class="check-column" scope="row"><input type="checkbox" value="{{comment.key.id}}" name="checks"/></th>
                            <td>{{comment.date}}</td>
 
                            <td><strong><a target="_blank" class="row-title" title='Edit "{{comment.weburl}}"' href="{{comment.weburl}}">{{comment.author}}</a></strong></td>
                             <td>{{comment.content}}</td>
                             <td>{{comment.email}}</td>
                              <td>{{comment.ip}}</td>
-                            <td><a  target="_blank" href="{{blog.baseurl}}/{{comment.entry.link}}" >{{comment.entry.title}}</a></td>
+                            <td><a  target="_blank" href="{{blog.baseurl}}/{{comment.entry.get.link}}" >{{comment.entry.get.title}}</a></td>
 
         		</tr>
 			{%endfor%}

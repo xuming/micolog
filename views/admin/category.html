@@ -54,10 +54,19 @@
 <h3>{% trans "Parent Category"%}</h3>
 <div class="inside">
     <select name="parentkey">
-       <option value=''>{%trans "None"%}</option>
-        {% for cate in categories%}
-       <option value="{{cate.key}}" {%ifequal category.parent_cat.key key%}selected="selected"{%endifequal%}>{{cate.name}}</option>
-        {%endfor%}
+       <option value=''>-------------</option>
+
+	{% recurse cate in categories children="children" indent=(0,4) %}
+
+
+            <option value="{{cate.key.urlsafe}}" {%ifequal cate.key.urlsafe category.parent_cat.urlsafe%}selected="selected"{%endifequal%}>{{'&nbsp;'|word_repeat:indent|safe}}{{cate.name}}{{''|safe}}</option>
+
+
+
+			  	{% yield %}
+			{% endrecurse %}
+
+
     </select>
 </div>
 

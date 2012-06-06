@@ -1,0 +1,69 @@
+<input type="hidden" value="{{blog.comment_check_type}}" id="check_type"/>
+
+
+{% if entry.allow_comment %}
+{%if self.is_login%}
+<h3>发表评论:</h3>
+<div class="info" id="comment_info"></div>
+<form id="commentform">
+<div>
+<p>
+<textarea name="comment" id="comment"  rows="10" tabindex="4"></textarea></p>
+<p>
+<input name="submit" type="submit" onclick='return submitComment();' id="submit" tabindex="5" value="提交留言" />
+</p>
+
+<input type="hidden" name="key" value="{{entry.key.id}}" />
+<input type="hidden" name="useajax" value="1" />
+<input type="hidden" name="ismobile" value="1" />
+</p>
+</div>
+</form>
+{%else%}
+<p>
+<a data-role="button" href='{{loginurl}}'>登录Google帐号后评论</a>
+</p>
+{%endif%}
+{% else %}
+<p class="nocomments">评论已关闭</p>
+{% endif %}
+
+<script>
+function submitComment(){
+                if ($('#comment').val().trim()=='')
+                {
+                    alert('请输入评论内容');
+                    return false;
+                }
+                var formData = $("#commentform").serialize();
+                $.mobile.showPageLoadingMsg()
+                $.ajax({
+                    type: "POST",
+                    url: "/post_comment",
+                    cache: false,
+                    data: formData,
+                    dataType: "json",
+                    success: function(data){
+                       if(data[0])
+                       {
+                            showcomment();
+                       }else
+                       {
+                            $.mobile.hidePageLoadingMsg();
+                            alert(data[2]);
+                       }
+
+
+                    },
+                   error:function()
+                   {
+                        $.mobile.hidePageLoadingMsg();
+                        alert('提交失败!');
+                   }
+                });
+
+                return false;
+            }
+
+
+</script>
