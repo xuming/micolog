@@ -91,9 +91,12 @@
 
         </div>
  <script>
-        $('#comment_edit').load('/do/getcomment_edit?key={{entry.key.id}}',function(){
-            $('#commentform textarea').textinput();
-            $('#commentform #submit').button();
+        $(document).ready(function(){
+            $('#comment_edit').load('/do/getcomment_edit?key={{entry.key.id}}',function(){
+                        $('#commentform textarea').textinput();
+                        $('#commentform #submit').button();
+
+                    });
 
         });
 

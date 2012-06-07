@@ -67,7 +67,7 @@ class MainPage(BasePublicPage):
         pass
 
 
-    @request_cache(key_prefix='HomePage', is_entry=True)
+    @request_memcache(key_prefix='HomePage', is_entry=True)
     def get(self):
 
         try:
@@ -148,9 +148,9 @@ class SinglePost(BasePublicPage):
         #entry.put()
         self.entry=entry
 
-        loginurl=users.create_login_url(entry.fullurl+(self.isPhone() and "" or "#comment_area"))
         @request_memcache(key_prefix='single_post',entry_id=entry.vkey)
         def render_single(self):
+            loginurl=users.create_login_url(entry.fullurl+(self.isPhone() and "" or "#comment_area"))
             if entry.entrytype=='post':
                 self.render('single',
                             dict(entry=entry,loginurl=loginurl))
@@ -293,7 +293,7 @@ class SinglePost(BasePublicPage):
             return "/"+url+"?mp="+str(pindex)+"#comments"
 
 class entriesByCategory(BasePublicPage):
-    @request_cache(key_prefix='entriesByCategory',time=3600*24)
+    @request_memcache(key_prefix='entriesByCategory',is_entry=True,time=3600*24)
     def get(self,slug=None):
         if not slug:
             self.error(404)
@@ -343,7 +343,7 @@ class archive_by_month(BasePublicPage):
         self.render('month', dict(entries=entries, year=year, month=month, pager=links))
 
 class entriesByTag(BasePublicPage):
-    @request_memcache(key_prefix='tag',time=3600*24)
+    @request_memcache(key_prefix='tag',is_entry=True,time=3600*24)
     def get(self,slug=None):
         if not slug:
              self.error(404)
@@ -375,7 +375,7 @@ class FeedHandler(BaseRequestHandler):
         self.render2('views/rss.xml',{'entries':entries,'last_updated':last_updated})
 
 class CommentsFeedHandler(BaseRequestHandler):
-    @request_memcache(key_prefix='commentsfeedhandler',time=3600*24,is_comment=True)
+    @request_cache(key_prefix='commentsfeedhandler',time=3600*24,is_comment=True)
     def get(self,tags=None):
         comments = Comment.query().order(-Comment.date).filter(Comment.ctype ==0).fetch(10)
         if comments and comments[0]:
