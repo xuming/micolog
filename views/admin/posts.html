@@ -50,7 +50,13 @@
                            <td>{%if entry.allow_comment%}Yes{%else%}<span style="color:#f00">No</span>{%endif%}</td>
                            <td>{%if entry.sticky%}Yes{%else%}<span style="color:#f00">No</span>{%endif%}</td>
 
-                           <td><a class="row-title"  title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key.id}}&amp;action=edit">[{%trans "edit" %}]</a> <a   href="/{{entry.link}}" target="_blank">[{%trans "view" %}]</a></td>
+                           <td>
+                           <a class="row-title"  title='Edit "{{entry.title|escape}}"' href="/admin/post?key={{entry.key.id}}&amp;action=edit">[{%trans "edit" %}]</a>
+                           <a   href="/{{entry.link}}" target="_blank">[{%trans "view" %}]</a>
+                           <a   href="/admin/do/update_entry_comments?key={{entry.key.id}}">[{%trans "更新评论数" %}]</a>
+                            <a   href="/admin/comments?cq=entry&cv={{entry.key.id}}">[{%trans "查看评论" %}]</a>
+
+                           </td>
 			</tr>
 			{%endfor%}
 			</tbody>

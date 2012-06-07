@@ -13,6 +13,7 @@
 		 <option value='author' {%ifequal cq 'author'%}selected{%endifequal%}>{% trans "Author"%}</option>
 		 <option value='email' {%ifequal cq 'email'%}selected{%endifequal%}>Email</option>
 		 <option value='ip' {%ifequal cq 'ip'%}selected{%endifequal%}>IP</option>
+         <option value='entry' {%ifequal cq 'entry'%}selected{%endifequal%}>文章号</option>
 		</select>
 		<input type="text" name="cv" value="{{cv}}"/>
 		<input type="submit" value="{% trans "Do"%}"/>
@@ -27,11 +28,11 @@
 		  </div>
 		  <div class="alignright">
 	        {% if pager.prev %}
-			<div class="alignleft" style="margin-right:10px"><a href="/admin/comments?prev={{ pager.prev }}">{% trans "&laquo; prev"%}</a></div>
+			<div class="alignleft" style="margin-right:10px"><a href="/admin/comments?cq={{cq}}&cv={{cv}}&prev={{ pager.prev }}">{% trans "&laquo; prev"%}</a></div>
 			{% endif %}
 
 			{% if pager.next %}
-			<div class="alignright"><a href="/admin/comments?next={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
+			<div class="alignright"><a href="/admin/comments?cq={{cq}}&cv={{cv}}&next={{ pager.next }}">{%trans "next &raquo;"%}</a></div>
 			{% endif %}
             <div> </div>
          </div>

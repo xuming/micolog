@@ -115,6 +115,20 @@ class admin_do_action(base.BaseRequestHandler):
                 entry.put()
         self.write(_('"All comments updated"'))
 
+    @base.requires_admin
+    def action_update_entry_comments(self):
+        key=self.param('key')
+        entry=Entry.get(key)
+
+        if entry:
+            cnt=len(entry.comments(1))
+
+            if cnt<>entry.commentcount:
+                entry.commentcount=cnt
+                entry.put()
+            #self.write(_('"update comments ok"'+str(cnt)))
+        self.redirect(self.referer)
+        #self.write(_('"update comments ok"'))
 
 
     @base.requires_admin
@@ -637,8 +651,13 @@ class admin_comments(base.BaseRequestHandler):
 
         cq=self.param('cq')
         cv=self.param('cv')
+
         if cq and cv:
-            query=Comment.query().filter(getattr(Comment,cq)==cv)
+            if cq=='entry':
+                query=Comment.query().filter(Comment.entry==ndb.Key(Entry,int(cv)))
+
+            else:
+                query=Comment.query().filter(getattr(Comment,cq)==cv)
         else:
             query=Comment.query()
         comments,pager=base.Pager(query=query,items_per_page=15).fetch_cursor(sNext,sPrev,-Comment.date)

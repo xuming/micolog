@@ -81,6 +81,13 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: entry
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
   - name: ip
   - name: date
     direction: desc

@@ -16,6 +16,7 @@
         </script>
         <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
         </script>
+
     </head>
     <body>
         <div data-role="page" id="singlepage">
@@ -92,11 +93,14 @@
         </div>
  <script>
         $(document).ready(function(){
-            $('#comment_edit').load('/do/getcomment_edit?key={{entry.key.id}}',function(){
-                        $('#commentform textarea').textinput();
-                        $('#commentform #submit').button();
 
-                    });
+            $.get('/do/getcomment_edit?key={{entry.key.id}}', function(data){
+                        $('.ui-page-active #comment_edit').html(data);
+                        $('.ui-page-active #commentform textarea').textinput();
+                        $('.ui-page-active #commentform #submit').button();
+            });
+
+
 
         });
 

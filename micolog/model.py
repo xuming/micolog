@@ -605,25 +605,21 @@ class Entry(BlogModel):
         self.tags = [t.strip() for t in tags]
 
 
-    def get_comments_by_page(self,index, psize):
-        @object_memcache("entry.get_comments_by_page",time=0,cache_key=(self.vkey,self.blog.comments_order,index,psize),entry_id=self.vkey)
-        def _get_comments_by_page():
-            if self.blog.comments_order:
-                commentslist= Comment.query().filter(Comment.entry ==self.key)\
-                        .filter(Comment.ctype == COMMENT_NORMAL)\
-                        .filter(Comment.status == COMMENT_APPROVE)\
-                        .order(-Comment.date).fetch(psize, offset=(index-1) * psize)
-            else:
-                commentslist= Comment.query().filter(Comment.entry ==self.key)\
-                        .filter(Comment.ctype == COMMENT_NORMAL)\
-                        .filter(Comment.status == COMMENT_APPROVE)\
-                        .order(Comment.date).fetch(psize, offset=(index-1) * psize)
-            i=0;
-            for comment in commentslist:
-                comment.no=(index-1) * psize+i
-                i=i+1
-            return commentslist
-        return _get_comments_by_page()
+##    def get_comments_by_page(self,index, psize):
+##        @object_memcache("entry.get_comments_by_page",time=0,cache_key=(self.vkey,self.blog.comments_order,index,psize),entry_id=self.vkey)
+##        def _get_comments_by_page():
+##            if self.blog.comments_order:
+##                commentslist= Comment.query().filter(Comment.entry ==self.key)\
+##                        .order(-Comment.date).fetch(psize, offset=(index-1) * psize)
+##            else:
+##                commentslist= Comment.query().filter(Comment.entry ==self.key)\
+##                        .order(Comment.date).fetch(psize, offset=(index-1) * psize)
+##            i=0;
+##            for comment in commentslist:
+##                comment.no=(index-1) * psize+i
+##                i=i+1
+##            return commentslist
+##        return _get_comments_by_page()
 
     @property
     def strtags(self):
@@ -635,17 +631,13 @@ class Entry(BlogModel):
 
 
     def comments(self,order):
-        @object_memcache("entry.comments",time=0,cache_key=(self.vkey,order),comments=True,entry_id=self.vkey)
+        #@object_memcache("entry.comments",time=0,cache_key=(self.vkey,order),comments=True,entry_id=self.vkey)
         def _comments():
             if order:
                 commentslist= Comment.query().filter(Comment.entry == self.key)\
-                        .filter(Comment.ctype == COMMENT_NORMAL)\
-                        .filter(Comment.status == COMMENT_APPROVE)\
                         .order(-Comment.date).fetch(100)
             else:
                 commentslist= Comment.query().filter(Comment.entry == self.key)\
-                        .filter(Comment.ctype == COMMENT_NORMAL)\
-                        .filter(Comment.status == COMMENT_APPROVE)\
                         .order(Comment.date).fetch(100)
             i=0
             for comment in commentslist:
